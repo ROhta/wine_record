@@ -1,35 +1,35 @@
-# Specification Quality Checklist: ワインの記録（ラベル写真からの登録）
+# 仕様品質チェックリスト: ワインの記録（ラベル写真からの登録）
 
-**Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-06-17
-**Feature**: [spec.md](../spec.md)
+**目的**: 計画フェーズに進む前に、仕様の網羅性と品質を検証する
+**作成日**: 2026-06-17
+**機能**: [spec.md](../spec.md)
 
-## Content Quality
+## 内容の品質
 
-- [x] No implementation details (languages, frameworks, APIs)
-- [x] Focused on user value and business needs
-- [x] Written for non-technical stakeholders
-- [x] All mandatory sections completed
+- [x] 実装の詳細（言語・フレームワーク・API）が無い
+- [x] ユーザー価値とビジネスニーズに焦点
+- [x] 非技術ステークホルダー向けに書かれている
+- [x] 必須セクションがすべて埋まっている
 
-## Requirement Completeness
+## 要件の網羅性
 
-- [x] No [NEEDS CLARIFICATION] markers remain
-- [x] Requirements are testable and unambiguous
-- [x] Success criteria are measurable
-- [x] Success criteria are technology-agnostic (no implementation details)
-- [x] All acceptance scenarios are defined
-- [x] Edge cases are identified
-- [x] Scope is clearly bounded
-- [x] Dependencies and assumptions identified
+- [x] [NEEDS CLARIFICATION] マーカーが残っていない
+- [x] 要件がテスト可能で曖昧でない
+- [x] 成功基準が測定可能
+- [x] 成功基準が技術非依存（実装詳細を含まない）
+- [x] すべての受け入れシナリオが定義されている
+- [x] エッジケースが特定されている
+- [x] スコープが明確に区切られている
+- [x] 依存関係と前提が特定されている
 
-## Feature Readiness
+## 機能の準備状況
 
-- [x] All functional requirements have clear acceptance criteria
-- [x] User scenarios cover primary flows
-- [x] Feature meets measurable outcomes defined in Success Criteria
-- [x] No implementation details leak into specification
+- [x] すべての機能要件に明確な受け入れ基準がある
+- [x] ユーザーシナリオが主要フローを網羅している
+- [x] 機能が成功基準で定義した測定可能な成果を満たす
+- [x] 実装詳細が仕様に漏れ出していない
 
-## Notes
+## 補足
 
 - すべての項目が合格。ブレインストーミング段階で要件・前提・スコープを確定済みのため、
   [NEEDS CLARIFICATION] は残っていない。

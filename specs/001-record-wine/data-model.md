@@ -1,4 +1,4 @@
-# Phase 1 Data Model: ワインの記録
+# フェーズ1 データモデル: ワインの記録
 
 ## エンティティ
 
@@ -53,7 +53,7 @@ JSA 表現集 PDF を構造化した `data/jsa-taxonomy.json` が供給源。`ge
 ### LabelImage（ラベル画像）
 
 オブジェクトストレージ上の画像と参照（URL）。本体はストレージ、参照は
-`WineRecord.imageUrl`。記録とは独立に保存され、保存失敗時も記録自体は成立する（FR-007 / Edge Case）。
+`WineRecord.imageUrl`。記録とは独立に保存され、保存失敗時も記録自体は成立する（FR-007 / エッジケース）。
 
 ## namespace へのマッピング（Upstash Vector）
 

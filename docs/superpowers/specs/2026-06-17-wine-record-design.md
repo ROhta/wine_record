@@ -1,4 +1,4 @@
-# Wine Record — 設計ドキュメント
+# ワイン記録アプリ — 設計ドキュメント
 
 - 日付: 2026-06-17
 - ステータス: 承認済み（ブレインストーミング成果物）
@@ -19,7 +19,7 @@
         │  Streamable HTTP (リモート MCP 接続)
         ▼
 [Wine MCP サーバー (TypeScript)]   ← 本プロジェクトで作る部分
-        ├─ MCP Tools: get_jsa_taxonomy / record_wine / search_wine / get_upload_url
+        ├─ MCP ツール: get_jsa_taxonomy / record_wine / search_wine / get_upload_url
         ├─ MCP Apps ウィジェット: 確認フォーム / タップ選択UI / 結果カード
         ├─ Upstash Vector (記録の保存・観点別クエリ)
         └─ オブジェクトストレージ (Cloudflare R2 もしくは Vercel Blob: ラベル画像本体)
@@ -41,7 +41,7 @@
 
 | namespace | ベクトル化対象 | metadata |
 |---|---|---|
-| `overall`（既定・正本）| 名前＋産地＋全表現を結合したテキスト | 全フィールド（下記）|
+| `overall`（既定・正本）| 名前＋産地＋全表現を結合したテキスト | 全フィールド |
 | `aroma` | 香り表現テキストのみ | `{ wineId }` のみ |
 | `appearance` | 外観表現テキストのみ | `{ wineId }` のみ |
 | `taste` | 味わい表現テキストのみ | `{ wineId }` のみ |
