@@ -2,7 +2,7 @@
 
 set -e
 
-# Parse command line arguments
+# コマンドライン引数を解析する
 JSON_MODE=false
 
 for arg in "$@"; do
@@ -18,16 +18,16 @@ for arg in "$@"; do
     esac
 done
 
-# Source common functions
+# 共通関数を読み込む
 SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-# Get feature paths
+# フィーチャーのパスを取得する
 _paths_output=$(get_feature_paths) || { echo "ERROR: Failed to resolve feature paths" >&2; exit 1; }
 eval "$_paths_output"
 unset _paths_output
 
-# Validate required files
+# 必須のファイルを検証する
 if [[ ! -f "$IMPL_PLAN" ]]; then
     echo "ERROR: plan.md not found in $FEATURE_DIR" >&2
     echo "Run /speckit-plan first to create the implementation plan." >&2
@@ -40,7 +40,7 @@ if [[ ! -f "$FEATURE_SPEC" ]]; then
     exit 1
 fi
 
-# Build available docs list
+# 利用可能なドキュメントのリストを構築する
 docs=()
 [[ -f "$RESEARCH" ]] && docs+=("research.md")
 [[ -f "$DATA_MODEL" ]] && docs+=("data-model.md")
@@ -49,7 +49,7 @@ if [[ -d "$CONTRACTS_DIR" ]] && [[ -n "$(ls -A "$CONTRACTS_DIR" 2>/dev/null)" ]]
 fi
 [[ -f "$QUICKSTART" ]] && docs+=("quickstart.md")
 
-# Resolve tasks template through override stack
+# オーバーライドスタックを通じて tasks テンプレートを解決する
 TASKS_TEMPLATE=$(resolve_template "tasks-template" "$REPO_ROOT") || true
 if [[ -z "$TASKS_TEMPLATE" ]] || [[ ! -f "$TASKS_TEMPLATE" ]]; then
     echo "ERROR: Could not resolve required tasks-template from the template override stack for $REPO_ROOT" >&2
@@ -57,7 +57,7 @@ if [[ -z "$TASKS_TEMPLATE" ]] || [[ ! -f "$TASKS_TEMPLATE" ]]; then
     exit 1
 fi
 
-# Output results
+# 結果を出力する
 if $JSON_MODE; then
     if has_jq; then
         if [[ ${#docs[@]} -eq 0 ]]; then

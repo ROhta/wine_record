@@ -29,7 +29,7 @@ while [ $i -le $# ]; do
             fi
             i=$((i + 1))
             next_arg="${!i}"
-            # Check if the next argument is another option (starts with --)
+            # 次の引数が別のオプション（-- で始まる）かどうかを確認する
             if [[ "$next_arg" == --* ]]; then
                 echo 'Error: --short-name requires a value' >&2
                 exit 1
@@ -83,14 +83,14 @@ if [ -z "$FEATURE_DESCRIPTION" ]; then
     exit 1
 fi
 
-# Trim whitespace and validate description is not empty (e.g., user passed only whitespace)
+# 空白をトリムし、説明が空でないことを検証する（例: ユーザーが空白のみを渡した場合）
 FEATURE_DESCRIPTION=$(echo "$FEATURE_DESCRIPTION" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')
 if [ -z "$FEATURE_DESCRIPTION" ]; then
     echo "Error: Feature description cannot be empty or contain only whitespace" >&2
     exit 1
 fi
 
-# Function to get highest number from specs directory
+# specs ディレクトリから最大の番号を取得する関数
 get_highest_from_specs() {
     local specs_dir="$1"
     local highest=0
@@ -99,7 +99,7 @@ get_highest_from_specs() {
         for dir in "$specs_dir"/*; do
             [ -d "$dir" ] || continue
             dirname=$(basename "$dir")
-            # Match sequential prefixes (>=3 digits), but skip timestamp dirs.
+            # 連番プレフィックス（3桁以上）にマッチさせるが、タイムスタンプのディレクトリはスキップする。
             if echo "$dirname" | grep -Eq '^[0-9]{3,}-' && ! echo "$dirname" | grep -Eq '^[0-9]{8}-[0-9]{6}-'; then
                 number=$(echo "$dirname" | grep -Eo '^[0-9]+')
                 number=$((10#$number))
@@ -113,13 +113,13 @@ get_highest_from_specs() {
     echo "$highest"
 }
 
-# Function to clean and format a branch name
+# ブランチ名をクリーンアップして整形する関数
 clean_branch_name() {
     local name="$1"
     echo "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//'
 }
 
-# Resolve repository root using common.sh functions which prioritize .specify
+# .specify を優先する common.sh の関数を使ってリポジトリルートを解決する
 SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
@@ -132,34 +132,34 @@ if [ "$DRY_RUN" != true ]; then
     mkdir -p "$SPECS_DIR"
 fi
 
-# Function to generate branch name with stop word filtering and length filtering
+# ストップワードのフィルタリングと長さのフィルタリングを行ってブランチ名を生成する関数
 generate_branch_name() {
     local description="$1"
     
-    # Common stop words to filter out
+    # フィルタリングで除外する一般的なストップワード
     local stop_words="^(i|a|an|the|to|for|of|in|on|at|by|with|from|is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|should|could|can|may|might|must|shall|this|that|these|those|my|your|our|their|want|need|add|get|set)$"
     
-    # Convert to lowercase and split into words
+    # 小文字に変換し、単語に分割する
     local clean_name=$(echo "$description" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/ /g')
     
-    # Filter words: remove stop words and words shorter than 3 chars (unless they're uppercase acronyms in original)
+    # 単語をフィルタリングする: ストップワードと3文字未満の単語を除去する（元の文中で大文字の頭字語である場合を除く）
     local meaningful_words=()
     for word in $clean_name; do
-        # Skip empty words
+        # 空の単語をスキップする
         [ -z "$word" ] && continue
         
-        # Keep words that are NOT stop words AND (length >= 3 OR are potential acronyms)
+        # ストップワードでなく、かつ（長さが3以上、または頭字語の可能性がある）単語を残す
         if ! echo "$word" | grep -qiE "$stop_words"; then
             if [ ${#word} -ge 3 ]; then
                 meaningful_words+=("$word")
             elif echo "$description" | grep -q "\b${word^^}\b"; then
-                # Keep short words if they appear as uppercase in original (likely acronyms)
+                # 元の文中で大文字として現れる短い単語は残す（頭字語の可能性が高い）
                 meaningful_words+=("$word")
             fi
         fi
     done
     
-    # If we have meaningful words, use first 3-4 of them
+    # 意味のある単語があれば、その最初の3〜4個を使う
     if [ ${#meaningful_words[@]} -gt 0 ]; then
         local max_words=3
         if [ ${#meaningful_words[@]} -eq 4 ]; then max_words=4; fi
@@ -174,55 +174,55 @@ generate_branch_name() {
         done
         echo "$result"
     else
-        # Fallback to original logic if no meaningful words found
+        # 意味のある単語が見つからない場合は元のロジックにフォールバックする
         local cleaned=$(clean_branch_name "$description")
         echo "$cleaned" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//'
     fi
 }
 
-# Generate branch name
+# ブランチ名を生成する
 if [ -n "$SHORT_NAME" ]; then
-    # Use provided short name, just clean it up
+    # 指定されたショートネームを使い、クリーンアップするだけにする
     BRANCH_SUFFIX=$(clean_branch_name "$SHORT_NAME")
 else
-    # Generate from description with smart filtering
+    # スマートなフィルタリングで説明から生成する
     BRANCH_SUFFIX=$(generate_branch_name "$FEATURE_DESCRIPTION")
 fi
 
-# Warn if --number and --timestamp are both specified
+# --number と --timestamp が両方指定された場合は警告する
 if [ "$USE_TIMESTAMP" = true ] && [ -n "$BRANCH_NUMBER" ]; then
     >&2 echo "[specify] Warning: --number is ignored when --timestamp is used"
     BRANCH_NUMBER=""
 fi
 
-# Determine branch prefix
+# ブランチのプレフィックスを決定する
 if [ "$USE_TIMESTAMP" = true ]; then
     FEATURE_NUM=$(date +%Y%m%d-%H%M%S)
     BRANCH_NAME="${FEATURE_NUM}-${BRANCH_SUFFIX}"
 else
-    # Determine branch number from existing feature directories
+    # 既存のフィーチャーディレクトリからブランチ番号を決定する
     if [ -z "$BRANCH_NUMBER" ]; then
         HIGHEST=$(get_highest_from_specs "$SPECS_DIR")
         BRANCH_NUMBER=$((HIGHEST + 1))
     fi
 
-    # Force base-10 interpretation to prevent octal conversion (e.g., 010 → 8 in octal, but should be 10 in decimal)
+    # 8進数への変換を防ぐため10進数として強制的に解釈する（例: 010 は8進数では 8 だが、10進数の 10 であるべき）
     FEATURE_NUM=$(printf "%03d" "$((10#$BRANCH_NUMBER))")
     BRANCH_NAME="${FEATURE_NUM}-${BRANCH_SUFFIX}"
 fi
 
-# GitHub enforces a 244-byte limit on branch names
-# Validate and truncate if necessary
+# GitHub はブランチ名に 244 バイトの制限を課す
+# 必要に応じて検証し切り詰める
 MAX_BRANCH_LENGTH=244
 if [ ${#BRANCH_NAME} -gt $MAX_BRANCH_LENGTH ]; then
-    # Calculate how much we need to trim from suffix
-    # Account for prefix length: timestamp (15) + hyphen (1) = 16, or sequential (3) + hyphen (1) = 4
+    # サフィックスからどれだけ削る必要があるかを計算する
+    # プレフィックス長を考慮する: タイムスタンプ (15) + ハイフン (1) = 16、または連番 (3) + ハイフン (1) = 4
     PREFIX_LENGTH=$(( ${#FEATURE_NUM} + 1 ))
     MAX_SUFFIX_LENGTH=$((MAX_BRANCH_LENGTH - PREFIX_LENGTH))
     
-    # Truncate suffix at word boundary if possible
+    # 可能なら単語境界でサフィックスを切り詰める
     TRUNCATED_SUFFIX=$(echo "$BRANCH_SUFFIX" | cut -c1-$MAX_SUFFIX_LENGTH)
-    # Remove trailing hyphen if truncation created one
+    # 切り詰めによって末尾にハイフンができた場合は除去する
     TRUNCATED_SUFFIX=$(echo "$TRUNCATED_SUFFIX" | sed 's/-$//')
     
     ORIGINAL_BRANCH_NAME="$BRANCH_NAME"
@@ -258,10 +258,10 @@ if [ "$DRY_RUN" != true ]; then
         fi
     fi
 
-    # Persist to .specify/feature.json so downstream commands can find the feature
+    # 下流のコマンドがフィーチャーを見つけられるよう .specify/feature.json に永続化する
     _persist_feature_json "$REPO_ROOT" "$FEATURE_DIR"
 
-    # Inform the user how to set feature state in their own shell
+    # ユーザー自身のシェルでフィーチャー状態を設定する方法を伝える
     printf '# To persist: export SPECIFY_FEATURE=%q\n' "$BRANCH_NAME" >&2
     printf '#              export SPECIFY_FEATURE_DIRECTORY=%q\n' "$FEATURE_DIR" >&2
 fi

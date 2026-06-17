@@ -2,7 +2,7 @@
 
 set -e
 
-# Parse command line arguments
+# コマンドライン引数を解析する
 JSON_MODE=false
 ARGS=()
 
@@ -23,19 +23,19 @@ for arg in "$@"; do
     esac
 done
 
-# Get script directory and load common functions
+# スクリプトのディレクトリを取得し、共通関数を読み込む
 SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-# Get all paths and variables from common functions
+# 共通関数からすべてのパスと変数を取得する
 _paths_output=$(get_feature_paths) || { echo "ERROR: Failed to resolve feature paths" >&2; exit 1; }
 eval "$_paths_output"
 unset _paths_output
 
-# Ensure the feature directory exists
+# フィーチャーディレクトリが存在することを保証する
 mkdir -p "$FEATURE_DIR"
 
-# Copy plan template if plan doesn't already exist
+# プランがまだ存在しない場合はプランテンプレートをコピーする
 if [[ -f "$IMPL_PLAN" ]]; then
     if $JSON_MODE; then
         echo "Plan already exists at $IMPL_PLAN, skipping template copy" >&2
@@ -57,12 +57,12 @@ else
         else
             echo "Warning: Plan template not found"
         fi
-        # Create a basic plan file if template doesn't exist
+        # テンプレートが存在しない場合は基本的なプランファイルを作成する
         touch "$IMPL_PLAN"
     fi
 fi
 
-# Output results
+# 結果を出力する
 if $JSON_MODE; then
     if has_jq; then
         jq -cn \

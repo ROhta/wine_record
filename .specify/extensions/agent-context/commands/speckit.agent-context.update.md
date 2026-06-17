@@ -1,26 +1,26 @@
 ---
-description: "Refresh the managed Spec Kit section in the coding agent context file"
+description: "コーディングエージェントのコンテキストファイル内の、管理対象 Spec Kit セクションを更新する"
 ---
 
-# Update Coding Agent Context
+# コーディングエージェントのコンテキスト更新
 
-Refresh the managed Spec Kit section inside the active coding agent's context/instruction file (e.g. `CLAUDE.md`, `.github/copilot-instructions.md`, `AGENTS.md`).
+アクティブなコーディングエージェントのコンテキスト／指示ファイル（例: `CLAUDE.md`、`.github/copilot-instructions.md`、`AGENTS.md`）内の、管理対象 Spec Kit セクションを更新する。
 
-## Behavior
+## 動作
 
-The script reads the agent-context extension config at
-`.specify/extensions/agent-context/agent-context-config.yml` to discover:
+スクリプトは、agent-context 拡張の設定
+`.specify/extensions/agent-context/agent-context-config.yml` を読み込み、以下を判別する:
 
-- `context_file` — the path of the coding agent context file to manage.
-- `context_markers.start` / `.end` — the delimiters surrounding the managed section. Defaults to `<!-- SPECKIT START -->` and `<!-- SPECKIT END -->` when the field is missing.
+- `context_file` — 管理するコーディングエージェントのコンテキストファイルのパス。
+- `context_markers.start` / `.end` — 管理対象セクションを囲む区切り文字。フィールドがない場合は `<!-- SPECKIT START -->` と `<!-- SPECKIT END -->` がデフォルト。
 
-It then creates, replaces, or appends the managed block so that the section points at the most recent plan path when one can be discovered (`specs/<feature>/plan.md`).
+その後、最新のプランパスを発見できる場合（`specs/<feature>/plan.md`）に、セクションがそれを指すように、管理対象ブロックを作成、置換、または追記する。
 
-If `context_file` is empty or the file cannot be located, the command reports nothing to do and exits successfully.
+`context_file` が空、またはファイルが見つからない場合、コマンドは何もすることがない旨を報告し、正常に終了する。
 
-## Execution
+## 実行
 
 - **Bash**: `.specify/extensions/agent-context/scripts/bash/update-agent-context.sh [plan_path]`
 - **PowerShell**: `.specify/extensions/agent-context/scripts/powershell/update-agent-context.ps1 [plan_path]`
 
-When `plan_path` is omitted, the script auto-detects the most recently modified `specs/*/plan.md`.
+`plan_path` が省略された場合、スクリプトは最も最近変更された `specs/*/plan.md` を自動検出する。

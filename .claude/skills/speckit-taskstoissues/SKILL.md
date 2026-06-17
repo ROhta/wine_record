@@ -1,8 +1,8 @@
 ---
 name: "speckit-taskstoissues"
-description: "Convert existing tasks into actionable, dependency-ordered GitHub issues for the feature based on available design artifacts."
-argument-hint: "Optional filter or label for GitHub issues"
-compatibility: "Requires spec-kit project structure with .specify/ directory"
+description: "利用可能な設計成果物に基づき、既存のタスクを、その機能向けの実行可能で依存関係順に並んだ GitHub issue に変換する。"
+argument-hint: "GitHub issue のフィルタまたはラベル（任意）"
+compatibility: ".specify/ ディレクトリを含む spec-kit プロジェクト構造が必要"
 metadata:
   author: "github-spec-kit"
   source: "templates/commands/taskstoissues.md"
@@ -11,27 +11,27 @@ disable-model-invocation: false
 ---
 
 
-## User Input
+## ユーザー入力
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+先に進む前に、ユーザー入力を（空でなければ）**必ず**考慮すること。
 
-## Pre-Execution Checks
+## 実行前チェック
 
-**Check for extension hooks (before tasks-to-issues conversion)**:
-- Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.before_taskstoissues` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- When constructing slash commands from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `/speckit-git-commit`.
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+**拡張フックの確認（tasks-to-issues 変換の前）**:
+- プロジェクトルートに `.specify/extensions.yml` が存在するか確認する。
+- 存在する場合、それを読み込み `hooks.before_taskstoissues` キー配下のエントリを探す
+- YAML がパースできない、または無効な場合は、フックチェックを黙って省略し通常どおり続行する
+- `enabled` が明示的に `false` のフックを除外する。`enabled` フィールドを持たないフックはデフォルトで有効として扱う。
+- 残った各フックについて、フックの `condition` 式を解釈または評価しようとは**しない**こと:
+  - フックに `condition` フィールドがない、または null/空の場合、そのフックを実行可能として扱う
+  - フックが空でない `condition` を定義している場合、そのフックを省略し、条件評価は HookExecutor の実装に委ねる
+- フックのコマンド名からスラッシュコマンドを構成する際は、ドット（`.`）をハイフン（`-`）に置き換える。例: `speckit.git.commit` → `/speckit-git-commit`。
+- 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
+  - **任意フック**（`optional: true`）:
     ```
     ## Extension Hooks
 
@@ -42,7 +42,7 @@ You **MUST** consider the user input before proceeding (if not empty).
     Prompt: {prompt}
     To execute: `/{command}`
     ```
-  - **Mandatory hook** (`optional: false`):
+  - **必須フック**（`optional: false`）:
     ```
     ## Extension Hooks
 
@@ -52,40 +52,40 @@ You **MUST** consider the user input before proceeding (if not empty).
 
     Wait for the result of the hook command before proceeding to the Outline.
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- フックが1つも登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙って省略する
 
-## Outline
+## 概要
 
-1. Run `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
-1. **IF EXISTS**: Load `.specify/memory/constitution.md` for project principles and governance constraints.
-1. From the executed script, extract the path to **tasks**.
-1. Get the Git remote by running:
+1. リポジトリルートから `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` を実行し、FEATURE_DIR と AVAILABLE_DOCS のリストをパースする。すべてのパスは絶対パスでなければならない。"I'm Groot" のように引数にシングルクォートを含む場合は、エスケープ構文を使う: 例 'I'\''m Groot'（または可能なら二重引用符で囲む: "I'm Groot"）。
+1. **存在する場合**: プロジェクトの原則とガバナンス制約のために `.specify/memory/constitution.md` を読み込む。
+1. 実行したスクリプトから、**tasks** へのパスを抽出する。
+1. 次を実行して Git リモートを取得する:
 
 ```bash
 git config --get remote.origin.url
 ```
 
 > [!CAUTION]
-> ONLY PROCEED TO NEXT STEPS IF THE REMOTE IS A GITHUB URL
+> リモートが GitHub の URL である場合のみ、次の手順に進むこと
 
-1. For each task in the list, use the GitHub MCP server to create a new issue in the repository that is representative of the Git remote.
+1. リストの各タスクについて、GitHub MCP サーバーを使い、Git リモートに対応するリポジトリに新しい issue を作成する。
 
 > [!CAUTION]
-> UNDER NO CIRCUMSTANCES EVER CREATE ISSUES IN REPOSITORIES THAT DO NOT MATCH THE REMOTE URL
+> いかなる状況でも、リモート URL に一致しないリポジトリに issue を作成しないこと
 
-## Post-Execution Checks
+## 実行後チェック
 
-**Check for extension hooks (after tasks-to-issues conversion)**:
-Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.after_taskstoissues` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- When constructing slash commands from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `/speckit-git-commit`.
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+**拡張フックの確認（tasks-to-issues 変換の後）**:
+プロジェクトルートに `.specify/extensions.yml` が存在するか確認する。
+- 存在する場合、それを読み込み `hooks.after_taskstoissues` キー配下のエントリを探す
+- YAML がパースできない、または無効な場合は、フックチェックを黙って省略し通常どおり続行する
+- `enabled` が明示的に `false` のフックを除外する。`enabled` フィールドを持たないフックはデフォルトで有効として扱う。
+- 残った各フックについて、フックの `condition` 式を解釈または評価しようとは**しない**こと:
+  - フックに `condition` フィールドがない、または null/空の場合、そのフックを実行可能として扱う
+  - フックが空でない `condition` を定義している場合、そのフックを省略し、条件評価は HookExecutor の実装に委ねる
+- フックのコマンド名からスラッシュコマンドを構成する際は、ドット（`.`）をハイフン（`-`）に置き換える。例: `speckit.git.commit` → `/speckit-git-commit`。
+- 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
+  - **任意フック**（`optional: true`）:
     ```
     ## Extension Hooks
 
@@ -96,7 +96,7 @@ Check if `.specify/extensions.yml` exists in the project root.
     Prompt: {prompt}
     To execute: `/{command}`
     ```
-  - **Mandatory hook** (`optional: false`):
+  - **必須フック**（`optional: false`）:
     ```
     ## Extension Hooks
 
@@ -104,4 +104,4 @@ Check if `.specify/extensions.yml` exists in the project root.
     Executing: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- フックが1つも登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙って省略する

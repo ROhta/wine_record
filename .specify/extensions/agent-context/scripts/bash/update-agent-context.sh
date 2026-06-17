@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 # update-agent-context.sh
 #
-# Refresh the managed Spec Kit section in the coding agent's context file
-# (e.g. CLAUDE.md, .github/copilot-instructions.md, AGENTS.md).
+# コーディングエージェントのコンテキストファイル（例: CLAUDE.md,
+# .github/copilot-instructions.md, AGENTS.md）内の管理対象 Spec Kit セクションを更新する。
 #
-# Reads `context_file` and `context_markers.{start,end}` from the
-# agent-context extension config:
+# agent-context 拡張の設定から `context_file` と `context_markers.{start,end}` を読み取る:
 #   .specify/extensions/agent-context/agent-context-config.yml
 #
-# Usage: update-agent-context.sh [plan_path]
+# 使い方: update-agent-context.sh [plan_path]
 #
-# When `plan_path` is omitted, the script picks the most recently modified
-# `specs/*/plan.md` if any exist, otherwise emits the section without a
-# concrete plan path.
+# `plan_path` が省略された場合、スクリプトは存在すれば最も最近変更された
+# `specs/*/plan.md` を選択し、なければ具体的なプランパスなしでセクションを
+# 出力する。
 
 set -euo pipefail
 
@@ -26,7 +25,7 @@ if [[ ! -f "$EXT_CONFIG" ]]; then
   exit 0
 fi
 
-# Locate a suitable Python interpreter (python3, then python).
+# 適切な Python インタープリタを探す（python3、次に python）。
 _python=""
 if command -v python3 >/dev/null 2>&1; then
   _python="python3"
@@ -39,7 +38,7 @@ if [[ -z "$_python" ]]; then
   exit 0
 fi
 
-# Parse extension config once; emit three newline-separated fields:
+# 拡張の設定を一度だけ解析し、改行区切りの3つのフィールドを出力する:
 # context_file, context_markers.start, context_markers.end
 if ! _raw_opts="$("$_python" - "$EXT_CONFIG" <<'PY'
 import sys
@@ -99,7 +98,7 @@ if [[ -z "$CONTEXT_FILE" ]]; then
   exit 0
 fi
 
-# Reject absolute paths, backslash separators, and '..' path segments in context_file
+# context_file 内の絶対パス、バックスラッシュ区切り、'..' のパスセグメントを拒否する
 if [[ "$CONTEXT_FILE" == /* ]] || [[ "$CONTEXT_FILE" =~ ^[A-Za-z]: ]]; then
   echo "agent-context: context_file must be a project-relative path; got '$CONTEXT_FILE'." >&2
   exit 1
@@ -122,9 +121,9 @@ unset _cf_parts _seg
 
 PLAN_PATH="${1:-}"
 if [[ -z "$PLAN_PATH" ]]; then
-  # Pick the most recently modified plan.md one level deep (specs/<feature>/plan.md).
-  # Use find + sort by modification time to avoid ls/head fragility with
-  # spaces in paths or SIGPIPE from pipefail.
+  # 1階層下（specs/<feature>/plan.md）で最も最近変更された plan.md を選択する。
+  # パスに含まれる空白や pipefail による SIGPIPE での ls/head の脆さを避けるため、
+  # find + 変更時刻でのソートを使う。
   _plan_abs="$("$_python" - "$PROJECT_ROOT" <<'PY'
 import sys, os
 from pathlib import Path
@@ -145,7 +144,7 @@ fi
 CTX_PATH="$PROJECT_ROOT/$CONTEXT_FILE"
 mkdir -p "$(dirname "$CTX_PATH")"
 
-# Build the managed section
+# 管理対象セクションを構築する
 TMP_SECTION="$(mktemp)"
 trap 'rm -f "$TMP_SECTION"' EXIT
 {

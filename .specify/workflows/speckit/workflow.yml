@@ -4,7 +4,7 @@ workflow:
   name: "Full SDD Cycle"
   version: "1.0.0"
   author: "GitHub"
-  description: "Runs specify → plan → tasks → implement with review gates"
+  description: "specify → plan → tasks → implement をレビューゲート付きで実行します"
 
 requires:
   # 0.8.5 is the first release with engine-side resolution of the
@@ -29,11 +29,11 @@ inputs:
   spec:
     type: string
     required: true
-    prompt: "Describe what you want to build"
+    prompt: "構築したいものを記述してください"
   integration:
     type: string
     default: "auto"
-    prompt: "Integration to use (e.g. claude, copilot, gemini; 'auto' uses the project's initialized integration)"
+    prompt: "使用するインテグレーション（例: claude、copilot、gemini。'auto' はプロジェクトで初期化済みのインテグレーションを使用します）"
   scope:
     type: string
     default: "full"
@@ -48,7 +48,7 @@ steps:
 
   - id: review-spec
     type: gate
-    message: "Review the generated spec before planning."
+    message: "計画作成の前に、生成された仕様をレビューしてください。"
     options: [approve, reject]
     on_reject: abort
 
@@ -60,7 +60,7 @@ steps:
 
   - id: review-plan
     type: gate
-    message: "Review the plan before generating tasks."
+    message: "タスク生成の前に、計画をレビューしてください。"
     options: [approve, reject]
     on_reject: abort
 

@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 
-# Consolidated prerequisite checking script
+# 統合された前提条件チェックスクリプト
 #
-# This script provides unified prerequisite checking for Spec-Driven Development workflow.
-# It replaces the functionality previously spread across multiple scripts.
+# このスクリプトは Spec-Driven Development ワークフローのための統一された前提条件チェックを提供する。
+# 以前は複数のスクリプトに分散していた機能を置き換える。
 #
-# Usage: ./check-prerequisites.sh [OPTIONS]
+# 使い方: ./check-prerequisites.sh [OPTIONS]
 #
-# OPTIONS:
-#   --json              Output in JSON format
-#   --require-tasks     Require tasks.md to exist (for implementation phase)
-#   --include-tasks     Include tasks.md in AVAILABLE_DOCS list
-#   --paths-only        Only output path variables (no validation)
-#   --help, -h          Show help message
+# オプション:
+#   --json              JSON 形式で出力する
+#   --require-tasks     tasks.md の存在を必須にする（実装フェーズ向け）
+#   --include-tasks     AVAILABLE_DOCS リストに tasks.md を含める
+#   --paths-only        パス変数のみを出力する（検証なし）
+#   --help, -h          ヘルプメッセージを表示する
 #
-# OUTPUTS:
-#   JSON mode: {"FEATURE_DIR":"...", "AVAILABLE_DOCS":["..."]}
-#   Text mode: FEATURE_DIR:... \n AVAILABLE_DOCS: \n ✓/✗ file.md
-#   Paths only: REPO_ROOT: ... \n BRANCH: ... \n FEATURE_DIR: ... etc.
+# 出力:
+#   JSON モード: {"FEATURE_DIR":"...", "AVAILABLE_DOCS":["..."]}
+#   テキストモード: FEATURE_DIR:... \n AVAILABLE_DOCS: \n ✓/✗ file.md
+#   パスのみ: REPO_ROOT: ... \n BRANCH: ... \n FEATURE_DIR: ... など
 
 set -e
 
-# Parse command line arguments
+# コマンドライン引数を解析する
 JSON_MODE=false
 REQUIRE_TASKS=false
 INCLUDE_TASKS=false
@@ -74,19 +74,19 @@ EOF
     esac
 done
 
-# Source common functions
+# 共通関数を読み込む
 SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-# Get feature paths
+# フィーチャーのパスを取得する
 _paths_output=$(get_feature_paths) || { echo "ERROR: Failed to resolve feature paths" >&2; exit 1; }
 eval "$_paths_output"
 unset _paths_output
 
-# If paths-only mode, output paths and exit (no validation)
+# paths-only モードの場合、パスを出力して終了する（検証なし）
 if $PATHS_ONLY; then
     if $JSON_MODE; then
-        # Minimal JSON paths payload (no validation performed)
+        # 最小限の JSON パスペイロード（検証は行わない）
         if has_jq; then
             jq -cn \
                 --arg repo_root "$REPO_ROOT" \
@@ -111,7 +111,7 @@ if $PATHS_ONLY; then
     exit 0
 fi
 
-# Validate required directories and files
+# 必須のディレクトリとファイルを検証する
 if [[ ! -d "$FEATURE_DIR" ]]; then
     echo "ERROR: Feature directory not found: $FEATURE_DIR" >&2
     echo "Run /speckit-specify first to create the feature structure." >&2
@@ -124,35 +124,35 @@ if [[ ! -f "$IMPL_PLAN" ]]; then
     exit 1
 fi
 
-# Check for tasks.md if required
+# 必要であれば tasks.md の存在を確認する
 if $REQUIRE_TASKS && [[ ! -f "$TASKS" ]]; then
     echo "ERROR: tasks.md not found in $FEATURE_DIR" >&2
     echo "Run /speckit-tasks first to create the task list." >&2
     exit 1
 fi
 
-# Build list of available documents
+# 利用可能なドキュメントのリストを構築する
 docs=()
 
-# Always check these optional docs
+# これらの任意ドキュメントは常に確認する
 [[ -f "$RESEARCH" ]] && docs+=("research.md")
 [[ -f "$DATA_MODEL" ]] && docs+=("data-model.md")
 
-# Check contracts directory (only if it exists and has files)
+# contracts ディレクトリを確認する（存在しファイルがある場合のみ）
 if [[ -d "$CONTRACTS_DIR" ]] && [[ -n "$(ls -A "$CONTRACTS_DIR" 2>/dev/null)" ]]; then
     docs+=("contracts/")
 fi
 
 [[ -f "$QUICKSTART" ]] && docs+=("quickstart.md")
 
-# Include tasks.md if requested and it exists
+# 要求され、かつ存在する場合は tasks.md を含める
 if $INCLUDE_TASKS && [[ -f "$TASKS" ]]; then
     docs+=("tasks.md")
 fi
 
-# Output results
+# 結果を出力する
 if $JSON_MODE; then
-    # Build JSON array of documents
+    # ドキュメントの JSON 配列を構築する
     if has_jq; then
         if [[ ${#docs[@]} -eq 0 ]]; then
             json_docs="[]"
@@ -173,11 +173,11 @@ if $JSON_MODE; then
         printf '{"FEATURE_DIR":"%s","AVAILABLE_DOCS":%s}\n' "$(json_escape "$FEATURE_DIR")" "$json_docs"
     fi
 else
-    # Text output
+    # テキスト出力
     echo "FEATURE_DIR:$FEATURE_DIR"
     echo "AVAILABLE_DOCS:"
     
-    # Show status of each potential document
+    # 対象となる各ドキュメントの状態を表示する
     check_file "$RESEARCH" "research.md"
     check_file "$DATA_MODEL" "data-model.md"
     check_dir "$CONTRACTS_DIR" "contracts/"

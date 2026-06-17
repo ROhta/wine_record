@@ -4,7 +4,7 @@ extension:
   id: agent-context
   name: "Coding Agent Context"
   version: "1.0.0"
-  description: "Manages coding agent context/instruction files (e.g., CLAUDE.md, copilot-instructions.md) with project-specific plan references and configurable markers"
+  description: "コーディングエージェントのコンテキスト/指示ファイル（例: CLAUDE.md、copilot-instructions.md）を、プロジェクト固有のプラン参照と設定可能なマーカーとともに管理します"
   author: spec-kit-core
   repository: https://github.com/github/spec-kit
   license: MIT
@@ -16,17 +16,17 @@ provides:
   commands:
     - name: speckit.agent-context.update
       file: commands/speckit.agent-context.update.md
-      description: "Refresh the managed Spec Kit section in the coding agent context file"
+      description: "コーディングエージェントのコンテキストファイル内で管理されている Spec Kit セクションを更新します"
 
 hooks:
   after_specify:
     command: speckit.agent-context.update
     optional: true
-    description: "Refresh agent context after specification"
+    description: "仕様作成後にエージェントコンテキストを更新します"
   after_plan:
     command: speckit.agent-context.update
     optional: true
-    description: "Refresh agent context after planning"
+    description: "計画作成後にエージェントコンテキストを更新します"
 
 tags:
   - "agent"

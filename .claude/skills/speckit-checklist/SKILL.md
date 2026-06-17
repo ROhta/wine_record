@@ -1,8 +1,8 @@
 ---
 name: "speckit-checklist"
-description: "Generate a custom checklist for the current feature based on user requirements."
-argument-hint: "Domain or focus area for the checklist"
-compatibility: "Requires spec-kit project structure with .specify/ directory"
+description: "ユーザー要件に基づいて、現在の機能向けのカスタムチェックリストを生成する。"
+argument-hint: "チェックリストのドメインまたは対象領域"
+compatibility: ".specify/ ディレクトリを含む spec-kit プロジェクト構造が必要"
 metadata:
   author: "github-spec-kit"
   source: "templates/commands/checklist.md"
@@ -11,48 +11,48 @@ disable-model-invocation: false
 ---
 
 
-## Checklist Purpose: "Unit Tests for English"
+## チェックリストの目的: 「英語のためのユニットテスト」
 
-**CRITICAL CONCEPT**: Checklists are **UNIT TESTS FOR REQUIREMENTS WRITING** - they validate the quality, clarity, and completeness of requirements in a given domain.
+**重要な概念**: チェックリストは**要件記述のためのユニットテスト**である — それらは、特定のドメインにおける要件の品質、明確さ、完全性を検証する。
 
-**NOT for verification/testing**:
+**検証／テストのためではない**:
 
-- ❌ NOT "Verify the button clicks correctly"
-- ❌ NOT "Test error handling works"
-- ❌ NOT "Confirm the API returns 200"
-- ❌ NOT checking if code/implementation matches the spec
+- ❌ 「ボタンが正しくクリックできることを検証する」ではない
+- ❌ 「エラー処理が機能することをテストする」ではない
+- ❌ 「API が 200 を返すことを確認する」ではない
+- ❌ コード／実装が仕様に一致するかをチェックすることではない
 
-**FOR requirements quality validation**:
+**要件品質の検証のため**:
 
-- ✅ "Are visual hierarchy requirements defined for all card types?" (completeness)
-- ✅ "Is 'prominent display' quantified with specific sizing/positioning?" (clarity)
-- ✅ "Are hover state requirements consistent across all interactive elements?" (consistency)
-- ✅ "Are accessibility requirements defined for keyboard navigation?" (coverage)
-- ✅ "Does the spec define what happens when logo image fails to load?" (edge cases)
+- ✅ 「すべてのカード種別について視覚的階層の要件が定義されているか？」（完全性）
+- ✅ 「'prominent display'（目立つ表示）が具体的なサイズ／配置で定量化されているか？」（明確さ）
+- ✅ 「ホバー状態の要件がすべてのインタラクティブ要素で一貫しているか？」（一貫性）
+- ✅ 「キーボードナビゲーションについてアクセシビリティ要件が定義されているか？」（カバレッジ）
+- ✅ 「ロゴ画像の読み込みに失敗したときに何が起こるかを仕様が定義しているか？」（エッジケース）
 
-**Metaphor**: If your spec is code written in English, the checklist is its unit test suite. You're testing whether the requirements are well-written, complete, unambiguous, and ready for implementation - NOT whether the implementation works.
+**比喩**: 仕様が英語で書かれたコードだとすれば、チェックリストはそのユニットテストスイートである。あなたがテストしているのは、要件がよく書かれ、完全で、曖昧さがなく、実装の準備ができているかどうかであって — 実装が機能するかどうかではない。
 
-## User Input
+## ユーザー入力
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+先に進む前に、ユーザー入力を（空でなければ）**必ず**考慮すること。
 
-## Pre-Execution Checks
+## 実行前チェック
 
-**Check for extension hooks (before checklist generation)**:
-- Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.before_checklist` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- When constructing slash commands from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `/speckit-git-commit`.
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+**拡張フックの確認（チェックリスト生成の前）**:
+- プロジェクトルートに `.specify/extensions.yml` が存在するか確認する。
+- 存在する場合、それを読み込み `hooks.before_checklist` キー配下のエントリを探す
+- YAML がパースできない、または無効な場合は、フックチェックを黙って省略し通常どおり続行する
+- `enabled` が明示的に `false` のフックを除外する。`enabled` フィールドを持たないフックはデフォルトで有効として扱う。
+- 残った各フックについて、フックの `condition` 式を解釈または評価しようとは**しない**こと:
+  - フックに `condition` フィールドがない、または null/空の場合、そのフックを実行可能として扱う
+  - フックが空でない `condition` を定義している場合、そのフックを省略し、条件評価は HookExecutor の実装に委ねる
+- フックのコマンド名からスラッシュコマンドを構成する際は、ドット（`.`）をハイフン（`-`）に置き換える。例: `speckit.git.commit` → `/speckit-git-commit`。
+- 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
+  - **任意フック**（`optional: true`）:
     ```
     ## Extension Hooks
 
@@ -63,7 +63,7 @@ You **MUST** consider the user input before proceeding (if not empty).
     Prompt: {prompt}
     To execute: `/{command}`
     ```
-  - **Mandatory hook** (`optional: false`):
+  - **必須フック**（`optional: false`）:
     ```
     ## Extension Hooks
 
@@ -73,102 +73,102 @@ You **MUST** consider the user input before proceeding (if not empty).
 
     Wait for the result of the hook command before proceeding to the Execution Steps.
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- フックが1つも登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙って省略する
 
-## Execution Steps
+## 実行手順
 
-1. **Setup**: Run `.specify/scripts/bash/check-prerequisites.sh --json` from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS list.
-   - All file paths must be absolute.
-   - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+1. **セットアップ**: リポジトリルートから `.specify/scripts/bash/check-prerequisites.sh --json` を実行し、FEATURE_DIR と AVAILABLE_DOCS のリストについて JSON をパースする。
+   - すべてのファイルパスは絶対パスでなければならない。
+   - "I'm Groot" のように引数にシングルクォートを含む場合は、エスケープ構文を使う: 例 'I'\''m Groot'（または可能なら二重引用符で囲む: "I'm Groot"）。
 
-2. **IF EXISTS**: Load `.specify/memory/constitution.md` for project principles and governance constraints.
+2. **存在する場合**: プロジェクトの原則とガバナンス制約のために `.specify/memory/constitution.md` を読み込む。
 
-3. **Clarify intent (dynamic)**: Derive up to THREE initial contextual clarifying questions (no pre-baked catalog). They MUST:
-   - Be generated from the user's phrasing + extracted signals from spec/plan/tasks
-   - Only ask about information that materially changes checklist content
-   - Be skipped individually if already unambiguous in `$ARGUMENTS`
-   - Prefer precision over breadth
+3. **意図の明確化（動的）**: 最大3つの初期文脈的な明確化質問を導出する（事前定義のカタログはない）。それらは以下を**必ず**満たすこと:
+   - ユーザーの言い回し＋仕様/計画/タスクから抽出したシグナルから生成される
+   - チェックリストの内容を実質的に変える情報についてのみ尋ねる
+   - `$ARGUMENTS` ですでに曖昧さがない場合は、個別にスキップする
+   - 幅広さより精度を優先する
 
-   Generation algorithm:
-   1. Extract signals: feature domain keywords (e.g., auth, latency, UX, API), risk indicators ("critical", "must", "compliance"), stakeholder hints ("QA", "review", "security team"), and explicit deliverables ("a11y", "rollback", "contracts").
-   2. Cluster signals into candidate focus areas (max 4) ranked by relevance.
-   3. Identify probable audience & timing (author, reviewer, QA, release) if not explicit.
-   4. Detect missing dimensions: scope breadth, depth/rigor, risk emphasis, exclusion boundaries, measurable acceptance criteria.
-   5. Formulate questions chosen from these archetypes:
-      - Scope refinement (e.g., "Should this include integration touchpoints with X and Y or stay limited to local module correctness?")
-      - Risk prioritization (e.g., "Which of these potential risk areas should receive mandatory gating checks?")
-      - Depth calibration (e.g., "Is this a lightweight pre-commit sanity list or a formal release gate?")
-      - Audience framing (e.g., "Will this be used by the author only or peers during PR review?")
-      - Boundary exclusion (e.g., "Should we explicitly exclude performance tuning items this round?")
-      - Scenario class gap (e.g., "No recovery flows detected—are rollback / partial failure paths in scope?")
+   生成アルゴリズム:
+   1. シグナルを抽出する: 機能ドメインのキーワード（例: auth、latency、UX、API）、リスク指標（"critical"、"must"、"compliance"）、ステークホルダーのヒント（"QA"、"review"、"security team"）、明示的な成果物（"a11y"、"rollback"、"contracts"）。
+   2. シグナルを候補となる対象領域（最大4つ）にクラスタリングし、関連度でランク付けする。
+   3. 明示されていない場合、想定される対象者＆タイミング（作成者、レビュアー、QA、リリース）を特定する。
+   4. 欠落している次元を検出する: スコープの幅、深さ／厳密さ、リスクの強調、除外境界、測定可能な受け入れ基準。
+   5. 以下のアーキタイプから選んだ質問を作成する:
+      - スコープの精緻化（例: 「これは X と Y との統合接点を含むべきか、それともローカルモジュールの正しさに限定すべきか？」）
+      - リスクの優先順位付け（例: 「これらの潜在的リスク領域のうち、どれに必須のゲートチェックを設けるべきか？」）
+      - 深さの調整（例: 「これは軽量なコミット前の確認リストか、それとも正式なリリースゲートか？」）
+      - 対象者のフレーミング（例: 「これは作成者のみが使うのか、それとも PR レビュー中に同僚も使うのか？」）
+      - 境界の除外（例: 「今回はパフォーマンスチューニングの項目を明示的に除外すべきか？」）
+      - シナリオクラスのギャップ（例: 「リカバリフローが検出されなかった — ロールバック／部分的障害のパスはスコープ内か？」）
 
-   Question formatting rules:
-   - If presenting options, generate a compact table with columns: Option | Candidate | Why It Matters
-   - Limit to A–E options maximum; omit table if a free-form answer is clearer
-   - Never ask the user to restate what they already said
-   - Avoid speculative categories (no hallucination). If uncertain, ask explicitly: "Confirm whether X belongs in scope."
+   質問の書式ルール:
+   - 選択肢を提示する場合は、列が Option | Candidate | Why It Matters のコンパクトな表を生成する
+   - 選択肢は最大 A～E まで。自由記述の回答の方が明確なら表は省く
+   - すでに述べたことをユーザーに再度述べさせない
+   - 推測的なカテゴリを避ける（捏造しない）。不確かな場合は明示的に尋ねる: 「X がスコープに含まれるか確認してください。」
 
-   Defaults when interaction impossible:
-   - Depth: Standard
-   - Audience: Reviewer (PR) if code-related; Author otherwise
-   - Focus: Top 2 relevance clusters
+   対話が不可能な場合のデフォルト:
+   - 深さ: Standard
+   - 対象者: コード関連なら Reviewer（PR）。それ以外は Author
+   - フォーカス: 関連度の上位2クラスタ
 
-   Output the questions (label Q1/Q2/Q3). After answers: if ≥2 scenario classes (Alternate / Exception / Recovery / Non-Functional domain) remain unclear, you MAY ask up to TWO more targeted follow‑ups (Q4/Q5) with a one-line justification each (e.g., "Unresolved recovery path risk"). Do not exceed five total questions. Skip escalation if user explicitly declines more.
+   質問を出力する（Q1/Q2/Q3 とラベル付け）。回答後: 2つ以上のシナリオクラス（Alternate / Exception / Recovery / Non-Functional ドメイン）が依然不明確なら、それぞれ一行の正当化（例: "Unresolved recovery path risk"）を添えて、的を絞った追加質問を最大2つ（Q4/Q5）尋ねて**よい**。質問は合計5つを超えないこと。ユーザーが明示的にこれ以上を断った場合はエスカレーションをスキップする。
 
-4. **Understand user request**: Combine `$ARGUMENTS` + clarifying answers:
-   - Derive checklist theme (e.g., security, review, deploy, ux)
-   - Consolidate explicit must-have items mentioned by user
-   - Map focus selections to category scaffolding
-   - Infer any missing context from spec/plan/tasks (do NOT hallucinate)
+4. **ユーザーの要求を理解する**: `$ARGUMENTS` ＋明確化の回答を組み合わせる:
+   - チェックリストのテーマを導出する（例: security、review、deploy、ux）
+   - ユーザーが言及した明示的な必須項目を統合する
+   - フォーカスの選択をカテゴリの足場に対応付ける
+   - 仕様/計画/タスクから欠けている文脈を推論する（捏造しないこと）
 
-5. **Load feature context**: Read from FEATURE_DIR:
-   - spec.md: Feature requirements and scope
-   - plan.md (if exists): Technical details, dependencies
-   - tasks.md (if exists): Implementation tasks
+5. **機能コンテキストの読み込み**: FEATURE_DIR から読み込む:
+   - spec.md: 機能要件とスコープ
+   - plan.md（存在する場合）: 技術詳細、依存関係
+   - tasks.md（存在する場合）: 実装タスク
 
-   **Context Loading Strategy**:
-   - Load only necessary portions relevant to active focus areas (avoid full-file dumping)
-   - Prefer summarizing long sections into concise scenario/requirement bullets
-   - Use progressive disclosure: add follow-on retrieval only if gaps detected
-   - If source docs are large, generate interim summary items instead of embedding raw text
+   **コンテキスト読み込み戦略**:
+   - アクティブな対象領域に関連する必要な部分のみを読み込む（ファイル全体のダンプを避ける）
+   - 長いセクションは簡潔なシナリオ／要件の箇条書きに要約することを優先する
+   - 漸進的開示を使う: ギャップが検出された場合のみ追加の取得を行う
+   - ソースドキュメントが大きい場合は、生のテキストを埋め込むのではなく中間サマリ項目を生成する
 
-6. **Generate checklist** - Create "Unit Tests for Requirements":
-   - Create `FEATURE_DIR/checklists/` directory if it doesn't exist
-   - Generate unique checklist filename:
-     - Use short, descriptive name based on domain (e.g., `ux.md`, `api.md`, `security.md`)
-     - Format: `[domain].md`
-   - File handling behavior:
-     - If file does NOT exist: Create new file and number items starting from CHK001
-     - If file exists: Append new items to existing file, continuing from the last CHK ID (e.g., if last item is CHK015, start new items at CHK016)
-   - Never delete or replace existing checklist content - always preserve and append
+6. **チェックリストの生成** - 「要件のためのユニットテスト」を作成する:
+   - 存在しなければ `FEATURE_DIR/checklists/` ディレクトリを作成する
+   - 一意なチェックリストのファイル名を生成する:
+     - ドメインに基づいた短く説明的な名前を使う（例: `ux.md`、`api.md`、`security.md`）
+     - 形式: `[domain].md`
+   - ファイルの取り扱い動作:
+     - ファイルが存在しない場合: 新しいファイルを作成し、項目を CHK001 から番号付けする
+     - ファイルが存在する場合: 既存ファイルに新しい項目を追記し、最後の CHK ID から続ける（例: 最後の項目が CHK015 なら、新しい項目は CHK016 から始める）
+   - 既存のチェックリストの内容を決して削除または置換しない — 常に保持して追記する
 
-   **CORE PRINCIPLE - Test the Requirements, Not the Implementation**:
-   Every checklist item MUST evaluate the REQUIREMENTS THEMSELVES for:
-   - **Completeness**: Are all necessary requirements present?
-   - **Clarity**: Are requirements unambiguous and specific?
-   - **Consistency**: Do requirements align with each other?
-   - **Measurability**: Can requirements be objectively verified?
-   - **Coverage**: Are all scenarios/edge cases addressed?
+   **中核原則 - 実装ではなく要件をテストする**:
+   すべてのチェックリスト項目は、**要件そのもの**を以下について評価しなければならない:
+   - **完全性**: 必要な要件がすべて存在するか？
+   - **明確さ**: 要件が曖昧さなく具体的か？
+   - **一貫性**: 要件が互いに整合しているか？
+   - **測定可能性**: 要件を客観的に検証できるか？
+   - **カバレッジ**: すべてのシナリオ／エッジケースが扱われているか？
 
-   **Category Structure** - Group items by requirement quality dimensions:
-   - **Requirement Completeness** (Are all necessary requirements documented?)
-   - **Requirement Clarity** (Are requirements specific and unambiguous?)
-   - **Requirement Consistency** (Do requirements align without conflicts?)
-   - **Acceptance Criteria Quality** (Are success criteria measurable?)
-   - **Scenario Coverage** (Are all flows/cases addressed?)
-   - **Edge Case Coverage** (Are boundary conditions defined?)
-   - **Non-Functional Requirements** (Performance, Security, Accessibility, etc. - are they specified?)
-   - **Dependencies & Assumptions** (Are they documented and validated?)
-   - **Ambiguities & Conflicts** (What needs clarification?)
+   **カテゴリ構造** - 項目を要件品質の次元でグループ化する:
+   - **Requirement Completeness**（必要な要件がすべて文書化されているか？）
+   - **Requirement Clarity**（要件が具体的で曖昧さがないか？）
+   - **Requirement Consistency**（要件が衝突なく整合しているか？）
+   - **Acceptance Criteria Quality**（成功基準が測定可能か？）
+   - **Scenario Coverage**（すべてのフロー／ケースが扱われているか？）
+   - **Edge Case Coverage**（境界条件が定義されているか？）
+   - **Non-Functional Requirements**（パフォーマンス、セキュリティ、アクセシビリティなど — 指定されているか？）
+   - **Dependencies & Assumptions**（文書化され検証されているか？）
+   - **Ambiguities & Conflicts**（何の明確化が必要か？）
 
-   **HOW TO WRITE CHECKLIST ITEMS - "Unit Tests for English"**:
+   **チェックリスト項目の書き方 - 「英語のためのユニットテスト」**:
 
-   ❌ **WRONG** (Testing implementation):
+   ❌ **誤り**（実装をテストしている）:
    - "Verify landing page displays 3 episode cards"
    - "Test hover states work on desktop"
    - "Confirm logo click navigates home"
 
-   ✅ **CORRECT** (Testing requirements quality):
+   ✅ **正しい**（要件品質をテストしている）:
    - "Are the exact number and layout of featured episodes specified?" [Completeness]
    - "Is 'prominent display' quantified with specific sizing/positioning?" [Clarity]
    - "Are hover state requirements consistent across all interactive elements?" [Consistency]
@@ -177,72 +177,72 @@ You **MUST** consider the user input before proceeding (if not empty).
    - "Are loading states defined for asynchronous episode data?" [Completeness]
    - "Does the spec define visual hierarchy for competing UI elements?" [Clarity]
 
-   **ITEM STRUCTURE**:
-   Each item should follow this pattern:
-   - Question format asking about requirement quality
-   - Focus on what's WRITTEN (or not written) in the spec/plan
-   - Include quality dimension in brackets [Completeness/Clarity/Consistency/etc.]
-   - Reference spec section `[Spec §X.Y]` when checking existing requirements
-   - Use `[Gap]` marker when checking for missing requirements
+   **項目の構造**:
+   各項目は次のパターンに従うべき:
+   - 要件品質について問う質問形式
+   - 仕様／計画に書かれている（または書かれていない）ことに焦点を当てる
+   - 品質の次元を角括弧で含める [Completeness/Clarity/Consistency/etc.]
+   - 既存の要件をチェックするときは仕様セクション `[Spec §X.Y]` を参照する
+   - 欠落している要件をチェックするときは `[Gap]` マーカーを使う
 
-   **EXAMPLES BY QUALITY DIMENSION**:
+   **品質次元ごとの例**:
 
-   Completeness:
+   完全性:
    - "Are error handling requirements defined for all API failure modes? [Gap]"
    - "Are accessibility requirements specified for all interactive elements? [Completeness]"
    - "Are mobile breakpoint requirements defined for responsive layouts? [Gap]"
 
-   Clarity:
+   明確さ:
    - "Is 'fast loading' quantified with specific timing thresholds? [Clarity, Spec §NFR-2]"
    - "Are 'related episodes' selection criteria explicitly defined? [Clarity, Spec §FR-5]"
    - "Is 'prominent' defined with measurable visual properties? [Ambiguity, Spec §FR-4]"
 
-   Consistency:
+   一貫性:
    - "Do navigation requirements align across all pages? [Consistency, Spec §FR-10]"
    - "Are card component requirements consistent between landing and detail pages? [Consistency]"
 
-   Coverage:
+   カバレッジ:
    - "Are requirements defined for zero-state scenarios (no episodes)? [Coverage, Edge Case]"
    - "Are concurrent user interaction scenarios addressed? [Coverage, Gap]"
    - "Are requirements specified for partial data loading failures? [Coverage, Exception Flow]"
 
-   Measurability:
+   測定可能性:
    - "Are visual hierarchy requirements measurable/testable? [Acceptance Criteria, Spec §FR-1]"
    - "Can 'balanced visual weight' be objectively verified? [Measurability, Spec §FR-2]"
 
-   **Scenario Classification & Coverage** (Requirements Quality Focus):
-   - Check if requirements exist for: Primary, Alternate, Exception/Error, Recovery, Non-Functional scenarios
-   - For each scenario class, ask: "Are [scenario type] requirements complete, clear, and consistent?"
-   - If scenario class missing: "Are [scenario type] requirements intentionally excluded or missing? [Gap]"
-   - Include resilience/rollback when state mutation occurs: "Are rollback requirements defined for migration failures? [Gap]"
+   **シナリオ分類＆カバレッジ**（要件品質の観点）:
+   - 次のシナリオの要件が存在するか確認する: Primary、Alternate、Exception/Error、Recovery、Non-Functional
+   - 各シナリオクラスについて尋ねる: "Are [scenario type] requirements complete, clear, and consistent?"
+   - シナリオクラスが欠けている場合: "Are [scenario type] requirements intentionally excluded or missing? [Gap]"
+   - 状態変更が発生する場合はレジリエンス／ロールバックを含める: "Are rollback requirements defined for migration failures? [Gap]"
 
-   **Traceability Requirements**:
-   - MINIMUM: ≥80% of items MUST include at least one traceability reference
-   - Each item should reference: spec section `[Spec §X.Y]`, or use markers: `[Gap]`, `[Ambiguity]`, `[Conflict]`, `[Assumption]`
-   - If no ID system exists: "Is a requirement & acceptance criteria ID scheme established? [Traceability]"
+   **トレーサビリティ要件**:
+   - 最低条件: 項目の 80% 以上が少なくとも1つのトレーサビリティ参照を**必ず**含むこと
+   - 各項目は次を参照すべき: 仕様セクション `[Spec §X.Y]`、またはマーカーを使う: `[Gap]`、`[Ambiguity]`、`[Conflict]`、`[Assumption]`
+   - ID システムが存在しない場合: "Is a requirement & acceptance criteria ID scheme established? [Traceability]"
 
-   **Surface & Resolve Issues** (Requirements Quality Problems):
-   Ask questions about the requirements themselves:
-   - Ambiguities: "Is the term 'fast' quantified with specific metrics? [Ambiguity, Spec §NFR-1]"
-   - Conflicts: "Do navigation requirements conflict between §FR-10 and §FR-10a? [Conflict]"
-   - Assumptions: "Is the assumption of 'always available podcast API' validated? [Assumption]"
-   - Dependencies: "Are external podcast API requirements documented? [Dependency, Gap]"
-   - Missing definitions: "Is 'visual hierarchy' defined with measurable criteria? [Gap]"
+   **課題の表面化＆解決**（要件品質の問題）:
+   要件そのものについて質問する:
+   - 曖昧さ: "Is the term 'fast' quantified with specific metrics? [Ambiguity, Spec §NFR-1]"
+   - 衝突: "Do navigation requirements conflict between §FR-10 and §FR-10a? [Conflict]"
+   - 前提: "Is the assumption of 'always available podcast API' validated? [Assumption]"
+   - 依存関係: "Are external podcast API requirements documented? [Dependency, Gap]"
+   - 定義の欠落: "Is 'visual hierarchy' defined with measurable criteria? [Gap]"
 
-   **Content Consolidation**:
-   - Soft cap: If raw candidate items > 40, prioritize by risk/impact
-   - Merge near-duplicates checking the same requirement aspect
-   - If >5 low-impact edge cases, create one item: "Are edge cases X, Y, Z addressed in requirements? [Coverage]"
+   **内容の統合**:
+   - ソフト上限: 生の候補項目が40を超える場合は、リスク／影響度で優先順位を付ける
+   - 同じ要件の側面をチェックするほぼ重複した項目をマージする
+   - 影響度の低いエッジケースが5つを超える場合は、1つの項目を作る: "Are edge cases X, Y, Z addressed in requirements? [Coverage]"
 
-   **🚫 ABSOLUTELY PROHIBITED** - These make it an implementation test, not a requirements test:
-   - ❌ Any item starting with "Verify", "Test", "Confirm", "Check" + implementation behavior
-   - ❌ References to code execution, user actions, system behavior
-   - ❌ "Displays correctly", "works properly", "functions as expected"
-   - ❌ "Click", "navigate", "render", "load", "execute"
-   - ❌ Test cases, test plans, QA procedures
-   - ❌ Implementation details (frameworks, APIs, algorithms)
+   **🚫 絶対禁止** - これらは要件テストではなく実装テストにしてしまう:
+   - ❌ "Verify"、"Test"、"Confirm"、"Check" ＋実装の挙動で始まる項目
+   - ❌ コード実行、ユーザーの操作、システムの挙動への言及
+   - ❌ "Displays correctly"、"works properly"、"functions as expected"
+   - ❌ "Click"、"navigate"、"render"、"load"、"execute"
+   - ❌ テストケース、テスト計画、QA 手順
+   - ❌ 実装詳細（フレームワーク、API、アルゴリズム）
 
-   **✅ REQUIRED PATTERNS** - These test requirements quality:
+   **✅ 必須パターン** - これらは要件品質をテストする:
    - ✅ "Are [requirement type] defined/specified/documented for [scenario]?"
    - ✅ "Is [vague term] quantified/clarified with specific criteria?"
    - ✅ "Are requirements consistent between [section A] and [section B]?"
@@ -250,27 +250,27 @@ You **MUST** consider the user input before proceeding (if not empty).
    - ✅ "Are [edge cases/scenarios] addressed in requirements?"
    - ✅ "Does the spec define [missing aspect]?"
 
-7. **Structure Reference**: Generate the checklist following the canonical template in `.specify/templates/checklist-template.md` for title, meta section, category headings, and ID formatting. If template is unavailable, use: H1 title, purpose/created meta lines, `##` category sections containing `- [ ] CHK### <requirement item>` lines with globally incrementing IDs starting at CHK001.
+7. **構造の参照**: タイトル、メタセクション、カテゴリ見出し、ID 書式については、`.specify/templates/checklist-template.md` の正規テンプレートに従ってチェックリストを生成する。テンプレートが利用できない場合は次を使う: H1 タイトル、purpose/created のメタ行、`- [ ] CHK### <requirement item>` 行を含む `##` カテゴリセクション。ID は CHK001 から始まりグローバルにインクリメントする。
 
-8. **Report**: Output full path to checklist file, item count, and summarize whether the run created a new file or appended to an existing one. Summarize:
-   - Focus areas selected
-   - Depth level
-   - Actor/timing
-   - Any explicit user-specified must-have items incorporated
+8. **報告**: チェックリストファイルへのフルパス、項目数を出力し、実行が新しいファイルを作成したか既存ファイルに追記したかを要約する。次を要約する:
+   - 選択された対象領域
+   - 深さレベル
+   - アクター／タイミング
+   - 取り込んだ、ユーザーが明示的に指定した必須項目
 
-**Important**: Each `/speckit-checklist` command invocation uses a short, descriptive checklist filename and either creates a new file or appends to an existing one. This allows:
+**重要**: `/speckit-checklist` コマンドの各呼び出しは、短く説明的なチェックリストのファイル名を使い、新しいファイルを作成するか既存ファイルに追記する。これにより以下が可能になる:
 
-- Multiple checklists of different types (e.g., `ux.md`, `test.md`, `security.md`)
-- Simple, memorable filenames that indicate checklist purpose
-- Easy identification and navigation in the `checklists/` folder
+- 異なる種別の複数のチェックリスト（例: `ux.md`、`test.md`、`security.md`）
+- チェックリストの目的を示す、シンプルで覚えやすいファイル名
+- `checklists/` フォルダ内での容易な識別とナビゲーション
 
-To avoid clutter, use descriptive types and clean up obsolete checklists when done.
+散らかりを避けるため、説明的な種別を使い、完了したら不要になったチェックリストを整理する。
 
-## Example Checklist Types & Sample Items
+## チェックリスト種別の例＆サンプル項目
 
-**UX Requirements Quality:** `ux.md`
+**UX 要件品質:** `ux.md`
 
-Sample items (testing the requirements, NOT the implementation):
+サンプル項目（実装ではなく要件をテストする）:
 
 - "Are visual hierarchy requirements defined with measurable criteria? [Clarity, Spec §FR-1]"
 - "Is the number and positioning of UI elements explicitly specified? [Completeness, Spec §FR-1]"
@@ -279,9 +279,9 @@ Sample items (testing the requirements, NOT the implementation):
 - "Is fallback behavior defined when images fail to load? [Edge Case, Gap]"
 - "Can 'prominent display' be objectively measured? [Measurability, Spec §FR-4]"
 
-**API Requirements Quality:** `api.md`
+**API 要件品質:** `api.md`
 
-Sample items:
+サンプル項目:
 
 - "Are error response formats specified for all failure scenarios? [Completeness]"
 - "Are rate limiting requirements quantified with specific thresholds? [Clarity]"
@@ -289,9 +289,9 @@ Sample items:
 - "Are retry/timeout requirements defined for external dependencies? [Coverage, Gap]"
 - "Is versioning strategy documented in requirements? [Gap]"
 
-**Performance Requirements Quality:** `performance.md`
+**パフォーマンス要件品質:** `performance.md`
 
-Sample items:
+サンプル項目:
 
 - "Are performance requirements quantified with specific metrics? [Clarity]"
 - "Are performance targets defined for all critical user journeys? [Coverage]"
@@ -299,9 +299,9 @@ Sample items:
 - "Can performance requirements be objectively measured? [Measurability]"
 - "Are degradation requirements defined for high-load scenarios? [Edge Case, Gap]"
 
-**Security Requirements Quality:** `security.md`
+**セキュリティ要件品質:** `security.md`
 
-Sample items:
+サンプル項目:
 
 - "Are authentication requirements specified for all protected resources? [Coverage]"
 - "Are data protection requirements defined for sensitive information? [Completeness]"
@@ -309,9 +309,9 @@ Sample items:
 - "Are security requirements consistent with compliance obligations? [Consistency]"
 - "Are security failure/breach response requirements defined? [Gap, Exception Flow]"
 
-## Anti-Examples: What NOT To Do
+## アンチ例: やってはいけないこと
 
-**❌ WRONG - These test implementation, not requirements:**
+**❌ 誤り - これらは要件ではなく実装をテストしている:**
 
 ```markdown
 - [ ] CHK001 - Verify landing page displays 3 episode cards [Spec §FR-001]
@@ -320,7 +320,7 @@ Sample items:
 - [ ] CHK004 - Check that related episodes section shows 3-5 items [Spec §FR-005]
 ```
 
-**✅ CORRECT - These test requirements quality:**
+**✅ 正しい - これらは要件品質をテストしている:**
 
 ```markdown
 - [ ] CHK001 - Are the number and layout of featured episodes explicitly specified? [Completeness, Spec §FR-001]
@@ -331,28 +331,28 @@ Sample items:
 - [ ] CHK006 - Can "visual hierarchy" requirements be objectively measured? [Measurability, Spec §FR-001]
 ```
 
-**Key Differences:**
+**主な違い:**
 
-- Wrong: Tests if the system works correctly
-- Correct: Tests if the requirements are written correctly
-- Wrong: Verification of behavior
-- Correct: Validation of requirement quality
-- Wrong: "Does it do X?"
-- Correct: "Is X clearly specified?"
+- 誤り: システムが正しく機能するかをテストする
+- 正しい: 要件が正しく書かれているかをテストする
+- 誤り: 挙動の検証
+- 正しい: 要件品質の検証
+- 誤り: 「それは X をするか？」
+- 正しい: 「X は明確に仕様化されているか？」
 
-## Post-Execution Checks
+## 実行後チェック
 
-**Check for extension hooks (after checklist generation)**:
-Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.after_checklist` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- When constructing slash commands from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `/speckit-git-commit`.
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+**拡張フックの確認（チェックリスト生成の後）**:
+プロジェクトルートに `.specify/extensions.yml` が存在するか確認する。
+- 存在する場合、それを読み込み `hooks.after_checklist` キー配下のエントリを探す
+- YAML がパースできない、または無効な場合は、フックチェックを黙って省略し通常どおり続行する
+- `enabled` が明示的に `false` のフックを除外する。`enabled` フィールドを持たないフックはデフォルトで有効として扱う。
+- 残った各フックについて、フックの `condition` 式を解釈または評価しようとは**しない**こと:
+  - フックに `condition` フィールドがない、または null/空の場合、そのフックを実行可能として扱う
+  - フックが空でない `condition` を定義している場合、そのフックを省略し、条件評価は HookExecutor の実装に委ねる
+- フックのコマンド名からスラッシュコマンドを構成する際は、ドット（`.`）をハイフン（`-`）に置き換える。例: `speckit.git.commit` → `/speckit-git-commit`。
+- 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
+  - **任意フック**（`optional: true`）:
     ```
     ## Extension Hooks
 
@@ -363,7 +363,7 @@ Check if `.specify/extensions.yml` exists in the project root.
     Prompt: {prompt}
     To execute: `/{command}`
     ```
-  - **Mandatory hook** (`optional: false`):
+  - **必須フック**（`optional: false`）:
     ```
     ## Extension Hooks
 
@@ -371,4 +371,4 @@ Check if `.specify/extensions.yml` exists in the project root.
     Executing: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- フックが1つも登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙って省略する

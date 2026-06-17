@@ -1,14 +1,13 @@
 #!/usr/bin/env pwsh
 # update-agent-context.ps1
 #
-# Refresh the managed Spec Kit section in the coding agent's context file
-# (e.g. CLAUDE.md, .github/copilot-instructions.md, AGENTS.md).
+# コーディングエージェントのコンテキストファイル（例: CLAUDE.md,
+# .github/copilot-instructions.md, AGENTS.md）内の管理対象 Spec Kit セクションを更新する。
 #
-# Reads `context_file` and `context_markers.{start,end}` from the
-# agent-context extension config:
+# agent-context 拡張の設定から `context_file` と `context_markers.{start,end}` を読み取る:
 #   .specify/extensions/agent-context/agent-context-config.yml
 #
-# Usage: update-agent-context.ps1 [plan_path]
+# 使い方: update-agent-context.ps1 [plan_path]
 
 [CmdletBinding()]
 param(
@@ -68,16 +67,16 @@ if (Get-Command ConvertFrom-Yaml -ErrorAction SilentlyContinue) {
     try {
         $Options = Get-Content -LiteralPath $ExtConfig -Raw | ConvertFrom-Yaml -ErrorAction Stop
     } catch {
-        # fall through to Python fallback
+        # Python フォールバックへ進む
     }
 }
 
 if ($null -eq $Options) {
-    # ConvertFrom-Yaml unavailable or failed; fall back to Python+PyYAML.
+    # ConvertFrom-Yaml が利用不可または失敗; Python+PyYAML にフォールバックする。
     $pythonCmd = $null
     foreach ($candidate in @('python3', 'python')) {
         if (Get-Command $candidate -ErrorAction SilentlyContinue) {
-            # Verify it is Python 3
+            # Python 3 であることを確認する
             $verOut = & $candidate --version 2>&1
             if ($verOut -match 'Python 3') {
                 $pythonCmd = $candidate
@@ -140,7 +139,7 @@ if (-not $ContextFile) {
     exit 0
 }
 
-# Reject absolute paths and '..' path segments in context_file
+# context_file 内の絶対パスと '..' のパスセグメントを拒否する
 if ([System.IO.Path]::IsPathRooted($ContextFile)) {
     Write-Warning "agent-context: context_file must be a project-relative path; got '$ContextFile'."
     exit 1
@@ -166,9 +165,9 @@ if ($cm) {
 }
 
 if (-not $PlanPath) {
-    # Discover plan.md exactly one level deep (specs/<feature>/plan.md),
-    # matching the bash glob specs/*/plan.md. Wrap in try/catch so access errors under
-    # $ErrorActionPreference = 'Stop' don't abort the script.
+    # bash の glob specs/*/plan.md と一致するよう、ちょうど1階層下
+    # （specs/<feature>/plan.md）の plan.md を探す。$ErrorActionPreference = 'Stop' 配下で
+    # アクセスエラーがスクリプトを中断しないよう try/catch で包む。
     try {
         $specsDir = Join-Path $ProjectRoot 'specs'
         $candidate = Get-ChildItem -Path $specsDir -Directory -ErrorAction SilentlyContinue |
@@ -180,7 +179,7 @@ if (-not $PlanPath) {
             $PlanPath = [System.IO.Path]::GetRelativePath($ProjectRoot, $candidate.FullName).Replace('\','/')
         }
     } catch {
-        # Non-fatal: continue without a plan path.
+        # 致命的ではない: プランパスなしで続行する。
     }
 }
 
@@ -201,7 +200,7 @@ $Section = ($lines -join "`n") + "`n"
 
 if (Test-Path -LiteralPath $CtxPath) {
     $rawBytes = [System.IO.File]::ReadAllBytes($CtxPath)
-    # Strip UTF-8 BOM if present
+    # UTF-8 BOM があれば除去する
     if ($rawBytes.Length -ge 3 -and $rawBytes[0] -eq 0xEF -and $rawBytes[1] -eq 0xBB -and $rawBytes[2] -eq 0xBF) {
         $content = [System.Text.Encoding]::UTF8.GetString($rawBytes, 3, $rawBytes.Length - 3)
     } else {

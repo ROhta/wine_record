@@ -1,57 +1,57 @@
-# Coding Agent Context Extension
+# Coding Agent Context拡張
 
-This bundled extension manages the **coding agent context/instruction file** (e.g. `CLAUDE.md`, `.github/copilot-instructions.md`, `AGENTS.md`, `GEMINI.md`, …) for the active integration.
+このバンドルされた拡張は、有効な統合に対する**コーディングエージェントのコンテキスト/指示ファイル**(例: `CLAUDE.md`、`.github/copilot-instructions.md`、`AGENTS.md`、`GEMINI.md` …)を管理します。
 
-It owns the lifecycle of the managed section delimited by the configurable start/end markers (defaults: `<!-- SPECKIT START -->` / `<!-- SPECKIT END -->`).
+設定可能な開始/終了マーカー(デフォルト: `<!-- SPECKIT START -->` / `<!-- SPECKIT END -->`)で区切られた、管理対象セクションのライフサイクルを担います。
 
-## Why an extension?
+## なぜ拡張なのか?
 
-Not every Spec Kit user wants Spec Kit to write into the coding agent's context file. Extracting this behavior into a dedicated extension lets users:
+すべての Spec Kit ユーザーが、Spec Kit にコーディングエージェントのコンテキストファイルへ書き込んでほしいわけではありません。この振る舞いを専用の拡張に切り出すことで、ユーザーは次のことができます:
 
-- **Opt out** entirely with `specify extension disable agent-context` — Spec Kit will then never create or modify the agent context file.
-- **Customize the markers** by editing `.specify/extensions/agent-context/agent-context-config.yml` — both the Python layer and the bundled scripts honor the same `context_markers` value.
-- **Refresh on demand** with `/speckit.agent-context.update`, or automatically through the hooks declared in `extension.yml` (`after_specify`, `after_plan`).
+- **完全にオプトアウトする**: `specify extension disable agent-context` を実行すると、Spec Kit はエージェントのコンテキストファイルを作成・変更しなくなります。
+- **マーカーをカスタマイズする**: `.specify/extensions/agent-context/agent-context-config.yml` を編集します。Python レイヤーとバンドルされたスクリプトの両方が同じ `context_markers` の値を尊重します。
+- **オンデマンドで更新する**: `/speckit.agent-context.update` を使うか、`extension.yml` で宣言されたフック(`after_specify`、`after_plan`)を通じて自動的に更新します。
 
-## Commands
+## コマンド
 
-| Command | Description |
+| コマンド | 説明 |
 |---------|-------------|
-| `speckit.agent-context.update` | Refresh the managed section in the agent context file with the current plan path. |
+| `speckit.agent-context.update` | エージェントのコンテキストファイル内の管理対象セクションを、現在のプランのパスで更新します。 |
 
-## Configuration
+## 設定
 
-All configuration flows through the extension's own config file at
-`.specify/extensions/agent-context/agent-context-config.yml`:
+すべての設定は、拡張独自の設定ファイル
+`.specify/extensions/agent-context/agent-context-config.yml` を通じて行われます:
 
 ```yaml
-# Path to the coding agent context file managed by this extension
+# この拡張が管理するコーディングエージェントのコンテキストファイルへのパス
 context_file: CLAUDE.md
 
-# Delimiters for the managed Spec Kit section
+# 管理対象の Spec Kit セクションを区切る区切り文字
 context_markers:
   start: "<!-- SPECKIT START -->"
   end: "<!-- SPECKIT END -->"
 ```
 
-- `context_file` — the project-relative path to the coding agent context file, written by `specify init` and `specify integration install`.
-- `context_markers.start` / `.end` — the delimiters around the managed section. Edit these to use custom markers.
+- `context_file` — コーディングエージェントのコンテキストファイルへのプロジェクト相対パス。`specify init` と `specify integration install` によって書き込まれます。
+- `context_markers.start` / `.end` — 管理対象セクションを囲む区切り文字。カスタムマーカーを使うにはこれらを編集します。
 
-## Requirements
+## 要件
 
-The bundled update scripts require **Python 3** with **PyYAML** for YAML/upsert processing (PowerShell can also use `ConvertFrom-Yaml` when available).
+バンドルされた更新スクリプトは、YAML/upsert 処理のために **PyYAML** を備えた **Python 3** を必要とします(利用可能な場合、PowerShell は `ConvertFrom-Yaml` も使えます)。
 
-PyYAML ships with the `specify` CLI and is normally available via the same `python3` interpreter. If a hook reports *"PyYAML is required … not available in the current Python environment"*, it means the system `python3` differs from the one used to install Spec Kit. To resolve, run:
+PyYAML は `specify` CLI に同梱されており、通常は同じ `python3` インタプリタ経由で利用できます。フックが *"PyYAML is required … not available in the current Python environment"* と報告した場合、それはシステムの `python3` が Spec Kit のインストールに使われたものと異なることを意味します。解決するには、次を実行します:
 
 ```bash
 pip install pyyaml
-# or target the specific interpreter Spec Kit uses:
+# または、Spec Kit が使う特定のインタプリタを対象にする:
 /path/to/speckit-python -m pip install pyyaml
 ```
 
-## Disable
+## 無効化
 
 ```bash
 specify extension disable agent-context
 ```
 
-When disabled, Spec Kit skips context file creation, updates, and removal (the gates are inside `upsert_context_section()` and `remove_context_section()`).
+無効化すると、Spec Kit はコンテキストファイルの作成・更新・削除をスキップします(そのゲートは `upsert_context_section()` と `remove_context_section()` の内部にあります)。

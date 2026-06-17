@@ -1,8 +1,8 @@
 <!-- SPECKIT START -->
-For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan:
-`specs/001-record-wine/plan.md` (record-wine feature).
+使用する技術、プロジェクト構成、シェルコマンド、その他の重要な情報に関する
+追加のコンテキストについては、現在のプランを参照してください:
+`specs/001-record-wine/plan.md` (record-wine 機能)。
 
-Project principles: `.specify/memory/constitution.md`.
-Overall design: `docs/superpowers/specs/2026-06-17-wine-record-design.md`.
+プロジェクトの原則: `.specify/memory/constitution.md`。
+全体設計: `docs/superpowers/specs/2026-06-17-wine-record-design.md`。
 <!-- SPECKIT END -->

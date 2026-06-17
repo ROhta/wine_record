@@ -1,8 +1,8 @@
 ---
 name: "speckit-implement"
-description: "Execute the implementation plan by processing and executing all tasks defined in tasks.md"
-argument-hint: "Optional implementation guidance or task filter"
-compatibility: "Requires spec-kit project structure with .specify/ directory"
+description: "tasks.md で定義されたすべてのタスクを処理・実行して実装計画を実行する"
+argument-hint: "実装への任意のガイダンスまたはタスクフィルタ"
+compatibility: ".specify/ ディレクトリを持つ spec-kit プロジェクト構造が必要"
 metadata:
   author: "github-spec-kit"
   source: "templates/commands/implement.md"
@@ -11,27 +11,27 @@ disable-model-invocation: false
 ---
 
 
-## User Input
+## ユーザー入力
 
 ```text
 $ARGUMENTS
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+続行する前に、ユーザー入力を（空でない場合）**必ず**考慮しなければならない。
 
-## Pre-Execution Checks
+## 実行前チェック
 
-**Check for extension hooks (before implementation)**:
-- Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.before_implement` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- When constructing slash commands from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `/speckit-git-commit`.
-- For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
+**拡張フックの確認（実装の前）**:
+- プロジェクトルートに `.specify/extensions.yml` が存在するか確認する。
+- 存在する場合はそれを読み込み、`hooks.before_implement` キー配下のエントリを探す
+- YAML を解析できない、または不正な場合は、フックのチェックを黙ってスキップし、通常どおり続行する
+- `enabled` が明示的に `false` になっているフックを除外する。`enabled` フィールドを持たないフックはデフォルトで有効として扱う。
+- 残った各フックについて、フックの `condition` 式を解釈または評価しようと**してはならない**:
+  - フックに `condition` フィールドがない、または null／空の場合、そのフックを実行可能として扱う
+  - フックが空でない `condition` を定義している場合、そのフックはスキップし、condition の評価は HookExecutor の実装に委ねる
+- フックのコマンド名からスラッシュコマンドを構築する際は、ドット（`.`）をハイフン（`-`）に置き換える。例えば `speckit.git.commit` → `/speckit-git-commit`。
+- 実行可能な各フックについて、その `optional` フラグに基づいて以下を出力する:
+  - **オプションフック**（`optional: true`）:
     ```
     ## Extension Hooks
 
@@ -42,7 +42,7 @@ You **MUST** consider the user input before proceeding (if not empty).
     Prompt: {prompt}
     To execute: `/{command}`
     ```
-  - **Mandatory hook** (`optional: false`):
+  - **必須フック**（`optional: false`）:
     ```
     ## Extension Hooks
 
@@ -52,19 +52,19 @@ You **MUST** consider the user input before proceeding (if not empty).
     
     Wait for the result of the hook command before proceeding to the Outline.
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+- フックが何も登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙ってスキップする
 
-## Outline
+## 概要
 
-1. Run `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+1. リポジトリルートから `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` を実行し、FEATURE_DIR と AVAILABLE_DOCS のリストを解析する。すべてのパスは絶対パスでなければならない。"I'm Groot" のように引数内に単一引用符がある場合は、エスケープ構文を使う: 例 'I'\''m Groot'（可能なら二重引用符で囲む: "I'm Groot"）。
 
-2. **Check checklists status** (if FEATURE_DIR/checklists/ exists):
-   - Scan all checklist files in the checklists/ directory
-   - For each checklist, count:
-     - Total items: All lines matching `- [ ]` or `- [X]` or `- [x]`
-     - Completed items: Lines matching `- [X]` or `- [x]`
-     - Incomplete items: Lines matching `- [ ]`
-   - Create a status table:
+2. **チェックリストのステータスを確認する**（FEATURE_DIR/checklists/ が存在する場合）:
+   - checklists/ ディレクトリ内のすべてのチェックリストファイルをスキャンする
+   - 各チェックリストについて、次を数える:
+     - 合計項目数: `- [ ]` または `- [X]` または `- [x]` に一致するすべての行
+     - 完了項目数: `- [X]` または `- [x]` に一致する行
+     - 未完了項目数: `- [ ]` に一致する行
+   - ステータステーブルを作成する:
 
      ```text
      | Checklist | Total | Completed | Incomplete | Status |
@@ -74,52 +74,52 @@ You **MUST** consider the user input before proceeding (if not empty).
      | security.md | 6   | 6         | 0          | ✓ PASS |
      ```
 
-   - Calculate overall status:
-     - **PASS**: All checklists have 0 incomplete items
-     - **FAIL**: One or more checklists have incomplete items
+   - 全体のステータスを計算する:
+     - **PASS**: すべてのチェックリストの未完了項目が 0
+     - **FAIL**: 1 つ以上のチェックリストに未完了項目がある
 
-   - **If any checklist is incomplete**:
-     - Display the table with incomplete item counts
-     - **STOP** and ask: "Some checklists are incomplete. Do you want to proceed with implementation anyway? (yes/no)"
-     - Wait for user response before continuing
-     - If user says "no" or "wait" or "stop", halt execution
-     - If user says "yes" or "proceed" or "continue", proceed to step 3
+   - **いずれかのチェックリストが未完了の場合**:
+     - 未完了項目数とともにテーブルを表示する
+     - **停止**して尋ねる: "Some checklists are incomplete. Do you want to proceed with implementation anyway? (yes/no)"
+     - 続行する前にユーザーの応答を待つ
+     - ユーザーが "no" または "wait" または "stop" と言った場合、実行を停止する
+     - ユーザーが "yes" または "proceed" または "continue" と言った場合、ステップ 3 に進む
 
-   - **If all checklists are complete**:
-     - Display the table showing all checklists passed
-     - Automatically proceed to step 3
+   - **すべてのチェックリストが完了している場合**:
+     - すべてのチェックリストが合格していることを示すテーブルを表示する
+     - 自動的にステップ 3 に進む
 
-3. Load and analyze the implementation context:
-   - **REQUIRED**: Read tasks.md for the complete task list and execution plan
-   - **REQUIRED**: Read plan.md for tech stack, architecture, and file structure
-   - **IF EXISTS**: Read data-model.md for entities and relationships
-   - **IF EXISTS**: Read contracts/ for API specifications and test requirements
-   - **IF EXISTS**: Read research.md for technical decisions and constraints
-   - **IF EXISTS**: Read .specify/memory/constitution.md for governance constraints
-   - **IF EXISTS**: Read quickstart.md for integration scenarios
+3. 実装のコンテキストを読み込んで分析する:
+   - **必須**: 完全なタスクリストと実行計画のために tasks.md を読む
+   - **必須**: 技術スタック、アーキテクチャ、ファイル構造のために plan.md を読む
+   - **存在する場合**: エンティティと関係のために data-model.md を読む
+   - **存在する場合**: API 仕様とテスト要件のために contracts/ を読む
+   - **存在する場合**: 技術的決定と制約のために research.md を読む
+   - **存在する場合**: ガバナンス制約のために .specify/memory/constitution.md を読む
+   - **存在する場合**: 統合シナリオのために quickstart.md を読む
 
-4. **Project Setup Verification**:
-   - **REQUIRED**: Create/verify ignore files based on actual project setup:
+4. **プロジェクトセットアップの検証**:
+   - **必須**: 実際のプロジェクトセットアップに基づいて ignore ファイルを作成／検証する:
 
-   **Detection & Creation Logic**:
-   - Check if the following command succeeds to determine if the repository is a git repo (create/verify .gitignore if so):
+   **検出と作成のロジック**:
+   - 次のコマンドが成功するか確認して、リポジトリが git リポジトリかどうかを判定する（そうであれば .gitignore を作成／検証する）:
 
      ```sh
      git rev-parse --git-dir 2>/dev/null
      ```
 
-   - Check if Dockerfile* exists or Docker in plan.md → create/verify .dockerignore
-   - Check if .eslintrc* exists → create/verify .eslintignore
-   - Check if eslint.config.* exists → ensure the config's `ignores` entries cover required patterns
-   - Check if .prettierrc* exists → create/verify .prettierignore
-   - Check if .npmrc or package.json exists → create/verify .npmignore (if publishing)
-   - Check if terraform files (*.tf) exist → create/verify .terraformignore
-   - Check if .helmignore needed (helm charts present) → create/verify .helmignore
+   - Dockerfile* が存在する、または plan.md に Docker がある → .dockerignore を作成／検証する
+   - .eslintrc* が存在する → .eslintignore を作成／検証する
+   - eslint.config.* が存在する → 設定の `ignores` エントリが必要なパターンをカバーしていることを確認する
+   - .prettierrc* が存在する → .prettierignore を作成／検証する
+   - .npmrc または package.json が存在する → .npmignore を作成／検証する（公開する場合）
+   - terraform ファイル（*.tf）が存在する → .terraformignore を作成／検証する
+   - .helmignore が必要（helm チャートが存在する）→ .helmignore を作成／検証する
 
-   **If ignore file already exists**: Verify it contains essential patterns, append missing critical patterns only
-   **If ignore file missing**: Create with full pattern set for detected technology
+   **ignore ファイルがすでに存在する場合**: 必須パターンが含まれていることを確認し、欠けている重要なパターンのみを追記する
+   **ignore ファイルが存在しない場合**: 検出された技術の完全なパターンセットで作成する
 
-   **Common Patterns by Technology** (from plan.md tech stack):
+   **技術ごとの一般的なパターン**（plan.md の技術スタックから）:
    - **Node.js/JavaScript/TypeScript**: `node_modules/`, `dist/`, `build/`, `*.log`, `.env*`
    - **Python**: `__pycache__/`, `*.pyc`, `.venv/`, `venv/`, `dist/`, `*.egg-info/`
    - **Java**: `target/`, `*.class`, `*.jar`, `.gradle/`, `build/`
@@ -133,66 +133,66 @@ You **MUST** consider the user input before proceeding (if not empty).
    - **C**: `build/`, `bin/`, `obj/`, `out/`, `*.o`, `*.a`, `*.so`, `*.exe`, `*.dll`, `autom4te.cache/`, `config.status`, `config.log`, `.idea/`, `*.log`, `.env*`
    - **Swift**: `.build/`, `DerivedData/`, `*.swiftpm/`, `Packages/`
    - **R**: `.Rproj.user/`, `.Rhistory`, `.RData`, `.Ruserdata`, `*.Rproj`, `packrat/`, `renv/`
-   - **Universal**: `.DS_Store`, `Thumbs.db`, `*.tmp`, `*.swp`, `.vscode/`, `.idea/`
+   - **共通**: `.DS_Store`, `Thumbs.db`, `*.tmp`, `*.swp`, `.vscode/`, `.idea/`
 
-   **Tool-Specific Patterns**:
+   **ツール固有のパターン**:
    - **Docker**: `node_modules/`, `.git/`, `Dockerfile*`, `.dockerignore`, `*.log*`, `.env*`, `coverage/`
    - **ESLint**: `node_modules/`, `dist/`, `build/`, `coverage/`, `*.min.js`
    - **Prettier**: `node_modules/`, `dist/`, `build/`, `coverage/`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`
    - **Terraform**: `.terraform/`, `*.tfstate*`, `*.tfvars`, `.terraform.lock.hcl`
    - **Kubernetes/k8s**: `*.secret.yaml`, `secrets/`, `.kube/`, `kubeconfig*`, `*.key`, `*.crt`
 
-5. Parse tasks.md structure and extract:
-   - **Task phases**: Setup, Tests, Core, Integration, Polish
-   - **Task dependencies**: Sequential vs parallel execution rules
-   - **Task details**: ID, description, file paths, parallel markers [P]
-   - **Execution flow**: Order and dependency requirements
+5. tasks.md の構造を解析して抽出する:
+   - **タスクフェーズ**: Setup、Tests、Core、Integration、Polish
+   - **タスクの依存関係**: 逐次実行と並列実行のルール
+   - **タスクの詳細**: ID、説明、ファイルパス、並列マーカー [P]
+   - **実行フロー**: 順序と依存関係の要件
 
-6. Execute implementation following the task plan:
-   - **Phase-by-phase execution**: Complete each phase before moving to the next
-   - **Respect dependencies**: Run sequential tasks in order, parallel tasks [P] can run together  
-   - **Follow TDD approach**: Execute test tasks before their corresponding implementation tasks
-   - **File-based coordination**: Tasks affecting the same files must run sequentially
-   - **Validation checkpoints**: Verify each phase completion before proceeding
+6. タスク計画に従って実装を実行する:
+   - **フェーズごとの実行**: 次に進む前に各フェーズを完了する
+   - **依存関係を尊重する**: 逐次タスクは順番に実行し、並列タスク [P] は一緒に実行できる  
+   - **TDD アプローチに従う**: 対応する実装タスクの前にテストタスクを実行する
+   - **ファイルベースの調整**: 同じファイルに影響するタスクは逐次的に実行しなければならない
+   - **検証チェックポイント**: 進む前に各フェーズの完了を確認する
 
-7. Implementation execution rules:
-   - **Setup first**: Initialize project structure, dependencies, configuration
-   - **Tests before code**: If you need to write tests for contracts, entities, and integration scenarios
-   - **Core development**: Implement models, services, CLI commands, endpoints
-   - **Integration work**: Database connections, middleware, logging, external services
-   - **Polish and validation**: Unit tests, performance optimization, documentation
+7. 実装の実行ルール:
+   - **まずセットアップ**: プロジェクト構造、依存関係、設定を初期化する
+   - **コードの前にテスト**: コントラクト、エンティティ、統合シナリオのテストを書く必要がある場合
+   - **コア開発**: モデル、サービス、CLI コマンド、エンドポイントを実装する
+   - **統合作業**: データベース接続、ミドルウェア、ロギング、外部サービス
+   - **仕上げと検証**: ユニットテスト、パフォーマンス最適化、ドキュメント
 
-8. Progress tracking and error handling:
-   - Report progress after each completed task
-   - Halt execution if any non-parallel task fails
-   - For parallel tasks [P], continue with successful tasks, report failed ones
-   - Provide clear error messages with context for debugging
-   - Suggest next steps if implementation cannot proceed
-   - **IMPORTANT** For completed tasks, make sure to mark the task off as [X] in the tasks file.
+8. 進捗の追跡とエラー処理:
+   - 完了した各タスクの後に進捗を報告する
+   - 並列でないタスクが失敗した場合は実行を停止する
+   - 並列タスク [P] については、成功したタスクは続行し、失敗したものを報告する
+   - デバッグのためのコンテキストとともに明確なエラーメッセージを提供する
+   - 実装を続行できない場合は次のステップを提案する
+   - **重要** 完了したタスクについては、タスクファイルでそのタスクを [X] としてマークすることを忘れないこと。
 
-9. Completion validation:
-   - Verify all required tasks are completed
-   - Check that implemented features match the original specification
-   - Validate that tests pass and coverage meets requirements
-   - Confirm the implementation follows the technical plan
+9. 完了の検証:
+   - 必須のタスクがすべて完了していることを確認する
+   - 実装された機能が元の仕様と一致することを確認する
+   - テストが合格し、カバレッジが要件を満たすことを検証する
+   - 実装が技術計画に従っていることを確認する
 
-Note: This command assumes a complete task breakdown exists in tasks.md. If tasks are incomplete or missing, suggest running `/speckit-tasks` first to regenerate the task list.
+注: このコマンドは tasks.md に完全なタスク分解が存在することを前提とする。タスクが不完全または欠けている場合は、まず `/speckit-tasks` を実行してタスクリストを再生成するよう提案する。
 
-## Mandatory Post-Execution Hooks
+## 必須の実行後フック
 
-**You MUST complete this section before reporting completion to the user.**
+**ユーザーに完了を報告する前に、このセクションを必ず完了しなければならない。**
 
-Check if `.specify/extensions.yml` exists in the project root.
-- If it does not exist, or no hooks are registered under `hooks.after_implement`, skip to the Completion Report.
-- If it exists, read it and look for entries under the `hooks.after_implement` key.
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue to the Completion Report.
-- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
-  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
-  - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
-- When constructing slash commands from hook command names, replace dots (`.`) with hyphens (`-`). For example, `speckit.git.commit` → `/speckit-git-commit`.
-- For each executable hook, output the following based on its `optional` flag:
-  - **Mandatory hook** (`optional: false`) — **You MUST emit `EXECUTE_COMMAND:` for each mandatory hook**:
+プロジェクトルートに `.specify/extensions.yml` が存在するか確認する。
+- 存在しない、または `hooks.after_implement` 配下にフックが登録されていない場合は、Completion Report に進む。
+- 存在する場合はそれを読み込み、`hooks.after_implement` キー配下のエントリを探す。
+- YAML を解析できない、または不正な場合は、フックのチェックを黙ってスキップし、Completion Report に進む。
+- `enabled` が明示的に `false` になっているフックを除外する。`enabled` フィールドを持たないフックはデフォルトで有効として扱う。
+- 残った各フックについて、フックの `condition` 式を解釈または評価しようと**してはならない**:
+  - フックに `condition` フィールドがない、または null／空の場合、そのフックを実行可能として扱う
+  - フックが空でない `condition` を定義している場合、そのフックはスキップし、condition の評価は HookExecutor の実装に委ねる
+- フックのコマンド名からスラッシュコマンドを構築する際は、ドット（`.`）をハイフン（`-`）に置き換える。例えば `speckit.git.commit` → `/speckit-git-commit`。
+- 実行可能な各フックについて、その `optional` フラグに基づいて以下を出力する:
+  - **必須フック**（`optional: false`） — **各必須フックについて `EXECUTE_COMMAND:` を必ず出力しなければならない**:
     ```
     ## Extension Hooks
 
@@ -200,7 +200,7 @@ Check if `.specify/extensions.yml` exists in the project root.
     Executing: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
-  - **Optional hook** (`optional: true`):
+  - **オプションフック**（`optional: true`）:
     ```
     ## Extension Hooks
 
@@ -212,13 +212,13 @@ Check if `.specify/extensions.yml` exists in the project root.
     To execute: `/{command}`
     ```
 
-## Completion Report
+## 完了レポート
 
-Report final status with summary of completed work.
+完了した作業のサマリーとともに最終ステータスを報告する。
 
-## Done When
+## 完了条件
 
-- [ ] All tasks in tasks.md completed and marked `[X]`
-- [ ] Implementation validated against specification, plan, and test coverage
-- [ ] Extension hooks dispatched or skipped according to the rules in Mandatory Post-Execution Hooks above
-- [ ] Completion reported to user with summary of completed work
+- [ ] tasks.md のすべてのタスクが完了し、`[X]` とマークされている
+- [ ] 実装が仕様、計画、テストカバレッジに照らして検証されている
+- [ ] 上記の「必須の実行後フック」のルールに従って、拡張フックがディスパッチまたはスキップされている
+- [ ] 完了した作業のサマリーとともに、完了がユーザーに報告されている
