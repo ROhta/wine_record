@@ -24,27 +24,27 @@ while [ $i -le $# ]; do
             ;;
         --short-name)
             if [ $((i + 1)) -gt $# ]; then
-                echo 'Error: --short-name requires a value' >&2
+                echo 'エラー: --short-name には値が必要です' >&2
                 exit 1
             fi
             i=$((i + 1))
             next_arg="${!i}"
             # 次の引数が別のオプション（-- で始まる）かどうかを確認する
             if [[ "$next_arg" == --* ]]; then
-                echo 'Error: --short-name requires a value' >&2
+                echo 'エラー: --short-name には値が必要です' >&2
                 exit 1
             fi
             SHORT_NAME="$next_arg"
             ;;
         --number)
             if [ $((i + 1)) -gt $# ]; then
-                echo 'Error: --number requires a value' >&2
+                echo 'エラー: --number には値が必要です' >&2
                 exit 1
             fi
             i=$((i + 1))
             next_arg="${!i}"
             if [[ "$next_arg" == --* ]]; then
-                echo 'Error: --number requires a value' >&2
+                echo 'エラー: --number には値が必要です' >&2
                 exit 1
             fi
             BRANCH_NUMBER="$next_arg"
@@ -53,18 +53,18 @@ while [ $i -le $# ]; do
             USE_TIMESTAMP=true
             ;;
         --help|-h)
-            echo "Usage: $0 [--json] [--dry-run] [--allow-existing-branch] [--short-name <name>] [--number N] [--timestamp] <feature_description>"
+            echo "使い方: $0 [--json] [--dry-run] [--allow-existing-branch] [--short-name <name>] [--number N] [--timestamp] <feature_description>"
             echo ""
-            echo "Options:"
-            echo "  --json              Output in JSON format"
-            echo "  --dry-run           Compute feature name and paths without creating directories or files"
-            echo "  --allow-existing-branch  Reuse an existing feature directory if it already exists"
-            echo "  --short-name <name> Provide a custom short name (2-4 words) for the feature"
-            echo "  --number N          Specify branch number manually (overrides auto-detection)"
-            echo "  --timestamp         Use timestamp prefix (YYYYMMDD-HHMMSS) instead of sequential numbering"
-            echo "  --help, -h          Show this help message"
+            echo "オプション:"
+            echo "  --json              JSON 形式で出力する"
+            echo "  --dry-run           ディレクトリやファイルを作成せずにフィーチャー名とパスを計算する"
+            echo "  --allow-existing-branch  既存のフィーチャーディレクトリがあれば再利用する"
+            echo "  --short-name <name> フィーチャーのカスタムショートネーム（2〜4語）を指定する"
+            echo "  --number N          ブランチ番号を手動で指定する（自動検出を上書きする）"
+            echo "  --timestamp         連番ではなくタイムスタンプのプレフィックス（YYYYMMDD-HHMMSS）を使う"
+            echo "  --help, -h          このヘルプメッセージを表示する"
             echo ""
-            echo "Examples:"
+            echo "使用例:"
             echo "  $0 'Add user authentication system' --short-name 'user-auth'"
             echo "  $0 'Implement OAuth2 integration for API' --number 5"
             echo "  $0 --timestamp --short-name 'user-auth' 'Add user authentication'"
@@ -79,14 +79,14 @@ done
 
 FEATURE_DESCRIPTION="${ARGS[*]}"
 if [ -z "$FEATURE_DESCRIPTION" ]; then
-    echo "Usage: $0 [--json] [--dry-run] [--allow-existing-branch] [--short-name <name>] [--number N] [--timestamp] <feature_description>" >&2
+    echo "使い方: $0 [--json] [--dry-run] [--allow-existing-branch] [--short-name <name>] [--number N] [--timestamp] <feature_description>" >&2
     exit 1
 fi
 
 # 空白をトリムし、説明が空でないことを検証する（例: ユーザーが空白のみを渡した場合）
 FEATURE_DESCRIPTION=$(echo "$FEATURE_DESCRIPTION" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')
 if [ -z "$FEATURE_DESCRIPTION" ]; then
-    echo "Error: Feature description cannot be empty or contain only whitespace" >&2
+    echo "エラー: フィーチャーの説明を空白のみにすることはできません" >&2
     exit 1
 fi
 
@@ -191,7 +191,7 @@ fi
 
 # --number と --timestamp が両方指定された場合は警告する
 if [ "$USE_TIMESTAMP" = true ] && [ -n "$BRANCH_NUMBER" ]; then
-    >&2 echo "[specify] Warning: --number is ignored when --timestamp is used"
+    >&2 echo "[specify] 警告: --timestamp の使用時は --number は無視されます"
     BRANCH_NUMBER=""
 fi
 
@@ -228,9 +228,9 @@ if [ ${#BRANCH_NAME} -gt $MAX_BRANCH_LENGTH ]; then
     ORIGINAL_BRANCH_NAME="$BRANCH_NAME"
     BRANCH_NAME="${FEATURE_NUM}-${TRUNCATED_SUFFIX}"
     
-    >&2 echo "[specify] Warning: Branch name exceeded GitHub's 244-byte limit"
-    >&2 echo "[specify] Original: $ORIGINAL_BRANCH_NAME (${#ORIGINAL_BRANCH_NAME} bytes)"
-    >&2 echo "[specify] Truncated to: $BRANCH_NAME (${#BRANCH_NAME} bytes)"
+    >&2 echo "[specify] 警告: ブランチ名が GitHub の 244 バイト制限を超えました"
+    >&2 echo "[specify] 元の名前: $ORIGINAL_BRANCH_NAME (${#ORIGINAL_BRANCH_NAME} バイト)"
+    >&2 echo "[specify] 切り詰め後: $BRANCH_NAME (${#BRANCH_NAME} バイト)"
 fi
 
 FEATURE_DIR="$SPECS_DIR/$BRANCH_NAME"
@@ -239,9 +239,9 @@ SPEC_FILE="$FEATURE_DIR/spec.md"
 if [ "$DRY_RUN" != true ]; then
     if [ -d "$FEATURE_DIR" ] && [ "$ALLOW_EXISTING" != true ]; then
         if [ "$USE_TIMESTAMP" = true ]; then
-            >&2 echo "Error: Feature directory '$FEATURE_DIR' already exists. Rerun to get a new timestamp or use a different --short-name."
+            >&2 echo "エラー: フィーチャーディレクトリ '$FEATURE_DIR' は既に存在します。新しいタイムスタンプを得るには再実行するか、別の --short-name を指定してください。"
         else
-            >&2 echo "Error: Feature directory '$FEATURE_DIR' already exists. Please use a different feature name or specify a different number with --number."
+            >&2 echo "エラー: フィーチャーディレクトリ '$FEATURE_DIR' は既に存在します。別のフィーチャー名を使うか、--number で別の番号を指定してください。"
         fi
         exit 1
     fi
@@ -253,7 +253,7 @@ if [ "$DRY_RUN" != true ]; then
         if [ -n "$TEMPLATE" ] && [ -f "$TEMPLATE" ]; then
             cp "$TEMPLATE" "$SPEC_FILE"
         else
-            echo "Warning: Spec template not found; created empty spec file" >&2
+            echo "警告: spec テンプレートが見つかりません。空の spec ファイルを作成しました" >&2
             touch "$SPEC_FILE"
         fi
     fi
@@ -262,8 +262,8 @@ if [ "$DRY_RUN" != true ]; then
     _persist_feature_json "$REPO_ROOT" "$FEATURE_DIR"
 
     # ユーザー自身のシェルでフィーチャー状態を設定する方法を伝える
-    printf '# To persist: export SPECIFY_FEATURE=%q\n' "$BRANCH_NAME" >&2
-    printf '#              export SPECIFY_FEATURE_DIRECTORY=%q\n' "$FEATURE_DIR" >&2
+    printf '# 永続化するには: export SPECIFY_FEATURE=%q\n' "$BRANCH_NAME" >&2
+    printf '#                 export SPECIFY_FEATURE_DIRECTORY=%q\n' "$FEATURE_DIR" >&2
 fi
 
 if $JSON_MODE; then
@@ -293,7 +293,7 @@ else
     echo "SPEC_FILE: $SPEC_FILE"
     echo "FEATURE_NUM: $FEATURE_NUM"
     if [ "$DRY_RUN" != true ]; then
-        printf '# To persist in your shell: export SPECIFY_FEATURE=%q\n' "$BRANCH_NAME"
-        printf '#                           export SPECIFY_FEATURE_DIRECTORY=%q\n' "$FEATURE_DIR"
+        printf '# シェルで永続化するには: export SPECIFY_FEATURE=%q\n' "$BRANCH_NAME"
+        printf '#                         export SPECIFY_FEATURE_DIRECTORY=%q\n' "$FEATURE_DIR"
     fi
 fi

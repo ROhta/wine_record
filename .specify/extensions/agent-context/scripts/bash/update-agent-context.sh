@@ -21,7 +21,7 @@ DEFAULT_START="<!-- SPECKIT START -->"
 DEFAULT_END="<!-- SPECKIT END -->"
 
 if [[ ! -f "$EXT_CONFIG" ]]; then
-  echo "agent-context: $EXT_CONFIG not found; nothing to do." >&2
+  echo "agent-context: $EXT_CONFIG が見つかりません。処理することはありません。" >&2
   exit 0
 fi
 
@@ -34,7 +34,7 @@ elif command -v python >/dev/null 2>&1 && python --version 2>&1 | grep -q "^Pyth
 fi
 
 if [[ -z "$_python" ]]; then
-  echo "agent-context: Python 3 not found on PATH; skipping update." >&2
+  echo "agent-context: PATH 上に Python 3 が見つかりません。更新をスキップします。" >&2
   exit 0
 fi
 
@@ -77,7 +77,7 @@ print(get_str(data, "context_markers", "start"))
 print(get_str(data, "context_markers", "end"))
 PY
 )"; then
-  echo "agent-context: skipping update (see above for details)." >&2
+  echo "agent-context: 更新をスキップします（詳細は上記を参照）。" >&2
   exit 0
 fi
 
@@ -86,7 +86,7 @@ while IFS= read -r _line || [[ -n "$_line" ]]; do
   _opts_lines+=("$_line")
 done < <(printf '%s\n' "$_raw_opts")
 if (( ${#_opts_lines[@]} < 3 )); then
-  echo "agent-context: malformed config parser output; expected 3 lines (context_file, marker_start, marker_end), got ${#_opts_lines[@]}; skipping update." >&2
+  echo "agent-context: 設定パーサーの出力が不正です。3 行（context_file、marker_start、marker_end）を期待しましたが ${#_opts_lines[@]} 行でした。更新をスキップします。" >&2
   exit 0
 fi
 CONTEXT_FILE="${_opts_lines[0]}"
@@ -94,23 +94,23 @@ MARKER_START="${_opts_lines[1]}"
 MARKER_END="${_opts_lines[2]}"
 
 if [[ -z "$CONTEXT_FILE" ]]; then
-  echo "agent-context: context_file not set in extension config; nothing to do." >&2
+  echo "agent-context: 拡張の設定に context_file が設定されていません。処理することはありません。" >&2
   exit 0
 fi
 
 # context_file 内の絶対パス、バックスラッシュ区切り、'..' のパスセグメントを拒否する
 if [[ "$CONTEXT_FILE" == /* ]] || [[ "$CONTEXT_FILE" =~ ^[A-Za-z]: ]]; then
-  echo "agent-context: context_file must be a project-relative path; got '$CONTEXT_FILE'." >&2
+  echo "agent-context: context_file はプロジェクト相対パスである必要があります。指定された値: '$CONTEXT_FILE'。" >&2
   exit 1
 fi
 if [[ "$CONTEXT_FILE" == *\\* ]]; then
-  echo "agent-context: context_file must not contain backslash separators; got '$CONTEXT_FILE'." >&2
+  echo "agent-context: context_file にバックスラッシュ区切りを含めることはできません。指定された値: '$CONTEXT_FILE'。" >&2
   exit 1
 fi
 IFS='/' read -ra _cf_parts <<< "$CONTEXT_FILE"
 for _seg in "${_cf_parts[@]}"; do
   if [[ "$_seg" == ".." ]]; then
-    echo "agent-context: context_file must not contain '..' path segments; got '$CONTEXT_FILE'." >&2
+    echo "agent-context: context_file に '..' のパスセグメントを含めることはできません。指定された値: '$CONTEXT_FILE'。" >&2
     exit 1
   fi
 done
@@ -149,10 +149,10 @@ TMP_SECTION="$(mktemp)"
 trap 'rm -f "$TMP_SECTION"' EXIT
 {
   echo "$MARKER_START"
-  echo "For additional context about technologies to be used, project structure,"
-  echo "shell commands, and other important information, read the current plan"
+  echo "使用する技術、プロジェクト構成、シェルコマンド、その他の重要な情報に関する"
+  echo "追加のコンテキストについては、現在のプランを参照してください"
   if [[ -n "$PLAN_PATH" ]]; then
-    echo "at $PLAN_PATH"
+    echo "（$PLAN_PATH）"
   fi
   echo "$MARKER_END"
 } > "$TMP_SECTION"
@@ -196,4 +196,4 @@ with open(ctx_path, "wb") as fh:
     fh.write(new_content.encode("utf-8"))
 PY
 
-echo "agent-context: updated $CONTEXT_FILE"
+echo "agent-context: $CONTEXT_FILE を更新しました"

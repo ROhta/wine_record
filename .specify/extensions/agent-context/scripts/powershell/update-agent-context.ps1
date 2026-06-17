@@ -58,7 +58,7 @@ $ProjectRoot  = (Get-Location).Path
 $ExtConfig    = Join-Path $ProjectRoot '.specify/extensions/agent-context/agent-context-config.yml'
 
 if (-not (Test-Path -LiteralPath $ExtConfig)) {
-    Write-Warning "agent-context: $ExtConfig not found; nothing to do."
+    Write-Warning "agent-context: $ExtConfig が見つかりません。処理することはありません。"
     exit 0
 }
 
@@ -123,30 +123,30 @@ print(json.dumps(data))
     }
 
     if (-not $Options) {
-        Write-Warning "agent-context: unable to parse $ExtConfig; skipping update."
+        Write-Warning "agent-context: $ExtConfig をパースできません。更新をスキップします。"
         exit 0
     }
 }
 
 if (-not (Test-ConfigObject -Object $Options)) {
-    Write-Warning "agent-context: $ExtConfig must contain a YAML mapping; skipping update."
+    Write-Warning "agent-context: $ExtConfig は YAML マッピングを含んでいる必要があります。更新をスキップします。"
     exit 0
 }
 
 $ContextFile = Get-ConfigValue -Object $Options -Key 'context_file'
 if (-not $ContextFile) {
-    Write-Warning 'agent-context: context_file not set in extension config; nothing to do.'
+    Write-Warning 'agent-context: 拡張の設定に context_file が設定されていません。処理することはありません。'
     exit 0
 }
 
 # context_file 内の絶対パスと '..' のパスセグメントを拒否する
 if ([System.IO.Path]::IsPathRooted($ContextFile)) {
-    Write-Warning "agent-context: context_file must be a project-relative path; got '$ContextFile'."
+    Write-Warning "agent-context: context_file はプロジェクト相対パスである必要があります。指定された値: '$ContextFile'。"
     exit 1
 }
 $cfSegments = $ContextFile -split '[/\\]'
 if ($cfSegments -contains '..') {
-    Write-Warning "agent-context: context_file must not contain '..' path segments; got '$ContextFile'."
+    Write-Warning "agent-context: context_file に '..' のパスセグメントを含めることはできません。指定された値: '$ContextFile'。"
     exit 1
 }
 
@@ -190,10 +190,10 @@ if ($CtxDir -and -not (Test-Path -LiteralPath $CtxDir)) {
 }
 
 $lines = @($MarkerStart,
-           'For additional context about technologies to be used, project structure,',
-           'shell commands, and other important information, read the current plan')
+           '使用する技術、プロジェクト構成、シェルコマンド、その他の重要な情報に関する',
+           '追加のコンテキストについては、現在のプランを参照してください')
 if ($PlanPath) {
-    $lines += "at $PlanPath"
+    $lines += "（$PlanPath）"
 }
 $lines += $MarkerEnd
 $Section = ($lines -join "`n") + "`n"
@@ -233,4 +233,4 @@ if (Test-Path -LiteralPath $CtxPath) {
 $newContent = $newContent.Replace("`r`n", "`n").Replace("`r", "`n")
 [System.IO.File]::WriteAllText($CtxPath, $newContent, (New-Object System.Text.UTF8Encoding($false)))
 
-Write-Host "agent-context: updated $ContextFile"
+Write-Host "agent-context: $ContextFile を更新しました"

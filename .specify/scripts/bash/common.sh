@@ -141,11 +141,11 @@ get_feature_paths() {
             # 相対パスをリポジトリルート配下の絶対パスに正規化する
             [[ "$feature_dir" != /* ]] && feature_dir="$repo_root/$feature_dir"
         else
-            echo "ERROR: Feature directory not found. Set SPECIFY_FEATURE_DIRECTORY or ensure .specify/feature.json contains feature_directory." >&2
+            echo "エラー: フィーチャーディレクトリが見つかりません。SPECIFY_FEATURE_DIRECTORY を設定するか、.specify/feature.json に feature_directory が含まれていることを確認してください。" >&2
             return 1
         fi
     else
-        echo "ERROR: Feature directory not found. Set SPECIFY_FEATURE_DIRECTORY or run the specify command to create .specify/feature.json." >&2
+        echo "エラー: フィーチャーディレクトリが見つかりません。SPECIFY_FEATURE_DIRECTORY を設定するか、specify コマンドを実行して .specify/feature.json を作成してください。" >&2
         return 1
     fi
 
@@ -436,7 +436,7 @@ except Exception:
                                 strategy=$(printf '%s' "$strategy" | tr '[:upper:]' '[:lower:]')
                             fi
                             if [ "$yaml_warned" = false ] && grep -q 'yaml_missing' "$py_stderr" 2>/dev/null; then
-                                echo "Warning: PyYAML not available; composition strategies may be ignored" >&2
+                                echo "警告: PyYAML が利用できません。合成ストラテジーは無視される可能性があります" >&2
                                 yaml_warned=true
                             fi
                             rm -f "$py_stderr"
@@ -564,7 +564,7 @@ except Exception:
             wrap)
                 case "$layer_content" in
                     *'{CORE_TEMPLATE}'*) ;;
-                    *) echo "Error: wrap strategy missing {CORE_TEMPLATE} placeholder" >&2; return 1 ;;
+                    *) echo "エラー: wrap ストラテジーに {CORE_TEMPLATE} プレースホルダーがありません" >&2; return 1 ;;
                 esac
                 while [[ "$layer_content" == *'{CORE_TEMPLATE}'* ]]; do
                     local before="${layer_content%%\{CORE_TEMPLATE\}*}"
@@ -573,7 +573,7 @@ except Exception:
                 done
                 content="$layer_content"
                 ;;
-            *) echo "Error: unknown strategy '$strat'" >&2; return 1 ;;
+            *) echo "エラー: 不明なストラテジー '$strat' です" >&2; return 1 ;;
         esac
     done
 

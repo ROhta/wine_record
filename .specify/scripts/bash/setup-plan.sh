@@ -12,10 +12,10 @@ for arg in "$@"; do
             JSON_MODE=true 
             ;;
         --help|-h) 
-            echo "Usage: $0 [--json]"
-            echo "  --json    Output results in JSON format"
-            echo "  --help    Show this help message"
-            exit 0 
+            echo "使い方: $0 [--json]"
+            echo "  --json    結果を JSON 形式で出力する"
+            echo "  --help    このヘルプメッセージを表示する"
+            exit 0
             ;;
         *) 
             ARGS+=("$arg") 
@@ -28,7 +28,7 @@ SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 # 共通関数からすべてのパスと変数を取得する
-_paths_output=$(get_feature_paths) || { echo "ERROR: Failed to resolve feature paths" >&2; exit 1; }
+_paths_output=$(get_feature_paths) || { echo "エラー: フィーチャーのパスを解決できませんでした" >&2; exit 1; }
 eval "$_paths_output"
 unset _paths_output
 
@@ -38,24 +38,24 @@ mkdir -p "$FEATURE_DIR"
 # プランがまだ存在しない場合はプランテンプレートをコピーする
 if [[ -f "$IMPL_PLAN" ]]; then
     if $JSON_MODE; then
-        echo "Plan already exists at $IMPL_PLAN, skipping template copy" >&2
+        echo "$IMPL_PLAN にプランが既に存在するため、テンプレートのコピーをスキップします" >&2
     else
-        echo "Plan already exists at $IMPL_PLAN, skipping template copy"
+        echo "$IMPL_PLAN にプランが既に存在するため、テンプレートのコピーをスキップします"
     fi
 else
     TEMPLATE=$(resolve_template "plan-template" "$REPO_ROOT") || true
     if [[ -n "$TEMPLATE" ]] && [[ -f "$TEMPLATE" ]]; then
         cp "$TEMPLATE" "$IMPL_PLAN"
         if $JSON_MODE; then
-            echo "Copied plan template to $IMPL_PLAN" >&2
+            echo "プランテンプレートを $IMPL_PLAN にコピーしました" >&2
         else
-            echo "Copied plan template to $IMPL_PLAN"
+            echo "プランテンプレートを $IMPL_PLAN にコピーしました"
         fi
     else
         if $JSON_MODE; then
-            echo "Warning: Plan template not found" >&2
+            echo "警告: プランテンプレートが見つかりません" >&2
         else
-            echo "Warning: Plan template not found"
+            echo "警告: プランテンプレートが見つかりません"
         fi
         # テンプレートが存在しない場合は基本的なプランファイルを作成する
         touch "$IMPL_PLAN"

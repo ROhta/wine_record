@@ -43,32 +43,32 @@ for arg in "$@"; do
             ;;
         --help|-h)
             cat << 'EOF'
-Usage: check-prerequisites.sh [OPTIONS]
+使い方: check-prerequisites.sh [OPTIONS]
 
-Consolidated prerequisite checking for Spec-Driven Development workflow.
+Spec-Driven Development ワークフローのための統合された前提条件チェック。
 
-OPTIONS:
-  --json              Output in JSON format
-  --require-tasks     Require tasks.md to exist (for implementation phase)
-  --include-tasks     Include tasks.md in AVAILABLE_DOCS list
-  --paths-only        Only output path variables (no prerequisite validation)
-  --help, -h          Show this help message
+オプション:
+  --json              JSON 形式で出力する
+  --require-tasks     tasks.md の存在を必須にする（実装フェーズ向け）
+  --include-tasks     AVAILABLE_DOCS リストに tasks.md を含める
+  --paths-only        パス変数のみを出力する（前提条件の検証なし）
+  --help, -h          このヘルプメッセージを表示する
 
-EXAMPLES:
-  # Check task prerequisites (plan.md required)
+使用例:
+  # タスクの前提条件をチェックする（plan.md が必須）
   ./check-prerequisites.sh --json
   
-  # Check implementation prerequisites (plan.md + tasks.md required)
+  # 実装の前提条件をチェックする（plan.md + tasks.md が必須）
   ./check-prerequisites.sh --json --require-tasks --include-tasks
   
-  # Get feature paths only (no validation)
+  # フィーチャーのパスのみを取得する（検証なし）
   ./check-prerequisites.sh --paths-only
   
 EOF
             exit 0
             ;;
         *)
-            echo "ERROR: Unknown option '$arg'. Use --help for usage information." >&2
+            echo "エラー: 不明なオプション '$arg' です。使い方は --help を参照してください。" >&2
             exit 1
             ;;
     esac
@@ -79,7 +79,7 @@ SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 # フィーチャーのパスを取得する
-_paths_output=$(get_feature_paths) || { echo "ERROR: Failed to resolve feature paths" >&2; exit 1; }
+_paths_output=$(get_feature_paths) || { echo "エラー: フィーチャーのパスを解決できませんでした" >&2; exit 1; }
 eval "$_paths_output"
 unset _paths_output
 
@@ -113,21 +113,21 @@ fi
 
 # 必須のディレクトリとファイルを検証する
 if [[ ! -d "$FEATURE_DIR" ]]; then
-    echo "ERROR: Feature directory not found: $FEATURE_DIR" >&2
-    echo "Run /speckit-specify first to create the feature structure." >&2
+    echo "エラー: フィーチャーディレクトリが見つかりません: $FEATURE_DIR" >&2
+    echo "まず /speckit-specify を実行してフィーチャー構造を作成してください。" >&2
     exit 1
 fi
 
 if [[ ! -f "$IMPL_PLAN" ]]; then
-    echo "ERROR: plan.md not found in $FEATURE_DIR" >&2
-    echo "Run /speckit-plan first to create the implementation plan." >&2
+    echo "エラー: $FEATURE_DIR に plan.md が見つかりません" >&2
+    echo "まず /speckit-plan を実行して実装プランを作成してください。" >&2
     exit 1
 fi
 
 # 必要であれば tasks.md の存在を確認する
 if $REQUIRE_TASKS && [[ ! -f "$TASKS" ]]; then
-    echo "ERROR: tasks.md not found in $FEATURE_DIR" >&2
-    echo "Run /speckit-tasks first to create the task list." >&2
+    echo "エラー: $FEATURE_DIR に tasks.md が見つかりません" >&2
+    echo "まず /speckit-tasks を実行してタスクリストを作成してください。" >&2
     exit 1
 fi
 

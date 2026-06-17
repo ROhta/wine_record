@@ -9,12 +9,12 @@ for arg in "$@"; do
     case "$arg" in
         --json) JSON_MODE=true ;;
         --help|-h)
-            echo "Usage: $0 [--json]"
-            echo "  --json    Output results in JSON format"
-            echo "  --help    Show this help message"
+            echo "使い方: $0 [--json]"
+            echo "  --json    結果を JSON 形式で出力する"
+            echo "  --help    このヘルプメッセージを表示する"
             exit 0
             ;;
-        *) echo "ERROR: Unknown option '$arg'" >&2; exit 1 ;;
+        *) echo "エラー: 不明なオプション '$arg' です" >&2; exit 1 ;;
     esac
 done
 
@@ -23,20 +23,20 @@ SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 # フィーチャーのパスを取得する
-_paths_output=$(get_feature_paths) || { echo "ERROR: Failed to resolve feature paths" >&2; exit 1; }
+_paths_output=$(get_feature_paths) || { echo "エラー: フィーチャーのパスを解決できませんでした" >&2; exit 1; }
 eval "$_paths_output"
 unset _paths_output
 
 # 必須のファイルを検証する
 if [[ ! -f "$IMPL_PLAN" ]]; then
-    echo "ERROR: plan.md not found in $FEATURE_DIR" >&2
-    echo "Run /speckit-plan first to create the implementation plan." >&2
+    echo "エラー: $FEATURE_DIR に plan.md が見つかりません" >&2
+    echo "まず /speckit-plan を実行して実装プランを作成してください。" >&2
     exit 1
 fi
 
 if [[ ! -f "$FEATURE_SPEC" ]]; then
-    echo "ERROR: spec.md not found in $FEATURE_DIR" >&2
-    echo "Run /speckit-specify first to create the feature structure." >&2
+    echo "エラー: $FEATURE_DIR に spec.md が見つかりません" >&2
+    echo "まず /speckit-specify を実行してフィーチャー構造を作成してください。" >&2
     exit 1
 fi
 
@@ -52,8 +52,8 @@ fi
 # オーバーライドスタックを通じて tasks テンプレートを解決する
 TASKS_TEMPLATE=$(resolve_template "tasks-template" "$REPO_ROOT") || true
 if [[ -z "$TASKS_TEMPLATE" ]] || [[ ! -f "$TASKS_TEMPLATE" ]]; then
-    echo "ERROR: Could not resolve required tasks-template from the template override stack for $REPO_ROOT" >&2
-    echo "Template 'tasks-template' was not found in any supported location (overrides, presets, extensions, or shared core). Add an override at .specify/templates/overrides/tasks-template.md, or run 'specify init' / reinstall shared infra to restore the core .specify/templates/tasks-template.md template." >&2
+    echo "エラー: $REPO_ROOT のテンプレートオーバーライドスタックから必須の tasks-template を解決できませんでした" >&2
+    echo "テンプレート 'tasks-template' は、サポートされているどの場所（overrides、presets、extensions、または共有コア）にも見つかりませんでした。.specify/templates/overrides/tasks-template.md にオーバーライドを追加するか、'specify init' を実行 / 共有インフラを再インストールしてコアの .specify/templates/tasks-template.md テンプレートを復元してください。" >&2
     exit 1
 fi
 
