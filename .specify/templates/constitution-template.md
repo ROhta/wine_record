@@ -46,5 +46,5 @@
 [GOVERNANCE_RULES]
 <!-- 例: すべての PR/レビューは準拠を検証しなければならない。複雑さは正当化されなければならない。ランタイムの開発ガイダンスには [GUIDANCE_FILE] を使用する -->
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+**バージョン**: [CONSTITUTION_VERSION] | **制定日**: [RATIFICATION_DATE] | **最終改定日**: [LAST_AMENDED_DATE]
 <!-- 例: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->

@@ -5,13 +5,13 @@ description: "機能実装のためのタスクリストテンプレート"
 
 # タスク: [FEATURE NAME]
 
-**Input**: `/specs/[###-feature-name]/` の設計ドキュメント
+**入力**: `/specs/[###-feature-name]/` の設計ドキュメント
 
-**Prerequisites**: plan.md (必須)、spec.md (ユーザーストーリーに必須)、research.md、data-model.md、contracts/
+**前提**: plan.md (必須)、spec.md (ユーザーストーリーに必須)、research.md、data-model.md、contracts/
 
-**Tests**: 以下の例にはテストタスクが含まれている。テストは任意 (OPTIONAL) - 機能仕様で明示的に要求された場合のみ含めること。
+**テスト**: 以下の例にはテストタスクが含まれている。テストは任意 (OPTIONAL) - 機能仕様で明示的に要求された場合のみ含めること。
 
-**Organization**: タスクはユーザーストーリーごとにグループ化し、各ストーリーを独立して実装・テストできるようにする。
+**構成方針**: タスクはユーザーストーリーごとにグループ化し、各ストーリーを独立して実装・テストできるようにする。
 
 ## フォーマット: `[ID] [P?] [Story] 説明`
 

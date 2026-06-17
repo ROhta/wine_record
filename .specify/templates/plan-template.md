@@ -1,10 +1,10 @@
 # 実装計画: [FEATURE]
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**ブランチ**: `[###-feature-name]` | **日付**: [DATE] | **仕様**: [link]
 
-**Input**: `/specs/[###-feature-name]/spec.md` の機能仕様
+**入力**: `/specs/[###-feature-name]/spec.md` の機能仕様
 
-**Note**: このテンプレートは `/speckit-plan` コマンドによって埋められます。実行ワークフローについては `.specify/templates/plan-template.md` を参照してください。
+**注**: このテンプレートは `/speckit-plan` コマンドによって埋められます。実行ワークフローについては `.specify/templates/plan-template.md` を参照してください。
 
 ## 概要
 
@@ -17,23 +17,23 @@
   ここでの構造は、反復プロセスを導くための参考として提示している。
 -->
 
-**Language/Version**: [例: Python 3.11、Swift 5.9、Rust 1.75、または NEEDS CLARIFICATION]
+**言語/バージョン**: [例: Python 3.11、Swift 5.9、Rust 1.75、または NEEDS CLARIFICATION]
 
-**Primary Dependencies**: [例: FastAPI、UIKit、LLVM、または NEEDS CLARIFICATION]
+**主要な依存**: [例: FastAPI、UIKit、LLVM、または NEEDS CLARIFICATION]
 
-**Storage**: [該当する場合、例: PostgreSQL、CoreData、ファイル、または N/A]
+**ストレージ**: [該当する場合、例: PostgreSQL、CoreData、ファイル、または N/A]
 
-**Testing**: [例: pytest、XCTest、cargo test、または NEEDS CLARIFICATION]
+**テスト**: [例: pytest、XCTest、cargo test、または NEEDS CLARIFICATION]
 
-**Target Platform**: [例: Linux サーバー、iOS 15+、WASM、または NEEDS CLARIFICATION]
+**対象プラットフォーム**: [例: Linux サーバー、iOS 15+、WASM、または NEEDS CLARIFICATION]
 
-**Project Type**: [例: library/cli/web-service/mobile-app/compiler/desktop-app、または NEEDS CLARIFICATION]
+**プロジェクト種別**: [例: library/cli/web-service/mobile-app/compiler/desktop-app、または NEEDS CLARIFICATION]
 
-**Performance Goals**: [ドメイン固有、例: 1000 req/s、10k lines/sec、60 fps、または NEEDS CLARIFICATION]
+**性能目標**: [ドメイン固有、例: 1000 req/s、10k lines/sec、60 fps、または NEEDS CLARIFICATION]
 
-**Constraints**: [ドメイン固有、例: <200ms p95、<100MB メモリ、オフライン対応、または NEEDS CLARIFICATION]
+**制約**: [ドメイン固有、例: <200ms p95、<100MB メモリ、オフライン対応、または NEEDS CLARIFICATION]
 
-**Scale/Scope**: [ドメイン固有、例: 10k ユーザー、1M LOC、50 画面、または NEEDS CLARIFICATION]
+**規模/範囲**: [ドメイン固有、例: 10k ユーザー、1M LOC、50 画面、または NEEDS CLARIFICATION]
 
 ## 憲章チェック
 
