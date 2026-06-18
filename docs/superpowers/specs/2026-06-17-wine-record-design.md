@@ -55,7 +55,7 @@
 - `name`（ワイン名）
 - `producer`（生産者）
 - `country` / `region` / `subregion` / `commune`（産地の階層）
-- `vintage`（収穫年、数値。NV の場合は null 扱い）
+- `vintage`（収穫年。`number | "NV" | null`。NV は文字列 `"NV"`、ヴィンテージ不明は `null`）
 - `importer`（輸入業者）
 - `store`（購入店舗）
 - `imageUrl`（ラベル画像の URL）
