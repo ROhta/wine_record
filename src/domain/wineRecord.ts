@@ -1,4 +1,5 @@
 import type { RegionPath } from './region.js';
+import type { WineColor } from './taxonomy.js';
 
 /**
  * 収穫年。
@@ -22,6 +23,8 @@ export interface WineRecord {
   wineId: string;
   /** ワイン名（必須・非空）。 */
   name: string;
+  /** ワインの色。タップ選択する JSA 用語セット（白用/赤用）を決める。 */
+  color: WineColor;
   producer: string | null;
   region: RegionPath;
   vintage: Vintage;
