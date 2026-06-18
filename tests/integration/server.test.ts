@@ -1,10 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import type { AddressInfo } from 'node:net';
-import { createApp } from '../../src/server.js';
+import { createApp, type McpServerDeps } from '../../src/server.js';
+
+const noopDeps: McpServerDeps = {
+  recordWine: () => Promise.resolve({ ok: true, wineId: 'x', recordedAt: 'x' }),
+};
 
 describe('MCP サーバー骨組み', () => {
   it('GET /health は 200 と {status:"ok"} を返す', async () => {
-    const app = createApp();
+    const app = createApp(noopDeps);
     const srv = app.listen(0);
     try {
       const { port } = srv.address() as AddressInfo;

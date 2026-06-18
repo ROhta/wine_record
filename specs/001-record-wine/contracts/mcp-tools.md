@@ -46,6 +46,7 @@ URL を発行する。
   ```json
   {
     "name": "string (必須・非空)",
+    "color": "\"white\" | \"red\" (必須。タップ選択する JSA 用語セットを決める)",
     "producer": "string | null",
     "region": {
       "country": "string | null",
@@ -66,7 +67,8 @@ URL を発行する。
   ```json
   { "wineId": "string (UUID)", "recordedAt": "ISO 8601" }
   ```
-- **バリデーション**: `name` 非空 / `*Terms` は JSA タクソノミー内の値のみ /
+- **バリデーション**: `name` 非空 / `color` は "white" or "red" /
+  `*Terms` は当該 `color` の JSA タクソノミー内の値のみ /
   `vintage` は妥当な年 or "NV" or null / `imageUrl` は許可ドメインの https のみ。
   いずれか不正なら保存せずエラーを返す。
 - **副作用**: `overall` + 選択された表現カテゴリの namespace へ upsert。
