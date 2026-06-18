@@ -1,0 +1,32 @@
+{
+  "name": "wine-record",
+  "version": "0.1.0",
+  "description": "AIエージェントを通じてワインを記録する MCP サーバー",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "dev": "tsx watch src/server.ts"
+  },
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tsconfig/strictest": "^2.0.8",
+    "@types/node": "^25.9.3",
+    "eslint": "^10.5.0",
+    "prettier": "^3.8.4",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1",
+    "vitest": "^4.1.9"
+  }
+}
