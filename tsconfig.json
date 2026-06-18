@@ -11,7 +11,12 @@
     "sourceMap": true,
     "declaration": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    // @tsconfig/strictest の exactOptionalPropertyTypes のみ無効化。
+    // 理由: MCP SDK(@modelcontextprotocol/sdk) の型がこのフラグと非互換で、
+    // server.connect(transport) 等が境界ごとのキャストなしに通らないため。
+    // 他の strict 系チェック（strict, noUncheckedIndexedAccess 等）は維持する。
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src", "tests", "vitest.config.ts", "eslint.config.js"]
 }
