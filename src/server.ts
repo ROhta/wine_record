@@ -36,7 +36,6 @@ const recordWineInputSchema = {
       subregion: z.string().nullish(),
       commune: z.string().nullish(),
     })
-    .partial()
     .nullish()
     .describe('産地（国/地方/小地区/村。階層・任意）'),
   vintage: z.union([z.number(), z.string()]).nullish().describe('収穫年 / "NV" / null'),
@@ -60,8 +59,9 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
     {
       title: 'ワインを記録する',
       description:
-        '確認済みのワイン記録を永続化する。name は必須・非空、各 *Terms は JSA 語彙内のみ、' +
-        'imageUrl は自ストレージの https のみ。検証に失敗した場合は保存せず、フィールド別エラーを返す。',
+        '確認済みのワイン記録を永続化する。name は必須・非空、color は "white" または "red"、' +
+        '各 *Terms は当該 color の JSA 語彙内のみ、imageUrl は自ストレージの https のみ。' +
+        '検証に失敗した場合は保存せず、フィールド別エラーを返す。',
       inputSchema: recordWineInputSchema,
     },
     async (args): Promise<CallToolResult> => {
