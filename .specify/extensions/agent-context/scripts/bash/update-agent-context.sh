@@ -1,0 +1,199 @@
+#!/usr/bin/env bash
+# update-agent-context.sh
+#
+# コーディングエージェントのコンテキストファイル（例: CLAUDE.md,
+# .github/copilot-instructions.md, AGENTS.md）内の管理対象 Spec Kit セクションを更新する。
+#
+# agent-context 拡張の設定から `context_file` と `context_markers.{start,end}` を読み取る:
+#   .specify/extensions/agent-context/agent-context-config.yml
+#
+# 使い方: update-agent-context.sh [plan_path]
+#
+# `plan_path` が省略された場合、スクリプトは存在すれば最も最近変更された
+# `specs/*/plan.md` を選択し、なければ具体的なプランパスなしでセクションを
+# 出力する。
+
+set -euo pipefail
+
+PROJECT_ROOT="$(pwd)"
+EXT_CONFIG="$PROJECT_ROOT/.specify/extensions/agent-context/agent-context-config.yml"
+DEFAULT_START="<!-- SPECKIT START -->"
+DEFAULT_END="<!-- SPECKIT END -->"
+
+if [[ ! -f "$EXT_CONFIG" ]]; then
+  echo "agent-context: $EXT_CONFIG が見つかりません。処理することはありません。" >&2
+  exit 0
+fi
+
+# 適切な Python インタープリタを探す（python3、次に python）。
+_python=""
+if command -v python3 >/dev/null 2>&1; then
+  _python="python3"
+elif command -v python >/dev/null 2>&1 && python --version 2>&1 | grep -q "^Python 3"; then
+  _python="python"
+fi
+
+if [[ -z "$_python" ]]; then
+  echo "agent-context: PATH 上に Python 3 が見つかりません。更新をスキップします。" >&2
+  exit 0
+fi
+
+# 拡張の設定を一度だけ解析し、改行区切りの3つのフィールドを出力する:
+# context_file, context_markers.start, context_markers.end
+if ! _raw_opts="$("$_python" - "$EXT_CONFIG" <<'PY'
+import sys
+try:
+    import yaml
+except ImportError:
+    print(
+        "agent-context: 拡張の設定を解析するには PyYAML が必要ですが、"
+        "現在の Python 環境では利用できません。\n"
+        "  解決方法: pip install pyyaml （または python3 が使用する環境にインストールしてください）。\n"
+        "  PyYAML がインポート可能になるまで、コンテキストファイルは更新されません。",
+        file=sys.stderr,
+    )
+    sys.exit(2)
+try:
+    with open(sys.argv[1], "r", encoding="utf-8") as fh:
+        data = yaml.safe_load(fh)
+except Exception as exc:
+    print(
+        f"agent-context: {sys.argv[1]} を解析できません（{exc}）。コンテキストを更新できません。",
+        file=sys.stderr,
+    )
+    sys.exit(2)
+if not isinstance(data, dict):
+    data = {}
+def get_str(obj, *keys):
+    node = obj
+    for k in keys:
+        if isinstance(node, dict) and k in node:
+            node = node[k]
+        else:
+            return ""
+    return node if isinstance(node, str) else ""
+print(get_str(data, "context_file"))
+print(get_str(data, "context_markers", "start"))
+print(get_str(data, "context_markers", "end"))
+PY
+)"; then
+  echo "agent-context: 更新をスキップします（詳細は上記を参照）。" >&2
+  exit 0
+fi
+
+_opts_lines=()
+while IFS= read -r _line || [[ -n "$_line" ]]; do
+  _opts_lines+=("$_line")
+done < <(printf '%s\n' "$_raw_opts")
+if (( ${#_opts_lines[@]} < 3 )); then
+  echo "agent-context: 設定パーサーの出力が不正です。3 行（context_file、marker_start、marker_end）を期待しましたが ${#_opts_lines[@]} 行でした。更新をスキップします。" >&2
+  exit 0
+fi
+CONTEXT_FILE="${_opts_lines[0]}"
+MARKER_START="${_opts_lines[1]}"
+MARKER_END="${_opts_lines[2]}"
+
+if [[ -z "$CONTEXT_FILE" ]]; then
+  echo "agent-context: 拡張の設定に context_file が設定されていません。処理することはありません。" >&2
+  exit 0
+fi
+
+# context_file 内の絶対パス、バックスラッシュ区切り、'..' のパスセグメントを拒否する
+if [[ "$CONTEXT_FILE" == /* ]] || [[ "$CONTEXT_FILE" =~ ^[A-Za-z]: ]]; then
+  echo "agent-context: context_file はプロジェクト相対パスである必要があります。指定された値: '$CONTEXT_FILE'。" >&2
+  exit 1
+fi
+if [[ "$CONTEXT_FILE" == *\\* ]]; then
+  echo "agent-context: context_file にバックスラッシュ区切りを含めることはできません。指定された値: '$CONTEXT_FILE'。" >&2
+  exit 1
+fi
+IFS='/' read -ra _cf_parts <<< "$CONTEXT_FILE"
+for _seg in "${_cf_parts[@]}"; do
+  if [[ "$_seg" == ".." ]]; then
+    echo "agent-context: context_file に '..' のパスセグメントを含めることはできません。指定された値: '$CONTEXT_FILE'。" >&2
+    exit 1
+  fi
+done
+unset _cf_parts _seg
+
+[[ -z "$MARKER_START" ]] && MARKER_START="$DEFAULT_START"
+[[ -z "$MARKER_END"   ]] && MARKER_END="$DEFAULT_END"
+
+PLAN_PATH="${1:-}"
+if [[ -z "$PLAN_PATH" ]]; then
+  # 1階層下（specs/<feature>/plan.md）で最も最近変更された plan.md を選択する。
+  # パスに含まれる空白や pipefail による SIGPIPE での ls/head の脆さを避けるため、
+  # find + 変更時刻でのソートを使う。
+  _plan_abs="$("$_python" - "$PROJECT_ROOT" <<'PY'
+import sys, os
+from pathlib import Path
+specs = Path(sys.argv[1]) / "specs"
+plans = sorted(
+    specs.glob("*/plan.md"),
+    key=lambda p: p.stat().st_mtime,
+    reverse=True,
+)
+print(plans[0] if plans else "")
+PY
+)"
+  if [[ -n "$_plan_abs" ]]; then
+    PLAN_PATH="${_plan_abs#"$PROJECT_ROOT/"}"
+  fi
+fi
+
+CTX_PATH="$PROJECT_ROOT/$CONTEXT_FILE"
+mkdir -p "$(dirname "$CTX_PATH")"
+
+# 管理対象セクションを構築する
+TMP_SECTION="$(mktemp)"
+trap 'rm -f "$TMP_SECTION"' EXIT
+{
+  echo "$MARKER_START"
+  echo "使用する技術、プロジェクト構成、シェルコマンド、その他の重要な情報に関する"
+  echo "追加のコンテキストについては、現在のプランを参照してください"
+  if [[ -n "$PLAN_PATH" ]]; then
+    echo "（$PLAN_PATH）"
+  fi
+  echo "$MARKER_END"
+} > "$TMP_SECTION"
+
+"$_python" - "$CTX_PATH" "$MARKER_START" "$MARKER_END" "$TMP_SECTION" <<'PY'
+import sys, os
+ctx_path, start, end, section_path = sys.argv[1:5]
+with open(section_path, "r", encoding="utf-8") as fh:
+    section = fh.read().rstrip("\n") + "\n"
+
+if os.path.exists(ctx_path):
+    with open(ctx_path, "r", encoding="utf-8-sig") as fh:
+        content = fh.read()
+    s = content.find(start)
+    e = content.find(end, s if s != -1 else 0)
+    if s != -1 and e != -1 and e > s:
+        end_of_marker = e + len(end)
+        if end_of_marker < len(content) and content[end_of_marker] == "\r":
+            end_of_marker += 1
+        if end_of_marker < len(content) and content[end_of_marker] == "\n":
+            end_of_marker += 1
+        new_content = content[:s] + section + content[end_of_marker:]
+    elif s != -1:
+        new_content = content[:s] + section
+    elif e != -1:
+        end_of_marker = e + len(end)
+        if end_of_marker < len(content) and content[end_of_marker] == "\r":
+            end_of_marker += 1
+        if end_of_marker < len(content) and content[end_of_marker] == "\n":
+            end_of_marker += 1
+        new_content = section + content[end_of_marker:]
+    else:
+        if content and not content.endswith("\n"):
+            content += "\n"
+        new_content = (content + "\n" + section) if content else section
+else:
+    new_content = section
+
+new_content = new_content.replace("\r\n", "\n").replace("\r", "\n")
+with open(ctx_path, "wb") as fh:
+    fh.write(new_content.encode("utf-8"))
+PY
+
+echo "agent-context: $CONTEXT_FILE を更新しました"

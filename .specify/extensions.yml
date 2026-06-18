@@ -1,0 +1,23 @@
+installed:
+- agent-context
+settings:
+  auto_execute_hooks: true
+hooks:
+  after_specify:
+  - extension: agent-context
+    command: speckit.agent-context.update
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: speckit.agent-context.update を実行しますか？
+    description: 仕様作成後にエージェントコンテキストを更新
+    condition: null
+  after_plan:
+  - extension: agent-context
+    command: speckit.agent-context.update
+    enabled: true
+    optional: true
+    priority: 10
+    prompt: speckit.agent-context.update を実行しますか？
+    description: 計画作成後にエージェントコンテキストを更新
+    condition: null

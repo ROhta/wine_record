@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "workflows": {
+    "speckit": {
+      "name": "Full SDD Cycle",
+      "version": "1.0.0",
+      "description": "specify \u2192 plan \u2192 tasks \u2192 implement \u3092\u30ec\u30d3\u30e5\u30fc\u30b2\u30fc\u30c8\u4ed8\u304d\u3067\u5b9f\u884c\u3057\u307e\u3059",
+      "source": "bundled",
+      "installed_at": "2026-06-17T08:47:43.417920+00:00",
+      "updated_at": "2026-06-17T08:47:43.417937+00:00"
+    }
+  }
+}
