@@ -1,0 +1,12 @@
+dist/
+node_modules/
+coverage/
+.specify/
+.claude/
+specs/
+docs/
+spikes/
+data/
+*.md
+LICENSE
+package-lock.json
