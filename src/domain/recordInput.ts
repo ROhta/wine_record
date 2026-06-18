@@ -54,6 +54,27 @@ function asStringArray(v: unknown): string[] {
 }
 
 /**
+ * imageUrl が許可された自ストレージの https URL かを検証する。
+ * 単純な前方一致だと `https://img.example.com.evil.com/x.jpg` を誤許可するため、
+ * URL としてパースし「ホスト完全一致」＋「パス境界」で判定する。
+ */
+function isAllowedImageUrl(rawUrl: string, allowedBaseUrl: string): boolean {
+  let url: URL;
+  let base: URL;
+  try {
+    url = new URL(rawUrl);
+    base = new URL(allowedBaseUrl);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== 'https:') return false;
+  if (url.host !== base.host) return false;
+  const basePath = base.pathname.endsWith('/') ? base.pathname : `${base.pathname}/`;
+  const urlPath = url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`;
+  return urlPath.startsWith(basePath);
+}
+
+/**
  * record_wine の入力（型不定）を検証・正規化する。
  * 最初のエラーで止めず、全フィールドのエラーを収集して返す（contract 準拠）。
  *
@@ -99,7 +120,7 @@ export function validateRecordInput(
   let imageUrl: string | null = null;
   const imgRaw = obj['imageUrl'];
   if (imgRaw !== null && imgRaw !== undefined && imgRaw !== '') {
-    if (typeof imgRaw === 'string' && imgRaw.startsWith('https://') && imgRaw.startsWith(allowedImageBaseUrl)) {
+    if (typeof imgRaw === 'string' && isAllowedImageUrl(imgRaw, allowedImageBaseUrl)) {
       imageUrl = imgRaw;
     } else {
       errors.push({ field: 'imageUrl', message: '許可された画像ストレージの https URL のみ指定できます' });

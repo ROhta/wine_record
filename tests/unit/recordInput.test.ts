@@ -68,4 +68,21 @@ describe('validateRecordInput', () => {
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value.vintage).toBe('NV');
   });
+
+  it('imageUrl はホスト完全一致を要求し、サフィックス偽装ドメインを弾く', () => {
+    const evil = validateRecordInput(
+      { ...validInput, imageUrl: 'https://img.example.com.evil.com/x.jpg' },
+      tax,
+      BASE,
+    );
+    expect(evil.ok).toBe(false);
+    if (!evil.ok) expect(evil.errors.some((e) => e.field === 'imageUrl')).toBe(true);
+
+    const okr = validateRecordInput(
+      { ...validInput, imageUrl: 'https://img.example.com/labels/abc.jpg' },
+      tax,
+      BASE,
+    );
+    expect(okr.ok).toBe(true);
+  });
 });
