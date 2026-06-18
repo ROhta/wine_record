@@ -76,9 +76,9 @@ if $JSON_MODE; then
             "$(json_escape "$FEATURE_SPEC")" "$(json_escape "$IMPL_PLAN")" "$(json_escape "$FEATURE_DIR")" "$(json_escape "$CURRENT_BRANCH")"
     fi
 else
-    echo "FEATURE_SPEC: $FEATURE_SPEC"
-    echo "IMPL_PLAN: $IMPL_PLAN" 
-    echo "SPECS_DIR: $FEATURE_DIR"
-    echo "BRANCH: $CURRENT_BRANCH"
+    echo "フィーチャー仕様: $FEATURE_SPEC"
+    echo "実装プラン: $IMPL_PLAN"
+    echo "仕様ディレクトリ: $FEATURE_DIR"
+    echo "ブランチ: $CURRENT_BRANCH"
 fi
 

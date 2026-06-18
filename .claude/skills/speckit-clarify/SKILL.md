@@ -33,24 +33,24 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
   - **任意フック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意の事前フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
   - **必須フック**（`optional: false`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自動の事前フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Outline.
+    概要に進む前にフックコマンドの結果を待つこと。
     ```
 - フックが1つも登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙って省略する
 
@@ -150,7 +150,7 @@ $ARGUMENTS
        - 形式: `**Recommended:** Option [X] - <reasoning>`
        - その後、すべての選択肢を Markdown の表として描画する:
 
-       | Option | Description |
+       | Option | 説明 |
        |--------|-------------|
        | A | <Option A description> |
        | B | <Option B description> |
@@ -223,7 +223,7 @@ $ARGUMENTS
 
 挙動ルール:
 
-- 意味のある曖昧さが見つからない場合（またはすべての潜在的な質問が低影響の場合）、次のように応答する: "No critical ambiguities detected worth formal clarification." そして続行を提案する。
+- 意味のある曖昧さが見つからない場合（またはすべての潜在的な質問が低影響の場合）、次のように応答する: "正式な明確化に値する重大な曖昧さは検出されませんでした。" そして続行を提案する。
 - 仕様ファイルが存在しない場合は、ユーザーにまず `/speckit-specify` の実行を指示する（ここで新しい仕様を作成しないこと）。
 - 尋ねる質問の合計が5を超えてはならない（単一の質問に対する明確化の再試行は新しい質問としてカウントしない）。
 - 機能的な明確さを阻害する欠落でない限り、推測的な技術スタックの質問は避ける。
@@ -249,22 +249,22 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
   - **必須フック**（`optional: false`） — **各必須フックについて `EXECUTE_COMMAND:` を必ず出力すること**:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Hook**: {extension}
-    Executing: `/{command}`
+    **自動フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
   - **任意フック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
 
 ## 完了レポート

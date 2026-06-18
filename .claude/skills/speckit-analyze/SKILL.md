@@ -33,24 +33,24 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
   - **任意フック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意の事前フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
   - **必須フック**（`optional: false`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自動の事前フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Goal.
+    目的に進む前にフックコマンドの結果を待つこと。
     ```
 - フックが1つも登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙って省略する
 
@@ -168,31 +168,31 @@ $ARGUMENTS
 
 以下の構造で Markdown レポートを出力する（ファイルへの書き込みはしない）:
 
-## Specification Analysis Report
+## 仕様分析レポート
 
-| ID | Category | Severity | Location(s) | Summary | Recommendation |
+| ID | カテゴリ | 重大度 | 該当箇所 | 概要 | 推奨対応 |
 |----|----------|----------|-------------|---------|----------------|
 | A1 | Duplication | HIGH | spec.md:L120-134 | Two similar requirements ... | Merge phrasing; keep clearer version |
 
-(Add one row per finding; generate stable IDs prefixed by category initial.)
+（指摘ごとに1行追加する。カテゴリの頭文字を接頭辞とした安定した ID を生成する。）
 
-**Coverage Summary Table:**
+**カバレッジサマリ表:**
 
-| Requirement Key | Has Task? | Task IDs | Notes |
+| 要件キー | タスクあり？ | タスク ID | 備考 |
 |-----------------|-----------|----------|-------|
 
-**Constitution Alignment Issues:** (if any)
+**憲章との整合性の課題:**（ある場合）
 
-**Unmapped Tasks:** (if any)
+**未対応付けのタスク:**（ある場合）
 
-**Metrics:**
+**メトリクス:**
 
-- Total Requirements
-- Total Tasks
-- Coverage % (requirements with >=1 task)
-- Ambiguity Count
-- Duplication Count
-- Critical Issues Count
+- 要件の総数
+- タスクの総数
+- カバレッジ %（1つ以上のタスクを持つ要件）
+- 曖昧さの件数
+- 重複の件数
+- Critical な課題の件数
 
 ### 7. 次のアクションの提示
 
@@ -219,21 +219,21 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
   - **任意フック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
   - **必須フック**（`optional: false`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Hook**: {extension}
-    Executing: `/{command}`
+    **自動フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
 - フックが1つも登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙って省略する

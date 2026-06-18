@@ -33,24 +33,24 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づいて以下を出力する:
   - **オプションフック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意の事前フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
   - **必須フック**（`optional: false`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自動の事前フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Outline.
+    概要に進む前にフックコマンドの結果を待つこと。
     ```
 - フックが何も登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙ってスキップする
 
@@ -147,40 +147,40 @@ $ARGUMENTS
    a. **仕様品質チェックリストを作成する**: チェックリストテンプレートの構造を使い、次の検証項目を含むチェックリストファイルを `SPECIFY_FEATURE_DIRECTORY/checklists/requirements.md` に生成する:
 
       ```markdown
-      # Specification Quality Checklist: [FEATURE NAME]
+      # 仕様品質チェックリスト: [FEATURE NAME]
       
-      **Purpose**: Validate specification completeness and quality before proceeding to planning
-      **Created**: [DATE]
-      **Feature**: [Link to spec.md]
+      **目的**: 計画に進む前に仕様の完全性と品質を検証する
+      **作成日**: [DATE]
+      **機能**: [Link to spec.md]
       
-      ## Content Quality
+      ## 内容品質
       
-      - [ ] No implementation details (languages, frameworks, APIs)
-      - [ ] Focused on user value and business needs
-      - [ ] Written for non-technical stakeholders
-      - [ ] All mandatory sections completed
+      - [ ] 実装の詳細がない（言語、フレームワーク、API）
+      - [ ] ユーザー価値とビジネスニーズに焦点を当てている
+      - [ ] 非技術系のステークホルダー向けに書かれている
+      - [ ] すべての必須セクションが完成している
       
-      ## Requirement Completeness
+      ## 要件の完全性
       
-      - [ ] No [NEEDS CLARIFICATION] markers remain
-      - [ ] Requirements are testable and unambiguous
-      - [ ] Success criteria are measurable
-      - [ ] Success criteria are technology-agnostic (no implementation details)
-      - [ ] All acceptance scenarios are defined
-      - [ ] Edge cases are identified
-      - [ ] Scope is clearly bounded
-      - [ ] Dependencies and assumptions identified
+      - [ ] [NEEDS CLARIFICATION] マーカーが残っていない
+      - [ ] 要件がテスト可能で曖昧さがない
+      - [ ] 成功基準が測定可能である
+      - [ ] 成功基準が技術非依存である（実装の詳細がない）
+      - [ ] すべての受け入れシナリオが定義されている
+      - [ ] エッジケースが特定されている
+      - [ ] スコープが明確に区切られている
+      - [ ] 依存関係と前提が特定されている
       
-      ## Feature Readiness
+      ## 機能の準備状況
       
-      - [ ] All functional requirements have clear acceptance criteria
-      - [ ] User scenarios cover primary flows
-      - [ ] Feature meets measurable outcomes defined in Success Criteria
-      - [ ] No implementation details leak into specification
+      - [ ] すべての機能要件に明確な受け入れ基準がある
+      - [ ] ユーザーシナリオが主要なフローをカバーしている
+      - [ ] 機能が成功基準で定義された測定可能な成果を満たしている
+      - [ ] 実装の詳細が仕様に漏れていない
       
-      ## Notes
+      ## メモ
       
-      - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
+      - 未完了とマークされた項目は、`/speckit-clarify` または `/speckit-plan` の前に仕様の更新が必要である
       ```
 
    b. **検証チェックを実行する**: 各チェックリスト項目に照らして仕様をレビューする:
@@ -203,22 +203,22 @@ $ARGUMENTS
         3. 必要な各明確化（最大 3 個）について、この形式でユーザーに選択肢を提示する:
 
            ```markdown
-           ## Question [N]: [Topic]
+           ## 質問 [N]: [Topic]
            
-           **Context**: [Quote relevant spec section]
+           **コンテキスト**: [Quote relevant spec section]
            
-           **What we need to know**: [Specific question from NEEDS CLARIFICATION marker]
+           **確認したいこと**: [Specific question from NEEDS CLARIFICATION marker]
            
-           **Suggested Answers**:
+           **推奨される回答**:
            
-           | Option | Answer | Implications |
+           | Option | 回答 | 含意 |
            |--------|--------|--------------|
            | A      | [First suggested answer] | [What this means for the feature] |
            | B      | [Second suggested answer] | [What this means for the feature] |
            | C      | [Third suggested answer] | [What this means for the feature] |
-           | Custom | Provide your own answer | [Explain how to provide custom input] |
+           | Custom | 独自の回答を提供する | [Explain how to provide custom input] |
            
-           **Your choice**: _[Wait for user response]_
+           **あなたの選択**: _[Wait for user response]_
            ```
 
         4. **重要 - テーブルの書式**: markdown テーブルが正しく整形されていることを確認する:
@@ -250,22 +250,22 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づいて以下を出力する:
   - **必須フック**（`optional: false`） — **各必須フックについて `EXECUTE_COMMAND:` を必ず出力しなければならない**:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Hook**: {extension}
-    Executing: `/{command}`
+    **自動フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
   - **オプションフック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
 
 ## 完了レポート

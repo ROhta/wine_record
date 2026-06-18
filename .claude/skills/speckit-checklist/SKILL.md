@@ -54,24 +54,24 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
   - **任意フック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意の事前フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
   - **必須フック**（`optional: false`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自動の事前フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
 
-    Wait for the result of the hook command before proceeding to the Execution Steps.
+    実行手順に進む前にフックコマンドの結果を待つこと。
     ```
 - フックが1つも登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙って省略する
 
@@ -151,15 +151,15 @@ $ARGUMENTS
    - **カバレッジ**: すべてのシナリオ／エッジケースが扱われているか？
 
    **カテゴリ構造** - 項目を要件品質の次元でグループ化する:
-   - **Requirement Completeness**（必要な要件がすべて文書化されているか？）
-   - **Requirement Clarity**（要件が具体的で曖昧さがないか？）
-   - **Requirement Consistency**（要件が衝突なく整合しているか？）
-   - **Acceptance Criteria Quality**（成功基準が測定可能か？）
-   - **Scenario Coverage**（すべてのフロー／ケースが扱われているか？）
-   - **Edge Case Coverage**（境界条件が定義されているか？）
-   - **Non-Functional Requirements**（パフォーマンス、セキュリティ、アクセシビリティなど — 指定されているか？）
-   - **Dependencies & Assumptions**（文書化され検証されているか？）
-   - **Ambiguities & Conflicts**（何の明確化が必要か？）
+   - **要件の完全性**（必要な要件がすべて文書化されているか？）
+   - **要件の明確さ**（要件が具体的で曖昧さがないか？）
+   - **要件の一貫性**（要件が衝突なく整合しているか？）
+   - **受け入れ基準の品質**（成功基準が測定可能か？）
+   - **シナリオのカバレッジ**（すべてのフロー／ケースが扱われているか？）
+   - **エッジケースのカバレッジ**（境界条件が定義されているか？）
+   - **非機能要件**（パフォーマンス、セキュリティ、アクセシビリティなど — 指定されているか？）
+   - **依存関係と前提**（文書化され検証されているか？）
+   - **曖昧さと衝突**（何の明確化が必要か？）
 
    **チェックリスト項目の書き方 - 「英語のためのユニットテスト」**:
 
@@ -354,21 +354,21 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づき以下を出力する:
   - **任意フック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
   - **必須フック**（`optional: false`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Hook**: {extension}
-    Executing: `/{command}`
+    **自動フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
 - フックが1つも登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙って省略する

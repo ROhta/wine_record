@@ -33,24 +33,24 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づいて以下を出力する:
   - **オプションフック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Pre-Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意の事前フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
   - **必須フック**（`optional: false`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Pre-Hook**: {extension}
-    Executing: `/{command}`
+    **自動の事前フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
     
-    Wait for the result of the hook command before proceeding to the Outline.
+    概要に進む前にフックコマンドの結果を待つこと。
     ```
 - フックが何も登録されていない、または `.specify/extensions.yml` が存在しない場合は、黙ってスキップする
 
@@ -67,7 +67,7 @@ $ARGUMENTS
    - ステータステーブルを作成する:
 
      ```text
-     | Checklist | Total | Completed | Incomplete | Status |
+     | チェックリスト | 合計 | 完了 | 未完了 | ステータス |
      |-----------|-------|-----------|------------|--------|
      | ux.md     | 12    | 12        | 0          | ✓ PASS |
      | test.md   | 8     | 5         | 3          | ✗ FAIL |
@@ -80,7 +80,7 @@ $ARGUMENTS
 
    - **いずれかのチェックリストが未完了の場合**:
      - 未完了項目数とともにテーブルを表示する
-     - **停止**して尋ねる: "Some checklists are incomplete. Do you want to proceed with implementation anyway? (yes/no)"
+     - **停止**して尋ねる: "一部のチェックリストが未完了です。それでも実装を続行しますか？ (yes/no)"
      - 続行する前にユーザーの応答を待つ
      - ユーザーが "no" または "wait" または "stop" と言った場合、実行を停止する
      - ユーザーが "yes" または "proceed" または "continue" と言った場合、ステップ 3 に進む
@@ -194,22 +194,22 @@ $ARGUMENTS
 - 実行可能な各フックについて、その `optional` フラグに基づいて以下を出力する:
   - **必須フック**（`optional: false`） — **各必須フックについて `EXECUTE_COMMAND:` を必ず出力しなければならない**:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Automatic Hook**: {extension}
-    Executing: `/{command}`
+    **自動フック**: {extension}
+    実行中: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
   - **オプションフック**（`optional: true`）:
     ```
-    ## Extension Hooks
+    ## 拡張フック
 
-    **Optional Hook**: {extension}
-    Command: `/{command}`
-    Description: {description}
+    **任意フック**: {extension}
+    コマンド: `/{command}`
+    説明: {description}
 
-    Prompt: {prompt}
-    To execute: `/{command}`
+    プロンプト: {prompt}
+    実行するには: `/{command}`
     ```
 
 ## 完了レポート

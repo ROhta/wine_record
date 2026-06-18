@@ -46,10 +46,10 @@ try:
     import yaml
 except ImportError:
     print(
-        "agent-context: PyYAML is required to parse extension config but is not available "
-        "in the current Python environment.\n"
-        "  To resolve: pip install pyyaml (or install it into the environment used by python3).\n"
-        "  Context file will not be updated until PyYAML is importable.",
+        "agent-context: 拡張の設定を解析するには PyYAML が必要ですが、"
+        "現在の Python 環境では利用できません。\n"
+        "  解決方法: pip install pyyaml （または python3 が使用する環境にインストールしてください）。\n"
+        "  PyYAML がインポート可能になるまで、コンテキストファイルは更新されません。",
         file=sys.stderr,
     )
     sys.exit(2)
@@ -58,7 +58,7 @@ try:
         data = yaml.safe_load(fh)
 except Exception as exc:
     print(
-        f"agent-context: unable to parse {sys.argv[1]} ({exc}); cannot update context.",
+        f"agent-context: {sys.argv[1]} を解析できません（{exc}）。コンテキストを更新できません。",
         file=sys.stderr,
     )
     sys.exit(2)

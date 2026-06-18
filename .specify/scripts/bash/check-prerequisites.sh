@@ -101,12 +101,12 @@ if $PATHS_ONLY; then
                 "$(json_escape "$REPO_ROOT")" "$(json_escape "$CURRENT_BRANCH")" "$(json_escape "$FEATURE_DIR")" "$(json_escape "$FEATURE_SPEC")" "$(json_escape "$IMPL_PLAN")" "$(json_escape "$TASKS")"
         fi
     else
-        echo "REPO_ROOT: $REPO_ROOT"
-        echo "BRANCH: $CURRENT_BRANCH"
-        echo "FEATURE_DIR: $FEATURE_DIR"
-        echo "FEATURE_SPEC: $FEATURE_SPEC"
-        echo "IMPL_PLAN: $IMPL_PLAN"
-        echo "TASKS: $TASKS"
+        echo "リポジトリルート: $REPO_ROOT"
+        echo "ブランチ: $CURRENT_BRANCH"
+        echo "フィーチャーディレクトリ: $FEATURE_DIR"
+        echo "フィーチャー仕様: $FEATURE_SPEC"
+        echo "実装プラン: $IMPL_PLAN"
+        echo "タスク: $TASKS"
     fi
     exit 0
 fi
@@ -174,8 +174,8 @@ if $JSON_MODE; then
     fi
 else
     # テキスト出力
-    echo "FEATURE_DIR:$FEATURE_DIR"
-    echo "AVAILABLE_DOCS:"
+    echo "フィーチャーディレクトリ:$FEATURE_DIR"
+    echo "利用可能なドキュメント:"
     
     # 対象となる各ドキュメントの状態を表示する
     check_file "$RESEARCH" "research.md"

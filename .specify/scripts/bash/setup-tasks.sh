@@ -81,9 +81,9 @@ if $JSON_MODE; then
             "$(json_escape "$FEATURE_DIR")" "$json_docs" "$(json_escape "${TASKS_TEMPLATE:-}")"
     fi
 else
-    echo "FEATURE_DIR: $FEATURE_DIR"
-    echo "TASKS_TEMPLATE: ${TASKS_TEMPLATE:-not found}"
-    echo "AVAILABLE_DOCS:"
+    echo "フィーチャーディレクトリ: $FEATURE_DIR"
+    echo "タスクテンプレート: ${TASKS_TEMPLATE:-見つかりません}"
+    echo "利用可能なドキュメント:"
     check_file "$RESEARCH" "research.md"
     check_file "$DATA_MODEL" "data-model.md"
     check_dir "$CONTRACTS_DIR" "contracts/"

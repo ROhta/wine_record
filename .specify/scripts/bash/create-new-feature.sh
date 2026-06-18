@@ -289,9 +289,9 @@ if $JSON_MODE; then
         fi
     fi
 else
-    echo "BRANCH_NAME: $BRANCH_NAME"
-    echo "SPEC_FILE: $SPEC_FILE"
-    echo "FEATURE_NUM: $FEATURE_NUM"
+    echo "ブランチ名: $BRANCH_NAME"
+    echo "仕様ファイル: $SPEC_FILE"
+    echo "フィーチャー番号: $FEATURE_NUM"
     if [ "$DRY_RUN" != true ]; then
         printf '# シェルで永続化するには: export SPECIFY_FEATURE=%q\n' "$BRANCH_NAME"
         printf '#                         export SPECIFY_FEATURE_DIRECTORY=%q\n' "$FEATURE_DIR"
