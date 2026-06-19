@@ -1,13 +1,14 @@
 import {describe, it, expect} from "vitest"
-import {Client} from "@modelcontextprotocol/sdk/client/index.js"
-import {InMemoryTransport} from "@modelcontextprotocol/sdk/inMemory.js"
-import {createMcpServer, type McpServerDeps} from "../../src/server.js"
 import {createRecordWine} from "../../src/tools/recordWine.js"
 import {createPreviewRecord} from "../../src/tools/previewRecord.js"
 import {createGetJsaTaxonomy} from "../../src/tools/getJsaTaxonomy.js"
-import type {VectorStore} from "../../src/storage/vectorStore.js"
+import type {McpServerDeps} from "../../src/server.js"
 import type {ExpressionTaxonomy} from "../../src/domain/taxonomy.js"
+import {connectClient} from "../fixtures/mcp.js"
+import {noStore} from "../fixtures/vectorStore.js"
+import {allowedImageBaseUrl} from "../fixtures/deps.js"
 
+// 表示テスト用のリッチなタクソノミー（複数 terms・selectCount=2 を含む。標準フィクスチャとは別物）。
 const tax: ExpressionTaxonomy = {
 	version: "2020.01.11",
 	white: {
@@ -22,32 +23,13 @@ const tax: ExpressionTaxonomy = {
 	},
 }
 
-const noStore: VectorStore = {
-	upsert: () => Promise.resolve(),
-	fetch: () => Promise.resolve([]),
-	query: () => Promise.resolve([]),
-}
-
 function makeDeps(): McpServerDeps {
-	const common = {taxonomy: tax, allowedImageBaseUrl: "https://img.example.com"}
+	const common = {taxonomy: tax, allowedImageBaseUrl}
 	return {
-		recordWine: createRecordWine({
-			...common,
-			store: noStore,
-			generateId: () => "w",
-			now: () => "t",
-		}),
+		recordWine: createRecordWine({...common, store: noStore, generateId: () => "w", now: () => "t"}),
 		previewRecord: createPreviewRecord(common),
 		getJsaTaxonomy: createGetJsaTaxonomy({taxonomy: tax}),
 	}
-}
-
-async function connectClient(deps: McpServerDeps): Promise<Client> {
-	const server = createMcpServer(deps)
-	const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
-	const client = new Client({name: "contract-test", version: "0.0.0"})
-	await Promise.all([client.connect(clientTransport), server.connect(serverTransport)])
-	return client
 }
 
 describe("get_jsa_taxonomy 契約（MCP プロトコル経由）", () => {
