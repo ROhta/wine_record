@@ -26,6 +26,18 @@ describe('loadConfig', () => {
     expect(loadConfig(rest).port).toBe(3000);
   });
 
+  it('画像ストレージ変数を省略しても Upstash + PORT だけで load できる（画像=US3 は未着手・任意）', () => {
+    const cfg = loadConfig({
+      UPSTASH_VECTOR_REST_URL: 'https://example.upstash.io',
+      UPSTASH_VECTOR_REST_TOKEN: 'tok',
+    });
+    expect(cfg.upstash.url).toBe('https://example.upstash.io');
+    expect(cfg.port).toBe(3000);
+    // 未設定時は publicBaseUrl='' = どの imageUrl も受理しない（fail-closed）。
+    expect(cfg.r2.publicBaseUrl).toBe('');
+    expect(cfg.r2.bucket).toBeNull();
+  });
+
   it('必須キー欠落で throw し、メッセージに欠落フィールド名を含む', () => {
     const { UPSTASH_VECTOR_REST_TOKEN: _t, ...rest } = validEnv;
     expect(() => loadConfig(rest)).toThrowError(/UPSTASH_VECTOR_REST_TOKEN/);

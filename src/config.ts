@@ -7,22 +7,28 @@ import { z } from 'zod';
 const EnvSchema = z.object({
   UPSTASH_VECTOR_REST_URL: z.string().min(1),
   UPSTASH_VECTOR_REST_TOKEN: z.string().min(1),
-  R2_ACCOUNT_ID: z.string().min(1),
-  R2_ACCESS_KEY_ID: z.string().min(1),
-  R2_SECRET_ACCESS_KEY: z.string().min(1),
-  R2_BUCKET: z.string().min(1),
-  R2_PUBLIC_BASE_URL: z.string().min(1),
+  // 画像ストレージは US3（ラベル画像永続化）用。US3 は widget 対応待ちで未着手のため、
+  // US1+US2 の稼働には不要 → 任意。R3 で Vercel Blob を採用予定（現状の R2_* 名は US3 実装時に見直す）。
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_BUCKET: z.string().optional(),
+  R2_PUBLIC_BASE_URL: z.string().optional(),
   PORT: z.coerce.number().int().positive().default(3000),
 });
 
 /** アプリの型付き設定。 */
 export interface Config {
   upstash: { url: string; token: string };
+  /**
+   * 画像ストレージ（US3 用・任意）。US3 未着手のため未設定でも起動する。
+   * `publicBaseUrl` は未設定なら `''`（= record_wine がどの imageUrl も受理しない fail-closed）。
+   */
   r2: {
-    accountId: string;
-    accessKeyId: string;
-    secretAccessKey: string;
-    bucket: string;
+    accountId: string | null;
+    accessKeyId: string | null;
+    secretAccessKey: string | null;
+    bucket: string | null;
     publicBaseUrl: string;
   };
   /** MCP サーバー（Streamable HTTP）が listen するポート。 */
@@ -45,11 +51,11 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
   return {
     upstash: { url: e.UPSTASH_VECTOR_REST_URL, token: e.UPSTASH_VECTOR_REST_TOKEN },
     r2: {
-      accountId: e.R2_ACCOUNT_ID,
-      accessKeyId: e.R2_ACCESS_KEY_ID,
-      secretAccessKey: e.R2_SECRET_ACCESS_KEY,
-      bucket: e.R2_BUCKET,
-      publicBaseUrl: e.R2_PUBLIC_BASE_URL,
+      accountId: e.R2_ACCOUNT_ID ?? null,
+      accessKeyId: e.R2_ACCESS_KEY_ID ?? null,
+      secretAccessKey: e.R2_SECRET_ACCESS_KEY ?? null,
+      bucket: e.R2_BUCKET ?? null,
+      publicBaseUrl: e.R2_PUBLIC_BASE_URL ?? '',
     },
     port: e.PORT,
   };

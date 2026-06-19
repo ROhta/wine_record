@@ -141,11 +141,11 @@ description: "record-wine 機能の実装タスク一覧"
 
 ## フェーズ7: 仕上げと横断的関心事
 
-- [ ] T040 [P] README と `.env.example` を最新化 `README.md`
-- [ ] T041 [P] セキュリティ・ハードニング（Helmet 設定確認・署名URL短命・エラーに秘匿情報を出さない）
-- [ ] T042 quickstart.md の検証シナリオを手動実行（Claude モバイルで端から端）
-- [ ] T043 Codex モバイルでの画像受け渡し・アップロード挙動を検証し差分を記録（R5 リスク、T012/T013 の本番再確認）
-- [ ] T044 [P] エッジケースの追加ユニットテスト `tests/unit/`（部分抽出 / NV / 画像欠落）
+- [X] T040 [P] README と `.env.example` を最新化（README.md を実体化・bge-m3 / 画像任意 / US3・widget defer を反映）`README.md`
+- [X] T041 [P] セキュリティ・ハードニング（Helmet 既定適用を回帰テストで固定・エラーに秘匿情報を出さない・画像ストレージ設定を任意化して未使用シークレットを要求しない。署名URL短命は US3 で扱う）
+- [ ] T042 （**defer: 実機/デプロイ依存**）quickstart.md の検証シナリオを手動実行（Claude モバイルで端から端）
+- [ ] T043 （**defer: 実機/widget 依存**）Codex モバイルでの画像受け渡し・アップロード挙動を検証し差分を記録（R5 リスク、T012/T013 の本番再確認）
+- [X] T044 [P] エッジケースの追加ユニットテスト `tests/unit/edgeCases.test.ts`（部分抽出 / NV / 画像欠落）
 
 ---
 
