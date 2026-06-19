@@ -2,10 +2,11 @@
  * [SPIKE] T014: Upstash Vector 無料枠の検証（捨てコード）
  *
  * 殺したい未知数:
- *   hosted 埋め込みモデル `openai/text-embedding-3-small` のインデックスを Upstash で作成し、
- *   namespace 付きの data ベース upsert / query / fetch が（できれば無料枠で）成立するか。
+ *   hosted 埋め込みモデル `BAAI/bge-m3` のインデックスを Upstash（Free プラン）で作成し、
+ *   namespace 付きの data ベース upsert / query / fetch が無料枠で成立するか。
  *   （成立しなければ vectorStore.ts のサーバー側埋め込み前提が崩れ、設計変更が要る）
- *   ※ 当初は `BAAI/bge-m3` 前提だったが、コンソールで提供終了のため変更。research.md R1 参照。
+ *   ※ 一時 openai/text-embedding-3-small で検証したが、Vercel の Upstash 統合で bge-m3 を
+ *     選べると判明し当初設計へ復帰。research.md R1 参照。bge-m3 は dense 1024 次元。
  *
  * 実行方法（spikes/upstash-index/README.md 参照）:
  *   node --env-file=.env --import tsx spikes/upstash-index/run.ts
@@ -23,7 +24,7 @@ const token = process.env.UPSTASH_VECTOR_REST_TOKEN;
 if (!url || !token) {
   console.error(
     '✗ 環境変数が未設定です: UPSTASH_VECTOR_REST_URL / UPSTASH_VECTOR_REST_TOKEN\n' +
-      '  README.md の手順で Upstash Vector（埋め込みモデル openai/text-embedding-3-small）の\n' +
+      '  README.md の手順で Upstash Vector（埋め込みモデル BGE_M3 / dense）の\n' +
       '  インデックスを作成し、REST URL / Token を渡してください。',
   );
   process.exit(1);
@@ -69,7 +70,7 @@ async function main(): Promise<void> {
   const index = new Index({ url, token });
   const checks: { label: string; ok: boolean; detail: string }[] = [];
 
-  // 1) info(): hosted-embedding インデックスであることと次元を確認（text-embedding-3-small = 1536 次元）
+  // 1) info(): hosted-embedding インデックスであることと次元を確認（bge-m3 = 1024 次元）
   let dimension = 0;
   try {
     const info = await index.info();
@@ -78,12 +79,12 @@ async function main(): Promise<void> {
     checks.push({
       label: 'info(): 埋め込みインデックスの次元',
       ok,
-      detail: `dimension=${dimension} (text-embedding-3-small=1536) / similarity=${info.similarityFunction}`,
+      detail: `dimension=${dimension} (bge-m3=1024) / similarity=${info.similarityFunction}`,
     });
     if (!ok) {
       console.error(
         '✗ dimension=0。埋め込みモデル未設定（Custom）のインデックスの可能性があります。\n' +
-          '  Upstash でインデックス作成時に「Embedding Model = openai/text-embedding-3-small」を選んでください。',
+          '  Upstash でインデックス作成時に「Embedding Model = BGE_M3（dense）」を選んでください。',
       );
     }
   } catch (e) {

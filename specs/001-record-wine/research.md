@@ -5,23 +5,26 @@
 
 ## R1. 埋め込みモデル
 
-- **制約（2026-06-19 / T014 スパイクで判明）**: 当初採用した `BAAI/bge-m3` は Upstash の
-  ドキュメントには残っているが、コンソールのインデックス作成画面では hosted モデルとして
-  提供されていない（全リージョンで `Custom` と `openai/text-embedding-3-small` の二択）。
-  選べないため設計を見直した。
-- **決定**: hosted `openai/text-embedding-3-small` を使う（テキストを `data` で渡し
-  サーバー側で自動ベクトル化）。`vectorStore.ts` は `data` ベースのままで**コード変更不要**。
-  次元は 1536（bge-m3 は 1024 だった）。多言語で日本語に対応。
-- **根拠**: 「サーバー側埋め込み（`data` 渡し）」という設計の核を維持でき、コード変更が最小。
-  個人規模（数千件・短文）では OpenAI 埋め込みコストは実質誤差。Upstash のベクトル保存自体は
-  無料枠のまま使える見込み。
-- **T014 スパイク結果（2026-06-19, PASS）**: `dimension=1536` / `COSINE`、4 namespace への
-  `data` ベース upsert・`fetch`（metadata 往復）・`query` が成立。日本語クエリ
-  「ブルゴーニュ 赤 チェリーの香り」で該当ワインが最上位（score≈0.83 > 0.71）と意味検索も正常。
-  サーバー側埋め込みの機能経路を確認済み。
-- **コスト/残る未確定**: 埋め込みは OpenAI 課金（~$0.02 / 1M トークン）。実課金額と無料枠の
-  容量/QPS 上限は運用で監視する（個人規模では実質誤差の見込み）。
+- **経緯（2026-06-19）**: 設計時の第一候補は多言語対応の hosted `BAAI/bge-m3`。一時は Upstash
+  コンソールのインデックス作成画面に当該モデルが出ず（全リージョンで `Custom` と
+  `openai/text-embedding-3-small` の二択）、回避策として openai モデルで T014 を検証し PASS した。
+  その後、**Vercel の Upstash Vector 統合（Install Integration）からは `BGE_M3` を hosted dense
+  モデルとして選択可能**と判明したため、当初設計どおり bge-m3 に戻した。
+- **決定**: hosted **`BAAI/bge-m3`**（dense・1024 次元・COSINE）を **Free プラン**で使う
+  （テキストを `data` で渡しサーバー側で自動ベクトル化）。`vectorStore.ts` は `data` ベースのまま
+  **コード変更不要**（次元が 1536→1024 に変わるが data 方式なので透過）。
+- **根拠**: (1) bge-m3 は多言語（日本語に強い）でワイン表現の意味検索に適する。(2) **privacy**:
+  埋め込みが Upstash 内で完結し、OpenAI を第三者処理者として経路に挟まない（「なるべく private に」
+  方針に合致）。(3) **コスト**: OpenAI のトークン課金が発生せず、Free プラン（1 index。本機能は
+  1 index + 4 namespace で充足）に収まる。(4) サーバー側埋め込みという設計の核を維持でき変更が最小。
+- **T014 スパイク結果（2026-06-19, PASS）**: 4 namespace の data ベース upsert・fetch（metadata
+  往復）・query がいずれも成立。日本語クエリ「ブルゴーニュ 赤 チェリーの香り」で該当ワインが最上位。
+  - 暫定 openai/text-embedding-3-small: `dimension=1536` / `COSINE`、score≈0.83 > 0.71。
+  - 採用 bge-m3（Free）: `dimension=1024` / `COSINE`、score≈0.87 > 0.75 で PASS（openai 版より分離も良好）。
+- **残る未確定**: Free プランの日次リクエスト/容量上限は運用で監視（個人規模では実質誤差の見込み）。
 - **代替案（不採用）**:
+  - openai/text-embedding-3-small: 動作するが OpenAI が経路に入り（privacy）トークン課金も発生する。
+    bge-m3 が選べる以上は優先しない。
   - Custom インデックス + クライアント側埋め込み（multilingual-e5 / bge-m3 をローカル実行）:
     完全無料・データを外に出さないが、`vectorStore` を `vector` ベースへ変更＋記録/検索フローに
     埋め込み処理＋依存追加が必要。個人 MVP では工数・運用負荷が見合わないと判断。

@@ -8,7 +8,7 @@
 - 環境変数（`.env`、リポジトリには含めない）:
   - `UPSTASH_VECTOR_REST_URL`, `UPSTASH_VECTOR_REST_TOKEN`
   - オブジェクトストレージ資格情報（R2 もしくは Vercel Blob）
-- Upstash Vector インデックスは埋め込みモデル `openai/text-embedding-3-small` で作成済み（research.md R1）
+- Upstash Vector インデックスは埋め込みモデル `BAAI/bge-m3`（dense・1024次元・Free）で作成済み（research.md R1）
 - `data/jsa-taxonomy.json` が用意済み（JSA 表現の構造化データ）
 
 ## セットアップ
