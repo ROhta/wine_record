@@ -26,11 +26,11 @@ description: "record-wine 機能の実装タスク一覧"
 
 ## フェーズ1: セットアップ（共有基盤）
 
-- [ ] T001 Node.js 24 / TypeScript プロジェクトを初期化（`package.json`, `tsconfig.json` は `@tsconfig/strictest` 継承）
-- [ ] T002 [P] Vitest を設定（`vitest.config.ts`、`npm test` スクリプト）
-- [ ] T003 [P] Lint / Format を設定（ESLint + Prettier、`any` 禁止ルール）
-- [ ] T004 [P] `src/`, `tests/{contract,integration,unit}`, `data/`, `src/widgets/` のディレクトリ構造を作成（plan.md の構造）
-- [ ] T005 [P] `.env.example` を作成し、`.gitignore` に `.env` を追加（Upstash / ストレージのキー欄）
+- [X] T001 Node.js 24 / TypeScript プロジェクトを初期化（`package.json`, `tsconfig.json` は `@tsconfig/strictest` 継承）
+- [X] T002 [P] Vitest を設定（`vitest.config.ts`、`npm test` スクリプト）
+- [X] T003 [P] Lint / Format を設定（ESLint + Prettier、`any` 禁止ルール）
+- [X] T004 [P] `src/`, `tests/{contract,integration,unit}`, `data/`, `src/widgets/` のディレクトリ構造を作成（plan.md の構造）
+- [X] T005 [P] `.env.example` を作成し、`.gitignore` に `.env` を追加（Upstash / ストレージのキー欄）
 
 ---
 
@@ -38,12 +38,12 @@ description: "record-wine 機能の実装タスク一覧"
 
 **⚠️ これらが完了するまでユーザーストーリー実装は開始できない**
 
-- [ ] T006 [P] 環境変数の読込・検証を実装 `src/config.ts`（必須キー欠落で起動失敗、値はログに出さない）
-- [ ] T007 [P] ドメイン型を定義 `src/domain/wineRecord.ts` / `src/domain/region.ts` / `src/domain/taxonomy.ts`（data-model.md 準拠）
-- [ ] T008 [P] Upstash Vector ラッパの骨組みを実装 `src/storage/vectorStore.ts`（`bge-m3` インデックス前提、namespace=overall/aroma/appearance/taste の upsert/fetch I/F）
-- [ ] T009 [P] MCP サーバー骨組みを実装 `src/server.ts`（Streamable HTTP、Helmet 系セキュアヘッダ既定適用、ツール登録の土台）
-- [ ] T010 **前提データ**: 提供される JSA 表現集 PDF を構造化し `data/jsa-taxonomy.json` を生成（外観/香り/味わい→ターム配列。`pdf` スキルで対応）
-- [ ] T011 [P] JSA タクソノミーのローダ/型検証を実装 `src/domain/taxonomy.ts`（`tests/fixtures` の小サンプルでテストし、T010 と並行可）
+- [X] T006 [P] 環境変数の読込・検証を実装 `src/config.ts`（必須キー欠落で起動失敗、値はログに出さない）
+- [X] T007 [P] ドメイン型を定義 `src/domain/wineRecord.ts` / `src/domain/region.ts` / `src/domain/taxonomy.ts`（data-model.md 準拠）
+- [X] T008 [P] Upstash Vector ラッパの骨組みを実装 `src/storage/vectorStore.ts`（`bge-m3` インデックス前提、namespace=overall/aroma/appearance/taste の upsert/fetch I/F）
+- [X] T009 [P] MCP サーバー骨組みを実装 `src/server.ts`（Streamable HTTP、Helmet 系セキュアヘッダ既定適用、ツール登録の土台）
+- [X] T010 **前提データ**: 提供される JSA 表現集 PDF を構造化し `data/jsa-taxonomy.json` を生成（外観/香り/味わい→ターム配列。`pdf` スキルで対応）
+- [X] T011 [P] JSA タクソノミーのローダ/型検証を実装 `src/domain/taxonomy.ts`（`tests/fixtures` の小サンプルでテストし、T010 と並行可）
 
 **チェックポイント**: 土台完成。
 
@@ -71,18 +71,18 @@ description: "record-wine 機能の実装タスク一覧"
 
 ### ユーザーストーリー1 のテスト（TDD: 先に書いて失敗させる）⚠️
 
-- [ ] T015 [P] [US1] `record_wine` の契約テスト `tests/contract/recordWine.test.ts`（contracts/mcp-tools.md の入出力・必須/任意・name 非空）
-- [ ] T016 [P] [US1] WineRecord バリデーションのユニットテスト `tests/unit/wineRecord.test.ts`（name 非空 / vintage number|"NV"|null / imageUrl ドメイン制約）
-- [ ] T017 [P] [US1] 記録フロー結合テスト `tests/integration/recordCore.test.ts`（承認で保存・未承認で非永続化＝SC-005）
+- [X] T015 [P] [US1] `record_wine` の契約テスト `tests/contract/recordWine.test.ts`（contracts/mcp-tools.md の入出力・必須/任意・name 非空）
+- [X] T016 [P] [US1] WineRecord バリデーションのユニットテスト `tests/unit/wineRecord.test.ts`（name 非空 / vintage number|"NV"|null / imageUrl ドメイン制約）
+- [X] T017 [P] [US1] 記録フロー結合テスト `tests/integration/recordCore.test.ts`（承認で保存・未承認で非永続化＝SC-005）
 
 ### ユーザーストーリー1 の実装
 
-- [ ] T018 [P] [US1] WineRecord のバリデーション/正規化を実装 `src/domain/wineRecord.ts`
-- [ ] T019 [P] [US1] RegionPath の構築/正規化を実装 `src/domain/region.ts`
-- [ ] T020 [US1] `vectorStore` の `overall` namespace への upsert を実装 `src/storage/vectorStore.ts`（T008 を具体化）
-- [ ] T021 [US1] `record_wine` ツールを実装 `src/tools/recordWine.ts`（入力検証→保存→`{wineId, recordedAt}`、明示承認前提）
+- [X] T018 [P] [US1] WineRecord のバリデーション/正規化を実装 `src/domain/wineRecord.ts`
+- [X] T019 [P] [US1] RegionPath の構築/正規化を実装 `src/domain/region.ts`
+- [X] T020 [US1] `vectorStore` の `overall` namespace への upsert を実装 `src/storage/vectorStore.ts`（T008 を具体化）
+- [X] T021 [US1] `record_wine` ツールを実装 `src/tools/recordWine.ts`（入力検証→保存→`{wineId, recordedAt}`、明示承認前提）
 - [ ] T022 [US1] 確認ウィジェット（最小）を実装 `src/widgets/confirmRecord/`（抽出値の事前入力・修正・承認。MCP Apps リソース。T012 の知見を反映）
-- [ ] T023 [US1] `record_wine` をサーバーに登録し結線 `src/server.ts`
+- [X] T023 [US1] `record_wine` をサーバーに登録し結線 `src/server.ts`
 
 **チェックポイント**: US1 が単体で動作・テスト可能（MVP）。
 
