@@ -4,6 +4,7 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { createMcpServer, type McpServerDeps } from '../../src/server.js';
 import { createRecordWine } from '../../src/tools/recordWine.js';
 import { createPreviewRecord } from '../../src/tools/previewRecord.js';
+import { createGetJsaTaxonomy } from '../../src/tools/getJsaTaxonomy.js';
 import type { VectorStore, Namespace, UpsertItem } from '../../src/storage/vectorStore.js';
 import type { ExpressionTaxonomy } from '../../src/domain/taxonomy.js';
 
@@ -39,7 +40,8 @@ function makeDeps(): { deps: McpServerDeps; upserts: { namespace: Namespace; ite
     now: () => '2026-06-18T00:00:00.000Z',
   });
   const previewRecord = createPreviewRecord(common);
-  return { deps: { recordWine, previewRecord }, upserts };
+  const getJsaTaxonomy = createGetJsaTaxonomy({ taxonomy: tax });
+  return { deps: { recordWine, previewRecord, getJsaTaxonomy }, upserts };
 }
 
 async function connectClient(deps: McpServerDeps): Promise<Client> {

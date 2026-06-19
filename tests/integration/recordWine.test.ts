@@ -59,9 +59,10 @@ describe('record_wine フロー', () => {
       expect(r.wineId).toBe('wine-123');
       expect(r.recordedAt).toBe('2026-06-18T00:00:00.000Z');
     }
-    expect(upserts).toHaveLength(1);
+    expect(upserts).toHaveLength(4); // overall + 観点別 appearance/aroma/taste
     expect(upserts[0]?.namespace).toBe('overall');
     expect(upserts[0]?.item.id).toBe('wine-123');
+    expect(upserts.map((u) => u.namespace)).toEqual(['overall', 'appearance', 'aroma', 'taste']);
   });
 
   it('不正な入力（name 欠落）→ 永続化しない（SC-005）', async () => {
