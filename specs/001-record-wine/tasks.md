@@ -56,7 +56,7 @@ description: "record-wine 機能の実装タスク一覧"
 
 - [ ] T012 [SPIKE] 画像アップロード経路の最小検証: 最小ウィジェットで写真選択 → `get_upload_url` 相当の署名付き PUT URL へ直接アップロード → 取得用 URL で再取得できることを **Claude モバイル**で確認 `spikes/image-upload/`
 - [X] T013 [SPIKE] vision OCR 経路の確認: ラベル画像が接続先 LLM の vision に渡り、文字情報を抽出できることを Claude モバイルで確認（抽出値→ツール入力に渡せる形か）`spikes/vision-ocr/`
-- [X] T014 [SPIKE] Upstash 無料枠の確認: hosted 埋め込み（`openai/text-embedding-3-small`。当初の `BAAI/bge-m3` はコンソール提供終了→research.md R1）でインデックスを作成し namespace 付き upsert/query/fetch が無料枠で可能かを確認 `spikes/upstash-index/`
+- [X] T014 [SPIKE] Upstash 無料枠の確認: hosted 埋め込み（`BAAI/bge-m3`・dense・Free。一時 openai で検証後、Vercel の Upstash 統合で bge-m3 に復帰→research.md R1）でインデックスを作成し namespace 付き upsert/query/fetch が無料枠で可能かを確認 `spikes/upstash-index/`
 
 **チェックポイント**: 画像パス・vision・無料枠インデックス形が確認できた。US1 実装に進める。
 （重大な制約が出たら plan.md / research.md を更新してから先へ。）
