@@ -17,7 +17,10 @@ const tax: ExpressionTaxonomy = {
   },
 };
 
-function makeFakeStore(): { store: VectorStore; upserts: { namespace: Namespace; item: UpsertItem }[] } {
+function makeFakeStore(): {
+  store: VectorStore;
+  upserts: { namespace: Namespace; item: UpsertItem }[];
+} {
   const upserts: { namespace: Namespace; item: UpsertItem }[] = [];
   const store: VectorStore = {
     upsert: (namespace, item) => {

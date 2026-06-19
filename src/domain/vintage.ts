@@ -25,7 +25,9 @@ export function normalizeVintage(raw: unknown): Vintage {
 
   if (typeof raw === 'number') {
     if (isValidVintageYear(raw)) return raw;
-    throw new Error(`不正なヴィンテージ年です: ${String(raw)}（${String(MIN_VINTAGE_YEAR)}〜翌年）`);
+    throw new Error(
+      `不正なヴィンテージ年です: ${String(raw)}（${String(MIN_VINTAGE_YEAR)}〜翌年）`,
+    );
   }
 
   if (typeof raw === 'string') {

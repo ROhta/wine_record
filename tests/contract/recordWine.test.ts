@@ -43,7 +43,10 @@ function makeServerDeps(): {
     generateId: () => 'wine-123',
     now: () => '2026-06-18T00:00:00.000Z',
   });
-  const previewRecord = createPreviewRecord({ taxonomy: tax, allowedImageBaseUrl: 'https://img.example.com' });
+  const previewRecord = createPreviewRecord({
+    taxonomy: tax,
+    allowedImageBaseUrl: 'https://img.example.com',
+  });
   const getJsaTaxonomy = createGetJsaTaxonomy({ taxonomy: tax });
   return { deps: { recordWine, previewRecord, getJsaTaxonomy }, upserts };
 }

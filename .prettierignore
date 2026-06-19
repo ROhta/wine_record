@@ -3,6 +3,7 @@ node_modules/
 coverage/
 .specify/
 .claude/
+.remember/
 specs/
 docs/
 spikes/

@@ -28,7 +28,12 @@ describe('エッジケース（部分抽出 / NV / 画像欠落）', () => {
     expect(r.ok).toBe(true);
     if (r.ok) {
       expect(r.value.producer).toBeNull();
-      expect(r.value.region).toEqual({ country: null, region: null, subregion: null, commune: null });
+      expect(r.value.region).toEqual({
+        country: null,
+        region: null,
+        subregion: null,
+        commune: null,
+      });
       expect(r.value.vintage).toBeNull();
       expect(r.value.importer).toBeNull();
       expect(r.value.store).toBeNull();
@@ -40,7 +45,11 @@ describe('エッジケース（部分抽出 / NV / 画像欠落）', () => {
   });
 
   it('部分抽出: 産地が国だけ判明 → 国のみ埋まり残りの階層は null', () => {
-    const r = validateRecordInput({ name: 'W', color: 'white', region: { country: '日本' } }, tax, BASE);
+    const r = validateRecordInput(
+      { name: 'W', color: 'white', region: { country: '日本' } },
+      tax,
+      BASE,
+    );
     expect(r.ok).toBe(true);
     if (r.ok) {
       expect(r.value.region.country).toBe('日本');

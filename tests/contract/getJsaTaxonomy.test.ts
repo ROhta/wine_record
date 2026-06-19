@@ -31,7 +31,12 @@ const noStore: VectorStore = {
 function makeDeps(): McpServerDeps {
   const common = { taxonomy: tax, allowedImageBaseUrl: 'https://img.example.com' };
   return {
-    recordWine: createRecordWine({ ...common, store: noStore, generateId: () => 'w', now: () => 't' }),
+    recordWine: createRecordWine({
+      ...common,
+      store: noStore,
+      generateId: () => 'w',
+      now: () => 't',
+    }),
     previewRecord: createPreviewRecord(common),
     getJsaTaxonomy: createGetJsaTaxonomy({ taxonomy: tax }),
   };

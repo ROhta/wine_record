@@ -1,5 +1,9 @@
 import type { ExpressionTaxonomy } from '../domain/taxonomy.js';
-import { validateRecordInput, type FieldError, type ValidatedRecord } from '../domain/recordInput.js';
+import {
+  validateRecordInput,
+  type FieldError,
+  type ValidatedRecord,
+} from '../domain/recordInput.js';
 
 /** preview_record の依存。検証・正規化に必要なものだけ（保存しないので store/ID は不要）。 */
 export interface PreviewRecordDeps {

@@ -22,7 +22,10 @@ const tax: ExpressionTaxonomy = {
   },
 };
 
-function makeDeps(): { deps: McpServerDeps; upserts: { namespace: Namespace; item: UpsertItem }[] } {
+function makeDeps(): {
+  deps: McpServerDeps;
+  upserts: { namespace: Namespace; item: UpsertItem }[];
+} {
   const upserts: { namespace: Namespace; item: UpsertItem }[] = [];
   const store: VectorStore = {
     upsert: (namespace, item) => {
@@ -65,7 +68,12 @@ describe('preview_record 契約', () => {
     const client = await connectClient(deps);
     const res = await client.callTool({
       name: 'preview_record',
-      arguments: { name: 'シャブリ', color: 'white', vintage: 2020, region: { country: 'フランス' } },
+      arguments: {
+        name: 'シャブリ',
+        color: 'white',
+        vintage: 2020,
+        region: { country: 'フランス' },
+      },
     });
     expect(res.isError).toBeFalsy();
     const sc = res.structuredContent as {
