@@ -7,7 +7,14 @@ type AspectNamespace = Exclude<Namespace, 'overall'>;
 /** `overall` namespace 用の結合テキスト（名前+生産者+産地+全表現）。埋め込みモデルでベクトル化される。 */
 export function buildOverallText(r: WineRecord): string {
   const regionParts = [r.region.country, r.region.region, r.region.subregion, r.region.commune];
-  const parts = [r.name, r.producer, ...regionParts, ...r.appearanceTerms, ...r.aromaTerms, ...r.tasteTerms];
+  const parts = [
+    r.name,
+    r.producer,
+    ...regionParts,
+    ...r.appearanceTerms,
+    ...r.aromaTerms,
+    ...r.tasteTerms,
+  ];
   return parts.filter((x): x is string => typeof x === 'string' && x.trim() !== '').join(' ');
 }
 
@@ -39,7 +46,10 @@ export function buildOverallUpsert(r: WineRecord): UpsertItem {
   };
 }
 
-const ASPECTS: { namespace: AspectNamespace; field: 'appearanceTerms' | 'aromaTerms' | 'tasteTerms' }[] = [
+const ASPECTS: {
+  namespace: AspectNamespace;
+  field: 'appearanceTerms' | 'aromaTerms' | 'tasteTerms';
+}[] = [
   { namespace: 'appearance', field: 'appearanceTerms' },
   { namespace: 'aroma', field: 'aromaTerms' },
   { namespace: 'taste', field: 'tasteTerms' },
@@ -51,12 +61,17 @@ const ASPECTS: { namespace: AspectNamespace; field: 'appearanceTerms' | 'aromaTe
  * `fetch(ids)` でハイドレートする前提・原則 IV）。data は選択タームの結合テキスト。
  * 表現が空のカテゴリはスキップする（空テキストの埋め込みを避ける）。
  */
-export function buildAspectUpserts(r: WineRecord): { namespace: AspectNamespace; item: UpsertItem }[] {
+export function buildAspectUpserts(
+  r: WineRecord,
+): { namespace: AspectNamespace; item: UpsertItem }[] {
   const items: { namespace: AspectNamespace; item: UpsertItem }[] = [];
   for (const { namespace, field } of ASPECTS) {
     const terms = r[field];
     if (terms.length === 0) continue;
-    items.push({ namespace, item: { id: r.wineId, data: terms.join(' '), metadata: { wineId: r.wineId } } });
+    items.push({
+      namespace,
+      item: { id: r.wineId, data: terms.join(' '), metadata: { wineId: r.wineId } },
+    });
   }
   return items;
 }

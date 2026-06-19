@@ -34,14 +34,24 @@ describe('表現タグの語彙内検証（US2 / FR-005）', () => {
   });
 
   it('別 color の語彙（赤用「赤の香り」）は white では弾く（color 横断の拒否）', () => {
-    const r = validateRecordInput({ name: 'W', color: 'white', aromaTerms: ['赤の香り'] }, tax, BASE);
+    const r = validateRecordInput(
+      { name: 'W', color: 'white', aromaTerms: ['赤の香り'] },
+      tax,
+      BASE,
+    );
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.errors.some((e) => e.field === 'aromaTerms')).toBe(true);
   });
 
   it('複数カテゴリの語彙内表現をまとめて受理する', () => {
     const r = validateRecordInput(
-      { name: 'R', color: 'red', appearanceTerms: ['澄んだ'], aromaTerms: ['赤の香り'], tasteTerms: ['緻密'] },
+      {
+        name: 'R',
+        color: 'red',
+        appearanceTerms: ['澄んだ'],
+        aromaTerms: ['赤の香り'],
+        tasteTerms: ['緻密'],
+      },
       tax,
       BASE,
     );

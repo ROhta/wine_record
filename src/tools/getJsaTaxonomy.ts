@@ -33,7 +33,9 @@ function parseColor(raw: unknown): WineColor | null {
   return raw === 'white' || raw === 'red' ? raw : null;
 }
 
-function parseCategory(raw: unknown): { ok: true; value: ExpressionCategory | null } | { ok: false } {
+function parseCategory(
+  raw: unknown,
+): { ok: true; value: ExpressionCategory | null } | { ok: false } {
   if (raw === undefined || raw === null) return { ok: true, value: null };
   if (raw === 'appearance' || raw === 'aroma' || raw === 'taste') return { ok: true, value: raw };
   return { ok: false };
@@ -46,18 +48,26 @@ function parseCategory(raw: unknown): { ok: true; value: ExpressionCategory | nu
  */
 export function createGetJsaTaxonomy(deps: GetJsaTaxonomyDeps) {
   return function getJsaTaxonomy(input: unknown): GetJsaTaxonomyResult {
-    const obj = (typeof input === 'object' && input !== null ? input : {}) as Record<string, unknown>;
+    const obj = (typeof input === 'object' && input !== null ? input : {}) as Record<
+      string,
+      unknown
+    >;
 
     const color = parseColor(obj['color']);
     if (color === null) {
-      return { ok: false, errors: [{ field: 'color', message: 'color は "white" または "red" が必須です' }] };
+      return {
+        ok: false,
+        errors: [{ field: 'color', message: 'color は "white" または "red" が必須です' }],
+      };
     }
 
     const category = parseCategory(obj['category']);
     if (!category.ok) {
       return {
         ok: false,
-        errors: [{ field: 'category', message: 'category は appearance / aroma / taste のいずれかです' }],
+        errors: [
+          { field: 'category', message: 'category は appearance / aroma / taste のいずれかです' },
+        ],
       };
     }
 

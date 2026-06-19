@@ -156,7 +156,10 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
         'ユーザーはこの語彙からのみ表現を選ぶ（record_wine は語彙外を拒否する）。',
       inputSchema: {
         color: z.string().optional().describe('"white" または "red"（必須）'),
-        category: z.string().optional().describe('appearance / aroma / taste（任意。未指定は全カテゴリ）'),
+        category: z
+          .string()
+          .optional()
+          .describe('appearance / aroma / taste（任意。未指定は全カテゴリ）'),
       },
     },
     async (args): Promise<CallToolResult> => {
@@ -176,7 +179,8 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
         const groups = v[c];
         if (groups === undefined) continue;
         lines.push(`\n【${categoryLabels[c]}】`);
-        for (const g of groups) lines.push(`- ${g.name}（目安 ${g.selectCount} 個）: ${g.terms.join(' / ')}`);
+        for (const g of groups)
+          lines.push(`- ${g.name}（目安 ${g.selectCount} 個）: ${g.terms.join(' / ')}`);
       }
       return { content: [{ type: 'text', text: lines.join('\n') }], structuredContent: { ...v } };
     },

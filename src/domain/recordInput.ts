@@ -29,11 +29,12 @@ export type ValidationResult =
   | { ok: true; value: ValidatedRecord }
   | { ok: false; errors: FieldError[] };
 
-const CATEGORY_FIELD: Record<ExpressionCategory, 'appearanceTerms' | 'aromaTerms' | 'tasteTerms'> = {
-  appearance: 'appearanceTerms',
-  aroma: 'aromaTerms',
-  taste: 'tasteTerms',
-};
+const CATEGORY_FIELD: Record<ExpressionCategory, 'appearanceTerms' | 'aromaTerms' | 'tasteTerms'> =
+  {
+    appearance: 'appearanceTerms',
+    aroma: 'aromaTerms',
+    taste: 'tasteTerms',
+  };
 
 /** ある色・カテゴリで許可される全用語の集合（サブカテゴリ横断）。 */
 function collectAllowedTerms(
@@ -94,13 +95,17 @@ export function validateRecordInput(
 
   const colorRaw = obj['color'];
   const color: WineColor | null = colorRaw === 'white' || colorRaw === 'red' ? colorRaw : null;
-  if (color === null) errors.push({ field: 'color', message: 'color は "white" または "red" が必須です' });
+  if (color === null)
+    errors.push({ field: 'color', message: 'color は "white" または "red" が必須です' });
 
   let vintage: Vintage = null;
   try {
     vintage = normalizeVintage(obj['vintage']);
   } catch (e) {
-    errors.push({ field: 'vintage', message: e instanceof Error ? e.message : '不正なヴィンテージです' });
+    errors.push({
+      field: 'vintage',
+      message: e instanceof Error ? e.message : '不正なヴィンテージです',
+    });
   }
 
   const terms: Record<ExpressionCategory, string[]> = { appearance: [], aroma: [], taste: [] };
@@ -123,7 +128,10 @@ export function validateRecordInput(
     if (typeof imgRaw === 'string' && isAllowedImageUrl(imgRaw, allowedImageBaseUrl)) {
       imageUrl = imgRaw;
     } else {
-      errors.push({ field: 'imageUrl', message: '許可された画像ストレージの https URL のみ指定できます' });
+      errors.push({
+        field: 'imageUrl',
+        message: '許可された画像ストレージの https URL のみ指定できます',
+      });
     }
   }
 
