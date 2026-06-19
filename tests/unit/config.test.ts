@@ -22,8 +22,8 @@ describe("loadConfig", () => {
 	})
 
 	it("PORT 未指定なら 3000 を既定にする", () => {
-		const {PORT: _PORT, ...rest} = validEnv
-		expect(loadConfig(rest).port).toBe(3000)
+		const env: Record<string, string | undefined> = {...validEnv, PORT: undefined}
+		expect(loadConfig(env).port).toBe(3000)
 	})
 
 	it("画像ストレージ変数を省略しても Upstash + PORT だけで load できる（画像=US3 は未着手・任意）", () => {
@@ -39,8 +39,8 @@ describe("loadConfig", () => {
 	})
 
 	it("必須キー欠落で throw し、メッセージに欠落フィールド名を含む", () => {
-		const {UPSTASH_VECTOR_REST_TOKEN: _t, ...rest} = validEnv
-		expect(() => loadConfig(rest)).toThrowError(/UPSTASH_VECTOR_REST_TOKEN/)
+		const env: Record<string, string | undefined> = {...validEnv, UPSTASH_VECTOR_REST_TOKEN: undefined}
+		expect(() => loadConfig(env)).toThrowError(/UPSTASH_VECTOR_REST_TOKEN/)
 	})
 
 	it("不正値で throw するが、メッセージに値（秘匿情報）を漏らさない", () => {
