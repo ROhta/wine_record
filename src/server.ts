@@ -52,7 +52,7 @@ const recordWineInputSchema = {
 
 /**
  * MCP サーバーを生成し、ツールを登録する。
- * 現状は record_wine のみ（get_jsa_taxonomy / get_upload_url は後続フェーズ）。
+ * 現状は record_wine と preview_record（get_jsa_taxonomy / get_upload_url は後続フェーズ）。
  */
 export function createMcpServer(deps: McpServerDeps): McpServer {
   const server = new McpServer({ name: 'wine-record', version: '0.1.0' });
