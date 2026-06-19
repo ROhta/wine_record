@@ -1,42 +1,56 @@
 {
-  "name": "wine-record",
-  "version": "0.1.0",
-  "description": "AIエージェントを通じてワインを記録する MCP サーバー",
-  "type": "module",
-  "private": true,
-  "engines": {
-    "node": ">=24"
-  },
-  "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "dev": "tsx watch src/server.ts"
-  },
-  "license": "GPL-3.0",
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@modelcontextprotocol/ext-apps": "^1.7.4",
-    "@tsconfig/strictest": "^2.0.8",
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.9.3",
-    "@vercel/blob": "^2.4.1",
-    "eslint": "^10.5.0",
-    "prettier": "^3.8.4",
-    "tsx": "^4.22.4",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.1",
-    "vitest": "^4.1.9"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "@upstash/vector": "^1.2.3",
-    "express": "^5.2.1",
-    "helmet": "^8.2.0",
-    "zod": "^4.4.3"
-  }
+	"name": "wine-record",
+	"version": "0.1.0",
+	"description": "AIエージェントを通じてワインを記録する MCP サーバー",
+	"type": "module",
+	"private": true,
+	"engines": {
+		"node": ">=24"
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run --passWithNoTests",
+		"test:watch": "vitest",
+		"lint": "eslint .",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"dev": "tsx watch src/server.ts",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"*.{ts,mjs,cjs}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{json,md,yml,yaml}": [
+			"prettier --write"
+		]
+	},
+	"license": "GPL-3.0",
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@modelcontextprotocol/ext-apps": "^1.7.4",
+		"@tsconfig/strictest": "^2.0.8",
+		"@types/express": "^5.0.6",
+		"@types/node": "^25.9.3",
+		"@vercel/blob": "^2.4.1",
+		"eslint": "^10.5.0",
+		"eslint-config-prettier": "^10.1.8",
+		"globals": "^17.6.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^17.0.7",
+		"prettier": "^3.8.4",
+		"tsx": "^4.22.4",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.61.1",
+		"vitest": "^4.1.9"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.29.0",
+		"@upstash/vector": "^1.2.3",
+		"express": "^5.2.1",
+		"helmet": "^8.2.0",
+		"zod": "^4.4.3"
+	}
 }
