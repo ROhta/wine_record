@@ -3,6 +3,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { createMcpServer, type McpServerDeps } from '../../src/server.js';
 import { createRecordWine } from '../../src/tools/recordWine.js';
+import { createPreviewRecord } from '../../src/tools/previewRecord.js';
 import type { VectorStore, Namespace, UpsertItem } from '../../src/storage/vectorStore.js';
 import type { ExpressionTaxonomy } from '../../src/domain/taxonomy.js';
 
@@ -41,7 +42,8 @@ function makeServerDeps(): {
     generateId: () => 'wine-123',
     now: () => '2026-06-18T00:00:00.000Z',
   });
-  return { deps: { recordWine }, upserts };
+  const previewRecord = createPreviewRecord({ taxonomy: tax, allowedImageBaseUrl: 'https://img.example.com' });
+  return { deps: { recordWine, previewRecord }, upserts };
 }
 
 /** Client と McpServer を InMemoryTransport で結線し、接続済み Client を返す。 */
