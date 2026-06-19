@@ -1,28 +1,30 @@
 /**
- * [SPIKE] T012: 画像アップロード経路（Vercel Blob）の検証（捨てコード）
+ * [SPIKE] T012: 画像アップロード経路（Vercel Blob / private ストア）の検証（捨てコード）
  *
  * 殺したい未知数:
- *   Vercel Blob で「アップロード → 公開 URL で再取得」が無料枠（Hobby・カード不要の見込み）で
- *   成立するか。これが get_upload_url(T035) / imageStore(T034) の前提。
- *   ※ R2 は無料枠でもカード登録必須のため Vercel Blob に切替（research.md R3）。
+ *   private Vercel Blob で「アップロード → 公開URL不可 → 認証付き取得（get）」が成立するか。
+ *   これが get_upload_url(T035) / imageStore(T034) の前提。
+ *   ※ R2 は無料枠でもカード必須、Vercel Blob は private を選択（ラベル画像を公開URLに晒さない）。
+ *
+ * private の配信モデル（重要・設計に影響）:
+ *   private blob は公開 URL で取得できない。読み取りは SDK の get(pathname,{access:'private'}) か
+ *   `Authorization: Bearer <BLOB_READ_WRITE_TOKEN>` 付き fetch のみ。実アプリでは「自サーバーの
+ *   認証付きルートが get() でストリーム配信」する形になる（imageUrl は公開URLではなく自サーバー経由）。
  *
  * 注意（widget ギャップ）:
- *   元の T012 は「最小ウィジェットで写真選択 → アップロード」だったが、MCP Apps ウィジェットは
- *   claude.ai リモート HTTP で描画されない（research.md R5 / T022a）。MCP ツール入力も JSON のみで
- *   画像バイトを運べない。よって「チャット添付画像 → ストレージ」の UX は widget なしでは現状成立しない。
- *   本スパイクは **ストレージ機構（アップロード→公開取得）のみ**を検証する。
+ *   「チャット添付画像 → ストレージ」の UX は widget 必須で現状不可（research.md R5）。
+ *   本スパイクは **ストレージ機構（put/private 取得）のみ**を検証する。
  *
- * 実行（spikes/image-upload/README.md 参照）:
- *   node --env-file=.env --import tsx spikes/image-upload/run.ts
+ * 実行: node --env-file=.env --import tsx spikes/image-upload/run.ts
  */
-import { put, del } from '@vercel/blob';
+import { put, get, del } from '@vercel/blob';
 
 const token = process.env.BLOB_READ_WRITE_TOKEN;
 
 if (!token) {
   console.error(
     '✗ 環境変数 BLOB_READ_WRITE_TOKEN が未設定です。\n' +
-      '  README.md の手順で Vercel に Blob ストアを作成し、Read-Write トークンを .env に設定してください。',
+      '  Vercel に private Blob ストアを作成し、Read-Write トークンを .env に設定してください。',
   );
   process.exit(1);
 }
@@ -38,33 +40,51 @@ async function main(): Promise<void> {
   const checks: { label: string; ok: boolean; detail: string }[] = [];
   let blobUrl = '';
 
-  // 1) アップロード（public）。Vercel Blob は put でアップロード＋公開 URL を返す。
+  // 1) アップロード（private）
   try {
     const blob = await put(pathname, pngBytes, {
-      access: 'public',
+      access: 'private',
       token,
       contentType: 'image/png',
       addRandomSuffix: false,
     });
     blobUrl = blob.url;
-    checks.push({ label: 'put: アップロード + 公開 URL 発行', ok: true, detail: blob.url });
+    checks.push({ label: 'put(access:private): アップロード', ok: true, detail: blob.url });
   } catch (e) {
     checks.push({ label: 'put', ok: false, detail: errMsg(e) });
     return report(checks, blobUrl);
   }
 
-  // 2) 公開 URL で再取得し、バイトが一致するか
+  // 2) 公開アクセス不可の確認（認証なし fetch は 401/403 のはず）
   try {
     const res = await fetch(blobUrl);
-    const buf = Buffer.from(await res.arrayBuffer());
-    const sameSize = buf.length === pngBytes.length;
+    const ok = !res.ok; // private なので失敗するのが正しい
     checks.push({
-      label: '公開 URL で再取得',
-      ok: res.ok && sameSize,
-      detail: `HTTP ${res.status} / bytes ${buf.length}=${pngBytes.length}? ${sameSize} / type ${res.headers.get('content-type')}`,
+      label: '認証なし fetch は拒否される（private 確認）',
+      ok,
+      detail: `HTTP ${res.status}（401/403 が期待値）`,
     });
   } catch (e) {
-    checks.push({ label: '公開 URL 取得', ok: false, detail: errMsg(e) });
+    // ネットワーク拒否系も「公開取得できない」= OK 扱い
+    checks.push({ label: '認証なし fetch は拒否される（private 確認）', ok: true, detail: `fetch 失敗: ${errMsg(e)}` });
+  }
+
+  // 3) 認証付き取得: get(pathname,{access:'private'}) でストリーム取得しバイト一致
+  try {
+    const result = await get(pathname, { access: 'private', token });
+    if (!result || result.statusCode !== 200 || !result.stream) {
+      checks.push({ label: 'get(access:private): 認証付き取得', ok: false, detail: `statusCode=${result?.statusCode}` });
+    } else {
+      const buf = Buffer.from(await new Response(result.stream).arrayBuffer());
+      const sameSize = buf.length === pngBytes.length;
+      checks.push({
+        label: 'get(access:private): 認証付き取得',
+        ok: sameSize,
+        detail: `statusCode=200 / bytes ${buf.length}=${pngBytes.length}? ${sameSize} / type ${result.blob?.contentType}`,
+      });
+    }
+  } catch (e) {
+    checks.push({ label: 'get(access:private)', ok: false, detail: errMsg(e) });
   }
 
   await report(checks, blobUrl);
@@ -80,14 +100,14 @@ async function cleanup(blobUrl: string): Promise<void> {
 }
 
 async function report(checks: { label: string; ok: boolean; detail: string }[], blobUrl: string): Promise<void> {
-  console.log('\n=== T012 Vercel Blob 画像アップロード機構スパイク 結果 ===');
+  console.log('\n=== T012 Vercel Blob(private) 画像アップロード機構スパイク 結果 ===');
   for (const c of checks) console.log(`${c.ok ? '✓' : '✗'} ${c.label}\n    ${c.detail}`);
   await cleanup(blobUrl);
   console.log('\n(投入したテスト Blob は削除しました)');
   const allOk = checks.length > 0 && checks.every((c) => c.ok);
   console.log(
     allOk
-      ? '\n結論: PASS — Vercel Blob でアップロード→公開取得が成立（ストレージ機構は ready）。\n注意: チャット添付画像→Blob の UX は widget が必要で現状未解決（research.md R5）。'
+      ? '\n結論: PASS — private Blob の put → 公開不可 → 認証付き get が成立（ストレージ機構は ready）。\n注意: imageUrl は公開URLではなく自サーバーの認証付きルート経由で配信する設計になる（R3）。UX は widget 待ちで保留（R5）。'
       : '\n結論: FAIL — 上記 ✗ を確認。',
   );
   process.exit(allOk ? 0 : 1);

@@ -45,15 +45,18 @@
 
 - **決定（2026-06-19 更新）**: オブジェクトストレージに保存し、Vector には URL のみ持つ。
   当初既定の **Cloudflare R2** は無料枠でも**カード登録必須**と判明したため、代替候補だった
-  **Vercel Blob**（Hobby・1GB/月・非商用・カード不要の見込み）に切替。`@vercel/blob` の `put`（公開）で
-  保存し公開 URL を得る。
+  **Vercel Blob（private ストア）**（Hobby・1GB/月・非商用・カード不要を確認）に切替。
+  `@vercel/blob` の `put(access:'private')` で保存。**private blob は公開 URL で取得できない**ため、
+  `imageUrl` は公開 URL ではなく**自サーバーの認証付きルートが `get(access:'private')` でストリーム配信**する
+  形になる（ラベル画像を公開に晒さない）。T034/T035/T036 はこの前提で設計する。
 - **根拠**: ベクトル DB のメタデータは画像バイナリ用ではない。直接アップロードで
   サーバーを画像バイトの中継にしない（負荷・メモリ・セキュリティ面で有利）。
 - **代替案**: 画像を base64 でメタデータに格納 → サイズ・コスト・上限で破綻。
   サーバー中継アップロード → サーバーが大きなバイナリを扱う必要があり不利。
-- **未確定/保留**: ストレージ機構（アップロード→公開取得）は T012 スパイク（`spikes/image-upload/`）で
-  検証中（pending）。ただし「チャット添付画像→ストレージ」の UX は widget 必須で現状不可（R5）。
-  Upstash は KV/Vector/QStash 等でオブジェクト保存は不可。card-free の控え: Supabase Storage / Cloudinary。
+- **T012 スパイク結果（2026-06-19, PASS）**: private Vercel Blob で put → 認証なし fetch は 403（公開不可）
+  → `get(access:'private')` で 200・バイト一致を確認。ストレージ機構は ready。
+- **保留**: 「チャット添付画像→ストレージ」の UX は widget 必須で現状不可（R5）。よって US3 の実機実装は
+  widget 対応待ち。Upstash はオブジェクト保存不可。card-free の控え: Supabase Storage / Cloudinary。
 
 ## R4. OCR（文字読み取り）
 
