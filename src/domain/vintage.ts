@@ -1,11 +1,11 @@
-import type { Vintage } from './wineRecord.js';
+import type {Vintage} from "./wineRecord.js"
 
 /** 妥当な収穫年の下限。 */
-const MIN_VINTAGE_YEAR = 1900;
+const MIN_VINTAGE_YEAR = 1900
 
 /** 妥当な収穫年か（整数・1900〜翌年）。 */
 function isValidVintageYear(n: number): boolean {
-  return Number.isInteger(n) && n >= MIN_VINTAGE_YEAR && n <= new Date().getFullYear() + 1;
+	return Number.isInteger(n) && n >= MIN_VINTAGE_YEAR && n <= new Date().getFullYear() + 1
 }
 
 /**
@@ -21,26 +21,24 @@ function isValidVintageYear(n: number): boolean {
  * - 妥当な収穫年は 1900〜翌年。範囲外・解釈不能・不正型は throw（厳格）
  */
 export function normalizeVintage(raw: unknown): Vintage {
-  if (raw === null || raw === undefined) return null;
+	if (raw === null || raw === undefined) return null
 
-  if (typeof raw === 'number') {
-    if (isValidVintageYear(raw)) return raw;
-    throw new Error(
-      `不正なヴィンテージ年です: ${String(raw)}（${String(MIN_VINTAGE_YEAR)}〜翌年）`,
-    );
-  }
+	if (typeof raw === "number") {
+		if (isValidVintageYear(raw)) return raw
+		throw new Error(`不正なヴィンテージ年です: ${String(raw)}（${String(MIN_VINTAGE_YEAR)}〜翌年）`)
+	}
 
-  if (typeof raw === 'string') {
-    const s = raw.normalize('NFKC').trim();
-    if (s === '') return null;
-    if (s.toUpperCase() === 'NV') return 'NV';
-    if (/^\d{1,4}$/.test(s)) {
-      const n = Number(s);
-      if (isValidVintageYear(n)) return n;
-      throw new Error(`不正なヴィンテージ年です: ${s}（${String(MIN_VINTAGE_YEAR)}〜翌年）`);
-    }
-    throw new Error(`ヴィンテージを解釈できません: ${s}`);
-  }
+	if (typeof raw === "string") {
+		const s = raw.normalize("NFKC").trim()
+		if (s === "") return null
+		if (s.toUpperCase() === "NV") return "NV"
+		if (/^\d{1,4}$/.test(s)) {
+			const n = Number(s)
+			if (isValidVintageYear(n)) return n
+			throw new Error(`不正なヴィンテージ年です: ${s}（${String(MIN_VINTAGE_YEAR)}〜翌年）`)
+		}
+		throw new Error(`ヴィンテージを解釈できません: ${s}`)
+	}
 
-  throw new Error('ヴィンテージの型が不正です');
+	throw new Error("ヴィンテージの型が不正です")
 }
