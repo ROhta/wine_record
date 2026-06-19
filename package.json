@@ -15,7 +15,12 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,mjs,cjs}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,yml,yaml}": ["prettier --write"]
   },
   "license": "GPL-3.0",
   "devDependencies": {
@@ -26,6 +31,10 @@
     "@types/node": "^25.9.3",
     "@vercel/blob": "^2.4.1",
     "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
     "prettier": "^3.8.4",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",

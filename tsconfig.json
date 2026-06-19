@@ -1,4 +1,5 @@
 {
+  "compileOnSave": true,
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
     "module": "NodeNext",
@@ -10,13 +11,22 @@
     "outDir": "dist",
     "sourceMap": true,
     "declaration": true,
-    "skipLibCheck": true,
+    "declarationMap": true,
+    "removeComments": true,
     "noEmit": true,
-    // @tsconfig/strictest の exactOptionalPropertyTypes のみ無効化。
-    // 理由: MCP SDK(@modelcontextprotocol/sdk) の型がこのフラグと非互換で、
-    // server.connect(transport) 等が境界ごとのキャストなしに通らないため。
-    // 他の strict 系チェック（strict, noUncheckedIndexedAccess 等）は維持する。
+    "noEmitOnError": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+    "moduleDetection": "force",
+    "allowJs": false,
+    "verbatimModuleSyntax": true,
+    "isolatedDeclarations": true,
+    "erasableSyntaxOnly": true,
+    "noUncheckedSideEffectImports": true,
+    "ignoreDeprecations": "6.0",
+    // @tsconfig/strictest の exactOptionalPropertyTypes のみ無効化（MCP SDK 非互換のため・既存方針）。
     "exactOptionalPropertyTypes": false
   },
-  "include": ["src", "tests", "vitest.config.ts", "eslint.config.js"]
+  "include": ["src", "tests", "vitest.config.ts"]
 }
