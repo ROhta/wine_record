@@ -81,7 +81,11 @@ description: "record-wine 機能の実装タスク一覧"
 - [X] T019 [P] [US1] RegionPath の構築/正規化を実装 `src/domain/region.ts`
 - [X] T020 [US1] `vectorStore` の `overall` namespace への upsert を実装 `src/storage/vectorStore.ts`（T008 を具体化）
 - [X] T021 [US1] `record_wine` ツールを実装 `src/tools/recordWine.ts`（入力検証→保存→`{wineId, recordedAt}`、明示承認前提）
-- [ ] T022 [US1] 確認ウィジェット（最小）を実装 `src/widgets/confirmRecord/`（抽出値の事前入力・修正・承認。MCP Apps リソース。T012 の知見を反映）
+- [ ] T022a [SPIKE] [US1] 描画検証: 最小 MCP Apps ウィジェット（hello + ボタン→テストツール呼び出し）を Claude モバイルで描画・ブリッジ確認 `spikes/widget-render/`（mimetype / UIリソースURI / ブリッジAPI / ウィジェットからのツール呼び出し可否を実機で確定。捨てコード）
+- [ ] T022b [P] [US1] `confirm_record` の契約テスト `tests/contract/confirmRecord.test.ts`（下書き→UIリソース返却・副作用なし）
+- [ ] T022c [US1] `confirm_record` ツールを実装 `src/tools/confirmRecord.ts`（下書き→確認ウィジェットUIリソースを事前入力で返す。保存しない）
+- [ ] T022 [US1] 確認ウィジェット（最小）を実装 `src/widgets/confirmRecord/`（事前入力・`color`選択(white/red)・修正・承認→ブリッジで `record_wine` 直接呼び出し。表示ロジックは純粋関数に分離しユニットテスト。T022a の知見を反映）
+- [ ] T022d [US1] `confirm_record` をサーバーに登録し結線 `src/server.ts`
 - [X] T023 [US1] `record_wine` をサーバーに登録し結線 `src/server.ts`
 
 **チェックポイント**: US1 が単体で動作・テスト可能（MVP）。
