@@ -76,11 +76,11 @@ async function main(): Promise<void> {
       checks.push({ label: 'get(access:private): 認証付き取得', ok: false, detail: `statusCode=${result?.statusCode}` });
     } else {
       const buf = Buffer.from(await new Response(result.stream).arrayBuffer());
-      const sameSize = buf.length === pngBytes.length;
+      const sameBytes = buf.equals(pngBytes); // サイズではなく実バイト列で完全一致を検証
       checks.push({
         label: 'get(access:private): 認証付き取得',
-        ok: sameSize,
-        detail: `statusCode=200 / bytes ${buf.length}=${pngBytes.length}? ${sameSize} / type ${result.blob?.contentType}`,
+        ok: sameBytes,
+        detail: `statusCode=200 / バイト列一致? ${sameBytes} (${buf.length}B) / type ${result.blob?.contentType}`,
       });
     }
   } catch (e) {
