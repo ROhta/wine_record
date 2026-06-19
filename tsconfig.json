@@ -27,5 +27,5 @@
 		// @tsconfig/strictest の exactOptionalPropertyTypes のみ無効化（MCP SDK 非互換のため・既存方針）。
 		"exactOptionalPropertyTypes": false
 	},
-	"include": ["src", "tests", "api", "vitest.config.ts"]
+	"include": ["src", "tests", "vitest.config.ts"]
 }
