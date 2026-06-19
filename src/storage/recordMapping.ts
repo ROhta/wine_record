@@ -1,4 +1,5 @@
 import type {WineRecord} from "../domain/wineRecord.js"
+import {regionToParts} from "../domain/region.js"
 import type {Namespace, UpsertItem} from "./vectorStore.js"
 
 /** 観点別 namespace（overall を除く）。 */
@@ -6,8 +7,7 @@ type AspectNamespace = Exclude<Namespace, "overall">
 
 /** `overall` namespace 用の結合テキスト（名前+生産者+産地+全表現）。埋め込みモデルでベクトル化される。 */
 export function buildOverallText(r: WineRecord): string {
-	const regionParts = [r.region.country, r.region.region, r.region.subregion, r.region.commune]
-	const parts = [r.name, r.producer, ...regionParts, ...r.appearanceTerms, ...r.aromaTerms, ...r.tasteTerms]
+	const parts = [r.name, r.producer, ...regionToParts(r.region), ...r.appearanceTerms, ...r.aromaTerms, ...r.tasteTerms]
 	return parts.filter((x): x is string => typeof x === "string" && x.trim() !== "").join(" ")
 }
 

@@ -12,6 +12,9 @@ import {createVectorStore} from "./storage/vectorStore.js"
 import {createRecordWine, type RecordWineResult} from "./tools/recordWine.js"
 import {createPreviewRecord, type PreviewRecordResult} from "./tools/previewRecord.js"
 import {createGetJsaTaxonomy, type GetJsaTaxonomyResult} from "./tools/getJsaTaxonomy.js"
+import {regionToParts} from "./domain/region.js"
+import {EXPRESSION_CATEGORIES, type ExpressionCategory} from "./domain/taxonomy.js"
+import type {FieldError} from "./domain/recordInput.js"
 
 /**
  * MCP サーバーの依存。MCP 層は「ツール契約 ⇄ ドメイン結果」の変換だけを担い、
@@ -53,6 +56,26 @@ const recordWineInputSchema = {
 	imageUrl: z.string().nullish().describe("ラベル画像 URL（自ストレージの https のみ・任意）"),
 }
 
+/** カテゴリ → 日本語ラベル（get_jsa_taxonomy のテキスト整形用）。 */
+const CATEGORY_LABELS: Record<ExpressionCategory, string> = {
+	appearance: "外観",
+	aroma: "香り",
+	taste: "味わい",
+}
+
+/**
+ * 検証エラーを MCP の CallToolResult に整形する（3ツール共通）。
+ * isError を立て、人間可読の text（field: message）と機械可読の structuredContent（{errors}）の
+ * 両方で「どこがなぜ不正か」を返す。成功時の structuredContent と形が混ざらないよう errors のみを載せる。
+ */
+function errorResult(errors: FieldError[]): CallToolResult {
+	return {
+		isError: true,
+		content: [{type: "text", text: errors.map(e => `${e.field}: ${e.message}`).join("\n")}],
+		structuredContent: {errors},
+	}
+}
+
 /**
  * MCP サーバーを生成し、ツールを登録する。
  * 現状は record_wine / preview_record / get_jsa_taxonomy（get_upload_url は後続フェーズ）。
@@ -76,14 +99,8 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
 					structuredContent: payload,
 				}
 			}
-			// 検証失敗: isError を立て、人間可読の text（field: message）と
-			// 機械可読の structuredContent（{ errors }）の両方で「どこがなぜ不正か」を返す。
-			// 成功時の structuredContent（{wineId,recordedAt}）と形が混ざらないよう errors のみを載せる。
-			return {
-				isError: true,
-				content: [{type: "text", text: result.errors.map(e => `${e.field}: ${e.message}`).join("\n")}],
-				structuredContent: {errors: result.errors},
-			}
+			// 検証失敗: 保存せず、どのフィールドがなぜ不正かをフィールド別に返す。
+			return errorResult(result.errors)
 		},
 	)
 
@@ -98,14 +115,10 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
 		async (args): Promise<CallToolResult> => {
 			const result = deps.previewRecord(args)
 			if (!result.ok) {
-				return {
-					isError: true,
-					content: [{type: "text", text: result.errors.map(e => `${e.field}: ${e.message}`).join("\n")}],
-					structuredContent: {errors: result.errors},
-				}
+				return errorResult(result.errors)
 			}
 			const p = result.preview
-			const region = [p.region.country, p.region.region, p.region.subregion, p.region.commune].filter((x): x is string => typeof x === "string" && x !== "").join(" > ") || "—"
+			const region = regionToParts(p.region).join(" > ") || "—"
 			const text = ["以下の内容で保存します。誤りがあれば修正を指示してください。承認する場合のみ record_wine を呼びます。", `名前: ${p.name}`, `色: ${p.color}`, `生産者: ${p.producer ?? "—"}`, `産地: ${region}`, `ヴィンテージ: ${p.vintage ?? "—"}`, `輸入者: ${p.importer ?? "—"}`, `購入店: ${p.store ?? "—"}`, `外観: ${p.appearanceTerms.join(", ") || "—"}`, `香り: ${p.aromaTerms.join(", ") || "—"}`, `味わい: ${p.tasteTerms.join(", ") || "—"}`, `画像: ${p.imageUrl ?? "—"}`].join("\n")
 			return {content: [{type: "text", text}], structuredContent: {preview: p}}
 		},
@@ -114,11 +127,6 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
 	// get_jsa_taxonomy: 表現選択の語彙を color 別・カテゴリ別に返す（読み取り専用・US2）。
 	// リモート HTTP では確認ウィジェットが使えないため、モデルがこの語彙をテキストで提示し、
 	// ユーザーがチャットで選択する（research.md R5）。
-	const categoryLabels: Record<"appearance" | "aroma" | "taste", string> = {
-		appearance: "外観",
-		aroma: "香り",
-		taste: "味わい",
-	}
 	server.registerTool(
 		"get_jsa_taxonomy",
 		{
@@ -132,18 +140,14 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
 		async (args): Promise<CallToolResult> => {
 			const result = deps.getJsaTaxonomy(args)
 			if (!result.ok) {
-				return {
-					isError: true,
-					content: [{type: "text", text: result.errors.map(e => `${e.field}: ${e.message}`).join("\n")}],
-					structuredContent: {errors: result.errors},
-				}
+				return errorResult(result.errors)
 			}
 			const v = result.value
 			const lines: string[] = [`JSA テイスティング用語（${v.color} / version ${v.version}）`]
-			for (const c of ["appearance", "aroma", "taste"] as const) {
+			for (const c of EXPRESSION_CATEGORIES) {
 				const groups = v[c]
 				if (groups === undefined) continue
-				lines.push(`\n【${categoryLabels[c]}】`)
+				lines.push(`\n【${CATEGORY_LABELS[c]}】`)
 				for (const g of groups) lines.push(`- ${g.name}（目安 ${g.selectCount} 個）: ${g.terms.join(" / ")}`)
 			}
 			return {content: [{type: "text", text: lines.join("\n")}], structuredContent: {...v}}

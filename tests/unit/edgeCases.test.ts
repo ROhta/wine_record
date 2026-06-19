@@ -1,26 +1,13 @@
 import {describe, it, expect} from "vitest"
 import {validateRecordInput} from "../../src/domain/recordInput.js"
-import type {ExpressionTaxonomy} from "../../src/domain/taxonomy.js"
+import {testTaxonomy as tax} from "../fixtures/taxonomy.js"
+import {allowedImageBaseUrl as BASE} from "../fixtures/deps.js"
 
 /**
  * spec.md「エッジケース」のうち記録フローに関わるもの（部分抽出 / NV / 画像欠落）を
  * validateRecordInput レベルで固定する。vintage/region 単体の正規化は
  * vintage.test.ts / region.test.ts で網羅済みなので、ここでは合成（部分入力）に焦点を当てる。
  */
-const tax: ExpressionTaxonomy = {
-	version: "t",
-	white: {
-		appearance: [{name: "清澄度", selectCount: 1, terms: ["澄んだ"]}],
-		aroma: [{name: "第一印象", selectCount: 1, terms: ["閉じている"]}],
-		taste: [{name: "アタック", selectCount: 1, terms: ["軽い"]}],
-	},
-	red: {
-		appearance: [{name: "清澄度", selectCount: 1, terms: ["澄んだ"]}],
-		aroma: [{name: "第一印象", selectCount: 1, terms: ["閉じている"]}],
-		taste: [{name: "タンニン分", selectCount: 1, terms: ["緻密"]}],
-	},
-}
-const BASE = "https://img.example.com"
 
 describe("エッジケース（部分抽出 / NV / 画像欠落）", () => {
 	it("部分抽出: name+color のみでも受理し、欠落フィールドは null / 空配列になる", () => {
