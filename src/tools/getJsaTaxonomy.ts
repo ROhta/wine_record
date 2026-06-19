@@ -1,4 +1,6 @@
 import type {ColorTaxonomy, ExpressionCategory, ExpressionTaxonomy, WineColor} from "../domain/taxonomy.js"
+import {EXPRESSION_CATEGORIES, parseWineColor} from "../domain/taxonomy.js"
+import {asRecord} from "../domain/region.js"
 import type {FieldError} from "../domain/recordInput.js"
 
 /** get_jsa_taxonomy の依存。 */
@@ -20,12 +22,6 @@ export interface TaxonomyView {
 
 export type GetJsaTaxonomyResult = {ok: true; value: TaxonomyView} | {ok: false; errors: FieldError[]}
 
-const CATEGORIES = ["appearance", "aroma", "taste"] as const
-
-function parseColor(raw: unknown): WineColor | null {
-	return raw === "white" || raw === "red" ? raw : null
-}
-
 function parseCategory(raw: unknown): {ok: true; value: ExpressionCategory | null} | {ok: false} {
 	if (raw === undefined || raw === null) return {ok: true, value: null}
 	if (raw === "appearance" || raw === "aroma" || raw === "taste") return {ok: true, value: raw}
@@ -39,9 +35,9 @@ function parseCategory(raw: unknown): {ok: true; value: ExpressionCategory | nul
  */
 export function createGetJsaTaxonomy(deps: GetJsaTaxonomyDeps) {
 	return function getJsaTaxonomy(input: unknown): GetJsaTaxonomyResult {
-		const obj = (typeof input === "object" && input !== null ? input : {}) as Record<string, unknown>
+		const obj = asRecord(input)
 
-		const color = parseColor(obj["color"])
+		const color = parseWineColor(obj["color"])
 		if (color === null) {
 			return {
 				ok: false,
@@ -59,7 +55,7 @@ export function createGetJsaTaxonomy(deps: GetJsaTaxonomyDeps) {
 
 		const colorTaxonomy = deps.taxonomy[color]
 		const value: TaxonomyView = {color, version: deps.taxonomy.version}
-		for (const c of CATEGORIES) {
+		for (const c of EXPRESSION_CATEGORIES) {
 			if (category.value === null || category.value === c) value[c] = colorTaxonomy[c]
 		}
 		return {ok: true, value}

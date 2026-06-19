@@ -1,8 +1,9 @@
 import type {ExpressionTaxonomy, ExpressionCategory, WineColor} from "./taxonomy.js"
+import {EXPRESSION_CATEGORIES, parseWineColor} from "./taxonomy.js"
 import type {RegionPath} from "./region.js"
 import type {Vintage} from "./wineRecord.js"
 import {normalizeVintage} from "./vintage.js"
-import {normalizeRegion, cleanOptionalString} from "./region.js"
+import {normalizeRegion, cleanOptionalString, asRecord} from "./region.js"
 
 /** フィールド単位の検証エラー（LLM が修正提示できるよう構造化）。 */
 export interface FieldError {
@@ -77,13 +78,12 @@ function isAllowedImageUrl(rawUrl: string, allowedBaseUrl: string): boolean {
  */
 export function validateRecordInput(input: unknown, taxonomy: ExpressionTaxonomy, allowedImageBaseUrl: string): ValidationResult {
 	const errors: FieldError[] = []
-	const obj = (typeof input === "object" && input !== null ? input : {}) as Record<string, unknown>
+	const obj = asRecord(input)
 
 	const name = cleanOptionalString(obj["name"])
 	if (name === null) errors.push({field: "name", message: "ワイン名は必須です"})
 
-	const colorRaw = obj["color"]
-	const color: WineColor | null = colorRaw === "white" || colorRaw === "red" ? colorRaw : null
+	const color = parseWineColor(obj["color"])
 	if (color === null) errors.push({field: "color", message: 'color は "white" または "red" が必須です'})
 
 	let vintage: Vintage = null
@@ -97,7 +97,7 @@ export function validateRecordInput(input: unknown, taxonomy: ExpressionTaxonomy
 	}
 
 	const terms: Record<ExpressionCategory, string[]> = {appearance: [], aroma: [], taste: []}
-	for (const category of ["appearance", "aroma", "taste"] as const) {
+	for (const category of EXPRESSION_CATEGORIES) {
 		const field = CATEGORY_FIELD[category]
 		const arr = asStringArray(obj[field])
 		terms[category] = arr

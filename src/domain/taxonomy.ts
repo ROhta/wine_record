@@ -8,8 +8,16 @@
 /** ワインの色。白用・赤用で用語セットが異なる。 */
 export type WineColor = "white" | "red"
 
+/** 型不定の入力を WineColor に正規化する（"white"/"red" 以外は null）。 */
+export function parseWineColor(raw: unknown): WineColor | null {
+	return raw === "white" || raw === "red" ? raw : null
+}
+
+/** 表現カテゴリの実体リスト（外観 / 香り / 味わい）。ランタイムの反復・型の双方の単一の真実源。 */
+export const EXPRESSION_CATEGORIES = ["appearance", "aroma", "taste"] as const
+
 /** 表現カテゴリ（外観 / 香り / 味わい）。 */
-export type ExpressionCategory = "appearance" | "aroma" | "taste"
+export type ExpressionCategory = (typeof EXPRESSION_CATEGORIES)[number]
 
 /**
  * サブカテゴリ（例: 清澄度・色調・第一印象・アタック…）。

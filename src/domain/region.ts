@@ -16,9 +16,19 @@ export function cleanOptionalString(v: unknown): string | null {
 	return t === "" ? null : t
 }
 
+/** 型不定の値を Record として安全に扱う（オブジェクトでなければ空オブジェクト）。 */
+export function asRecord(v: unknown): Record<string, unknown> {
+	return typeof v === "object" && v !== null ? (v as Record<string, unknown>) : {}
+}
+
+/** RegionPath を 国→地方→地区→村 の順の非空文字列配列に平坦化する（null/空は除外）。 */
+export function regionToParts(region: RegionPath): string[] {
+	return [region.country, region.region, region.subregion, region.commune].filter((x): x is string => typeof x === "string" && x !== "")
+}
+
 /** 入力（型不定）を RegionPath に正規化する。各層は空・非文字列なら null。 */
 export function normalizeRegion(raw: unknown): RegionPath {
-	const obj = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {}
+	const obj = asRecord(raw)
 	return {
 		country: cleanOptionalString(obj["country"]),
 		region: cleanOptionalString(obj["region"]),
