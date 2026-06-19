@@ -92,8 +92,14 @@
   直接呼べる）。完全な明示承認ゲートは widget/elicitation が使えるようになるまで実現不可。
   必要なら部分的強化として「preview_record が正規化内容の HMAC トークンを返し、record_wine が
   同一内容のトークンを要求する」案がある（内容一致は強制できるが、ユーザーが見たことの証明にはならない）。
-- **保留**: US2 の「タップ選択（自由入力なし）」も同じ理由でリモート HTTP では現状実現困難。
-  画像アップロード（US3）も含め、claude.ai が widget/elicitation をリモート HTTP で安定対応したら再導入する。
+- **US2 への適用（2026-06-19 決定）**: US2 の「タップ選択（自由入力なし）」も同じ理由でリモート HTTP
+  では物理的なタップ UI を実現できない。よって US1 と同様**テキストベースで成立**させる:
+  `get_jsa_taxonomy`（`color` 別・カテゴリ別・サブカテゴリ grouped）で語彙を提示 → ユーザーがチャットで
+  選択 → `record_wine`/`preview_record` が**語彙外を拒否**（`validateRecordInput` の既存検証）。
+  FR-005 は「自由入力の物理的排除」→「語彙外は永続化しない」に再解釈（spec.md 注記）。
+  確認ウィジェットのタップ選択 UI（T030）は **defer**（widget が remote HTTP で安定対応次第 再導入）。
+- **保留**: 画像アップロード（US3）の widget 経路も同様。claude.ai が widget/elicitation をリモート HTTP で
+  安定対応したら、US2 のタップ UI（T030）と併せて再導入する。
 
 ## R6. シークレットと HTTP セキュリティ
 

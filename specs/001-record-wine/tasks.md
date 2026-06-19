@@ -99,17 +99,17 @@ description: "record-wine 機能の実装タスク一覧"
 
 ### ユーザーストーリー2 のテスト（TDD）⚠️
 
-- [ ] T024 [P] [US2] `get_jsa_taxonomy` の契約テスト `tests/contract/getJsaTaxonomy.test.ts`（全件 / category 指定）
-- [ ] T025 [P] [US2] 表現バリデーションのユニットテスト `tests/unit/expressionTerms.test.ts`（語彙外の値を拒否＝FR-005/原則I）
-- [ ] T026 [P] [US2] 表現選択の結合テスト `tests/integration/expressions.test.ts`（タップ選択が記録に反映）
+- [X] T024 [P] [US2] `get_jsa_taxonomy` の契約テスト `tests/contract/getJsaTaxonomy.test.ts`（全件 / category 指定）
+- [X] T025 [P] [US2] 表現バリデーションのユニットテスト `tests/unit/expressionTerms.test.ts`（語彙外の値を拒否＝FR-005/原則I）
+- [X] T026 [P] [US2] 表現選択の結合テスト `tests/integration/expressions.test.ts`（タップ選択が記録に反映）
 
 ### ユーザーストーリー2 の実装
 
-- [ ] T027 [US2] `get_jsa_taxonomy` ツールを実装 `src/tools/getJsaTaxonomy.ts`（T011 のローダを利用）
-- [ ] T028 [US2] `record_wine` に表現タグの語彙内検証を追加 `src/tools/recordWine.ts` / `src/domain/wineRecord.ts`
-- [ ] T029 [US2] `vectorStore` の `aroma`/`appearance`/`taste` namespace upsert を実装 `src/storage/vectorStore.ts`（未選択カテゴリはスキップ）
-- [ ] T030 [US2] 確認ウィジェットにタップ選択 UI を追加 `src/widgets/confirmRecord/`（カテゴリ別チップ、文字入力手段なし）
-- [ ] T031 [US2] `get_jsa_taxonomy` をサーバーに登録 `src/server.ts`
+- [X] T027 [US2] `get_jsa_taxonomy` ツールを実装 `src/tools/getJsaTaxonomy.ts`（T011 のローダを利用）
+- [X] T028 [US2] `record_wine` に表現タグの語彙内検証を追加（**US1 で実装済み**: `src/domain/recordInput.ts` の `validateRecordInput` が `color` 別に語彙照合。T025 で担保）
+- [X] T029 [US2] `vectorStore` の `aroma`/`appearance`/`taste` namespace upsert を実装 `src/storage/recordMapping.ts`（`buildAspectUpserts`: id=wineId / metadata={wineId} / 未選択カテゴリはスキップ）＋ `src/tools/recordWine.ts` でベストエフォート書き込み
+- [ ] T030 [US2] （**defer: widget 対応待ち**）確認ウィジェットのタップ選択 UI。claude.ai リモート HTTP で widget 描画不可のため保留。当面はテキストベースの語彙選択（`get_jsa_taxonomy` + 語彙外拒否）で FR-004/005 を満たす（research.md R5 / spec.md 注記）。widget が remote HTTP で使えるようになり次第 再導入 `src/widgets/confirmRecord/`
+- [X] T031 [US2] `get_jsa_taxonomy` をサーバーに登録 `src/server.ts`
 
 **チェックポイント**: US1 + US2 が独立に動作。
 

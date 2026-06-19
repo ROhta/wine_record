@@ -11,6 +11,7 @@ import { loadTaxonomyFromFile } from './domain/taxonomyLoader.js';
 import { createVectorStore } from './storage/vectorStore.js';
 import { createRecordWine, type RecordWineResult } from './tools/recordWine.js';
 import { createPreviewRecord, type PreviewRecordResult } from './tools/previewRecord.js';
+import { createGetJsaTaxonomy, type GetJsaTaxonomyResult } from './tools/getJsaTaxonomy.js';
 
 /**
  * MCP サーバーの依存。MCP 層は「ツール契約 ⇄ ドメイン結果」の変換だけを担い、
@@ -20,6 +21,8 @@ export interface McpServerDeps {
   recordWine: (input: unknown) => Promise<RecordWineResult>;
   /** preview_record: 下書きを正規化・検証して「保存される内容」を返す（読み取り専用）。 */
   previewRecord: (input: unknown) => PreviewRecordResult;
+  /** get_jsa_taxonomy: 表現選択の語彙を color 別・カテゴリ別に返す（読み取り専用・US2）。 */
+  getJsaTaxonomy: (input: unknown) => GetJsaTaxonomyResult;
 }
 
 /**
@@ -52,7 +55,7 @@ const recordWineInputSchema = {
 
 /**
  * MCP サーバーを生成し、ツールを登録する。
- * 現状は record_wine と preview_record（get_jsa_taxonomy / get_upload_url は後続フェーズ）。
+ * 現状は record_wine / preview_record / get_jsa_taxonomy（get_upload_url は後続フェーズ）。
  */
 export function createMcpServer(deps: McpServerDeps): McpServer {
   const server = new McpServer({ name: 'wine-record', version: '0.1.0' });
@@ -134,6 +137,51 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
     },
   );
 
+  // get_jsa_taxonomy: 表現選択の語彙を color 別・カテゴリ別に返す（読み取り専用・US2）。
+  // リモート HTTP では確認ウィジェットが使えないため、モデルがこの語彙をテキストで提示し、
+  // ユーザーがチャットで選択する（research.md R5）。
+  const categoryLabels: Record<'appearance' | 'aroma' | 'taste', string> = {
+    appearance: '外観',
+    aroma: '香り',
+    taste: '味わい',
+  };
+  server.registerTool(
+    'get_jsa_taxonomy',
+    {
+      title: 'JSA テイスティング用語を取得',
+      description:
+        '外観・香り・味わいの定義済み表現語彙（JSA テイスティング用語）を返す。' +
+        'color は "white" または "red"（必須。白用/赤用で語彙が異なる）。category 指定で該当カテゴリのみ。' +
+        'サブカテゴリ（清澄度・色調…）ごとに selectCount（試験での選択数の目安・参考情報）と terms を返す。' +
+        'ユーザーはこの語彙からのみ表現を選ぶ（record_wine は語彙外を拒否する）。',
+      inputSchema: {
+        color: z.string().optional().describe('"white" または "red"（必須）'),
+        category: z.string().optional().describe('appearance / aroma / taste（任意。未指定は全カテゴリ）'),
+      },
+    },
+    async (args): Promise<CallToolResult> => {
+      const result = deps.getJsaTaxonomy(args);
+      if (!result.ok) {
+        return {
+          isError: true,
+          content: [
+            { type: 'text', text: result.errors.map((e) => `${e.field}: ${e.message}`).join('\n') },
+          ],
+          structuredContent: { errors: result.errors },
+        };
+      }
+      const v = result.value;
+      const lines: string[] = [`JSA テイスティング用語（${v.color} / version ${v.version}）`];
+      for (const c of ['appearance', 'aroma', 'taste'] as const) {
+        const groups = v[c];
+        if (groups === undefined) continue;
+        lines.push(`\n【${categoryLabels[c]}】`);
+        for (const g of groups) lines.push(`- ${g.name}（目安 ${g.selectCount} 個）: ${g.terms.join(' / ')}`);
+      }
+      return { content: [{ type: 'text', text: lines.join('\n') }], structuredContent: { ...v } };
+    },
+  );
+
   return server;
 }
 
@@ -178,7 +226,8 @@ function buildDeps(config: Config): McpServerDeps {
     taxonomy,
     allowedImageBaseUrl: config.r2.publicBaseUrl,
   });
-  return { recordWine, previewRecord };
+  const getJsaTaxonomy = createGetJsaTaxonomy({ taxonomy });
+  return { recordWine, previewRecord, getJsaTaxonomy };
 }
 
 /** サーバーを起動する。 */

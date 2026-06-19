@@ -4,6 +4,7 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { createMcpServer, type McpServerDeps } from '../../src/server.js';
 import { createRecordWine } from '../../src/tools/recordWine.js';
 import { createPreviewRecord } from '../../src/tools/previewRecord.js';
+import { createGetJsaTaxonomy } from '../../src/tools/getJsaTaxonomy.js';
 import type { VectorStore, Namespace, UpsertItem } from '../../src/storage/vectorStore.js';
 import type { ExpressionTaxonomy } from '../../src/domain/taxonomy.js';
 
@@ -43,7 +44,8 @@ function makeServerDeps(): {
     now: () => '2026-06-18T00:00:00.000Z',
   });
   const previewRecord = createPreviewRecord({ taxonomy: tax, allowedImageBaseUrl: 'https://img.example.com' });
-  return { deps: { recordWine, previewRecord }, upserts };
+  const getJsaTaxonomy = createGetJsaTaxonomy({ taxonomy: tax });
+  return { deps: { recordWine, previewRecord, getJsaTaxonomy }, upserts };
 }
 
 /** Client と McpServer を InMemoryTransport で結線し、接続済み Client を返す。 */
@@ -91,7 +93,7 @@ describe('record_wine 契約（MCP プロトコル経由）', () => {
       wineId: 'wine-123',
       recordedAt: '2026-06-18T00:00:00.000Z',
     });
-    expect(upserts).toHaveLength(1);
+    expect(upserts).toHaveLength(4); // overall + 観点別 appearance/aroma/taste
     expect(upserts[0]?.namespace).toBe('overall');
     expect(upserts[0]?.item.id).toBe('wine-123');
     await client.close();
