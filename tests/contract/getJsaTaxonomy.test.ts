@@ -98,4 +98,16 @@ describe('get_jsa_taxonomy 契約（MCP プロトコル経由）', () => {
     expect(sc.errors.map((e) => e.field)).toContain('color');
     await client.close();
   });
+
+  it('category 不正は isError かつフィールド別エラー（category）を返す', async () => {
+    const client = await connectClient(makeDeps());
+    const res = await client.callTool({
+      name: 'get_jsa_taxonomy',
+      arguments: { color: 'white', category: 'bouquet' },
+    });
+    expect(res.isError).toBe(true);
+    const sc = res.structuredContent as { errors: { field: string }[] };
+    expect(sc.errors.map((e) => e.field)).toContain('category');
+    await client.close();
+  });
 });
