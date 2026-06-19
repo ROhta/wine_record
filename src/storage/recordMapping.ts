@@ -1,7 +1,7 @@
 import type { WineRecord } from '../domain/wineRecord.js';
 import type { UpsertItem } from './vectorStore.js';
 
-/** `overall` namespace 用の結合テキスト（名前+生産者+産地+全表現）。bge-m3 でベクトル化される。 */
+/** `overall` namespace 用の結合テキスト（名前+生産者+産地+全表現）。埋め込みモデルでベクトル化される。 */
 export function buildOverallText(r: WineRecord): string {
   const regionParts = [r.region.country, r.region.region, r.region.subregion, r.region.commune];
   const parts = [r.name, r.producer, ...regionParts, ...r.appearanceTerms, ...r.aromaTerms, ...r.tasteTerms];

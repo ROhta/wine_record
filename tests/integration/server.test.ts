@@ -4,6 +4,7 @@ import { createApp, type McpServerDeps } from '../../src/server.js';
 
 const noopDeps: McpServerDeps = {
   recordWine: () => Promise.resolve({ ok: true, wineId: 'x', recordedAt: 'x' }),
+  previewRecord: () => ({ ok: false, errors: [] }),
 };
 
 describe('MCP サーバー骨組み', () => {

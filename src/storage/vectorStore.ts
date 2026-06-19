@@ -13,7 +13,7 @@ export type Metadata = Record<string, unknown>;
 
 export interface UpsertItem {
   id: string;
-  /** 埋め込みモデル（bge-m3）でベクトル化されるテキスト。 */
+  /** 埋め込みモデル（インデックス設定のモデル）でベクトル化されるテキスト。 */
   data: string;
   metadata: Metadata;
 }

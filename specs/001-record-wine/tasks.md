@@ -26,11 +26,11 @@ description: "record-wine 機能の実装タスク一覧"
 
 ## フェーズ1: セットアップ（共有基盤）
 
-- [ ] T001 Node.js 24 / TypeScript プロジェクトを初期化（`package.json`, `tsconfig.json` は `@tsconfig/strictest` 継承）
-- [ ] T002 [P] Vitest を設定（`vitest.config.ts`、`npm test` スクリプト）
-- [ ] T003 [P] Lint / Format を設定（ESLint + Prettier、`any` 禁止ルール）
-- [ ] T004 [P] `src/`, `tests/{contract,integration,unit}`, `data/`, `src/widgets/` のディレクトリ構造を作成（plan.md の構造）
-- [ ] T005 [P] `.env.example` を作成し、`.gitignore` に `.env` を追加（Upstash / ストレージのキー欄）
+- [X] T001 Node.js 24 / TypeScript プロジェクトを初期化（`package.json`, `tsconfig.json` は `@tsconfig/strictest` 継承）
+- [X] T002 [P] Vitest を設定（`vitest.config.ts`、`npm test` スクリプト）
+- [X] T003 [P] Lint / Format を設定（ESLint + Prettier、`any` 禁止ルール）
+- [X] T004 [P] `src/`, `tests/{contract,integration,unit}`, `data/`, `src/widgets/` のディレクトリ構造を作成（plan.md の構造）
+- [X] T005 [P] `.env.example` を作成し、`.gitignore` に `.env` を追加（Upstash / ストレージのキー欄）
 
 ---
 
@@ -38,12 +38,12 @@ description: "record-wine 機能の実装タスク一覧"
 
 **⚠️ これらが完了するまでユーザーストーリー実装は開始できない**
 
-- [ ] T006 [P] 環境変数の読込・検証を実装 `src/config.ts`（必須キー欠落で起動失敗、値はログに出さない）
-- [ ] T007 [P] ドメイン型を定義 `src/domain/wineRecord.ts` / `src/domain/region.ts` / `src/domain/taxonomy.ts`（data-model.md 準拠）
-- [ ] T008 [P] Upstash Vector ラッパの骨組みを実装 `src/storage/vectorStore.ts`（`bge-m3` インデックス前提、namespace=overall/aroma/appearance/taste の upsert/fetch I/F）
-- [ ] T009 [P] MCP サーバー骨組みを実装 `src/server.ts`（Streamable HTTP、Helmet 系セキュアヘッダ既定適用、ツール登録の土台）
-- [ ] T010 **前提データ**: 提供される JSA 表現集 PDF を構造化し `data/jsa-taxonomy.json` を生成（外観/香り/味わい→ターム配列。`pdf` スキルで対応）
-- [ ] T011 [P] JSA タクソノミーのローダ/型検証を実装 `src/domain/taxonomy.ts`（`tests/fixtures` の小サンプルでテストし、T010 と並行可）
+- [X] T006 [P] 環境変数の読込・検証を実装 `src/config.ts`（必須キー欠落で起動失敗、値はログに出さない）
+- [X] T007 [P] ドメイン型を定義 `src/domain/wineRecord.ts` / `src/domain/region.ts` / `src/domain/taxonomy.ts`（data-model.md 準拠）
+- [X] T008 [P] Upstash Vector ラッパの骨組みを実装 `src/storage/vectorStore.ts`（`bge-m3` インデックス前提、namespace=overall/aroma/appearance/taste の upsert/fetch I/F）
+- [X] T009 [P] MCP サーバー骨組みを実装 `src/server.ts`（Streamable HTTP、Helmet 系セキュアヘッダ既定適用、ツール登録の土台）
+- [X] T010 **前提データ**: 提供される JSA 表現集 PDF を構造化し `data/jsa-taxonomy.json` を生成（外観/香り/味わい→ターム配列。`pdf` スキルで対応）
+- [X] T011 [P] JSA タクソノミーのローダ/型検証を実装 `src/domain/taxonomy.ts`（`tests/fixtures` の小サンプルでテストし、T010 と並行可）
 
 **チェックポイント**: 土台完成。
 
@@ -55,8 +55,8 @@ description: "record-wine 機能の実装タスク一覧"
 ここで制約が判明したら、ツール/UI を作り込む前に設計を見直す。スパイクのコードは破棄してよい。
 
 - [ ] T012 [SPIKE] 画像アップロード経路の最小検証: 最小ウィジェットで写真選択 → `get_upload_url` 相当の署名付き PUT URL へ直接アップロード → 取得用 URL で再取得できることを **Claude モバイル**で確認 `spikes/image-upload/`
-- [ ] T013 [SPIKE] vision OCR 経路の確認: ラベル画像が接続先 LLM の vision に渡り、文字情報を抽出できることを Claude モバイルで確認（抽出値→ツール入力に渡せる形か）`spikes/vision-ocr/`
-- [ ] T014 [SPIKE] Upstash 無料枠の確認: ホスト型 `BAAI/bge-m3` インデックスを作成し namespace 付き upsert/query/fetch が無料枠で可能かを確認 `spikes/upstash-index/`
+- [X] T013 [SPIKE] vision OCR 経路の確認: ラベル画像が接続先 LLM の vision に渡り、文字情報を抽出できることを Claude モバイルで確認（抽出値→ツール入力に渡せる形か）`spikes/vision-ocr/`
+- [X] T014 [SPIKE] Upstash 無料枠の確認: hosted 埋め込み（`openai/text-embedding-3-small`。当初の `BAAI/bge-m3` はコンソール提供終了→research.md R1）でインデックスを作成し namespace 付き upsert/query/fetch が無料枠で可能かを確認 `spikes/upstash-index/`
 
 **チェックポイント**: 画像パス・vision・無料枠インデックス形が確認できた。US1 実装に進める。
 （重大な制約が出たら plan.md / research.md を更新してから先へ。）
@@ -71,18 +71,21 @@ description: "record-wine 機能の実装タスク一覧"
 
 ### ユーザーストーリー1 のテスト（TDD: 先に書いて失敗させる）⚠️
 
-- [ ] T015 [P] [US1] `record_wine` の契約テスト `tests/contract/recordWine.test.ts`（contracts/mcp-tools.md の入出力・必須/任意・name 非空）
-- [ ] T016 [P] [US1] WineRecord バリデーションのユニットテスト `tests/unit/wineRecord.test.ts`（name 非空 / vintage number|"NV"|null / imageUrl ドメイン制約）
-- [ ] T017 [P] [US1] 記録フロー結合テスト `tests/integration/recordCore.test.ts`（承認で保存・未承認で非永続化＝SC-005）
+- [X] T015 [P] [US1] `record_wine` の契約テスト `tests/contract/recordWine.test.ts`（contracts/mcp-tools.md の入出力・必須/任意・name 非空）
+- [X] T016 [P] [US1] WineRecord バリデーションのユニットテスト `tests/unit/wineRecord.test.ts`（name 非空 / vintage number|"NV"|null / imageUrl ドメイン制約）
+- [X] T017 [P] [US1] 記録フロー結合テスト `tests/integration/recordCore.test.ts`（承認で保存・未承認で非永続化＝SC-005）
 
 ### ユーザーストーリー1 の実装
 
-- [ ] T018 [P] [US1] WineRecord のバリデーション/正規化を実装 `src/domain/wineRecord.ts`
-- [ ] T019 [P] [US1] RegionPath の構築/正規化を実装 `src/domain/region.ts`
-- [ ] T020 [US1] `vectorStore` の `overall` namespace への upsert を実装 `src/storage/vectorStore.ts`（T008 を具体化）
-- [ ] T021 [US1] `record_wine` ツールを実装 `src/tools/recordWine.ts`（入力検証→保存→`{wineId, recordedAt}`、明示承認前提）
-- [ ] T022 [US1] 確認ウィジェット（最小）を実装 `src/widgets/confirmRecord/`（抽出値の事前入力・修正・承認。MCP Apps リソース。T012 の知見を反映）
-- [ ] T023 [US1] `record_wine` をサーバーに登録し結線 `src/server.ts`
+- [X] T018 [P] [US1] WineRecord のバリデーション/正規化を実装 `src/domain/wineRecord.ts`
+- [X] T019 [P] [US1] RegionPath の構築/正規化を実装 `src/domain/region.ts`
+- [X] T020 [US1] `vectorStore` の `overall` namespace への upsert を実装 `src/storage/vectorStore.ts`（T008 を具体化）
+- [X] T021 [US1] `record_wine` ツールを実装 `src/tools/recordWine.ts`（入力検証→保存→`{wineId, recordedAt}`、明示承認前提）
+- [X] T022a [SPIKE] [US1] 描画検証（結論）: リモート Streamable-HTTP（claude.ai/モバイル）では MCP Apps ウィジェットが描画されない（"No approval received"）。stdio/デスクトップでは可（bingo_mcp 前例＝差分はトランスポート）。elicitation も claude.ai 未対応（#153）。→ **テキスト確認フローへ転換**。`spikes/widget-render/`・research.md R5
+- [X] T022b [P] [US1] `preview_record` の契約テスト `tests/contract/previewRecord.test.ts`（下書き→正規化サマリ＋structuredContent、副作用なし、検証エラーのフィールド別提示）
+- [X] T022c [US1] `preview_record` ツールを実装 `src/tools/previewRecord.ts`（下書きを正規化・検証し、保存される内容をテキスト＋structuredContent で返す。保存しない）
+- [X] T022 [US1] テキスト確認フロー結線: `preview_record` をサーバー登録 + `record_wine` の description を「ユーザーの明示承認後にのみ呼ぶ」に強化 `src/server.ts`
+- [X] T023 [US1] `record_wine` をサーバーに登録し結線 `src/server.ts`
 
 **チェックポイント**: US1 が単体で動作・テスト可能（MVP）。
 
