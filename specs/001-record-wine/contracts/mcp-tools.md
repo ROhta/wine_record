@@ -86,8 +86,9 @@ URL を発行する。
   で返す。`name`/`color` 欠落や `*Terms` の語彙外などの検証エラーはフィールド別に提示する。
 - **副作用**: なし（保存しない）。
 - **確認フロー（FR-003）**: モデルは vision 抽出 → `preview_record` で内容提示 → **ユーザーが明示承認**
-  → `record_wine`。`record_wine` は「ユーザーが内容を明示承認した後にのみ呼ぶ」と description で規定し、
-  会話プロトコルで明示承認ゲートを担保する。
+  → `record_wine`。`record_wine` は「ユーザーが内容を明示承認した後にのみ呼ぶ」と description で規定する。
+  ただし UI ゲート不在のため**ハードな強制ではなく会話プロトコルのベストエフォート**（モデルは
+  preview を飛ばして record_wine を直接呼べる）。完全強制は widget/elicitation 対応待ち。
 
 ## エラー表現
 
