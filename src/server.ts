@@ -56,7 +56,7 @@ const recordWineInputSchema = {
 	imageUrl: z.string().nullish().describe("ラベル画像 URL（自ストレージの https のみ・任意）"),
 }
 
-/** カテゴリ → 日本語ラベル（preview / get_jsa_taxonomy のテキスト整形用）。 */
+/** カテゴリ → 日本語ラベル（get_jsa_taxonomy のテキスト整形用）。 */
 const CATEGORY_LABELS: Record<ExpressionCategory, string> = {
 	appearance: "外観",
 	aroma: "香り",
