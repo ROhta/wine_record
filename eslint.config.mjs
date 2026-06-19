@@ -16,7 +16,7 @@ export default tseslint.config(
 		// （recommendedTypeChecked）を併用していないため型情報が消費されず無駄なコストになる。
 		// よって project は設定しない（Copilot 指摘）。型情報リントが必要になれば
 		// recommendedTypeChecked + projectService を導入する。
-		files: ["src/**/*.ts", "tests/**/*.ts"],
+		files: ["src/**/*.ts", "tests/**/*.ts", "api/**/*.ts"],
 		languageOptions: {
 			ecmaVersion: 2023,
 			sourceType: "module",

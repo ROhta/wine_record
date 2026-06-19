@@ -202,6 +202,14 @@ function buildDeps(config: Config): McpServerDeps {
 	return {recordWine, previewRecord, getJsaTaxonomy}
 }
 
+/**
+ * 実依存（config/Upstash/タクソノミー）を構築済みの Express アプリを返す。
+ * Vercel のサーバーレスエントリポイント（api/index.ts が default export する）から使う。
+ */
+export function createConfiguredApp(): express.Express {
+	return createApp(buildDeps(loadConfig()))
+}
+
 /** サーバーを起動する。 */
 export function start(): void {
 	const config = loadConfig()
