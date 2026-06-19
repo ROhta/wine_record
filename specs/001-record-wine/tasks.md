@@ -81,11 +81,10 @@ description: "record-wine 機能の実装タスク一覧"
 - [X] T019 [P] [US1] RegionPath の構築/正規化を実装 `src/domain/region.ts`
 - [X] T020 [US1] `vectorStore` の `overall` namespace への upsert を実装 `src/storage/vectorStore.ts`（T008 を具体化）
 - [X] T021 [US1] `record_wine` ツールを実装 `src/tools/recordWine.ts`（入力検証→保存→`{wineId, recordedAt}`、明示承認前提）
-- [ ] T022a [SPIKE] [US1] 描画検証: 最小 MCP Apps ウィジェット（hello + ボタン→テストツール呼び出し）を Claude モバイルで描画・ブリッジ確認 `spikes/widget-render/`（mimetype / UIリソースURI / ブリッジAPI / ウィジェットからのツール呼び出し可否を実機で確定。捨てコード）
-- [ ] T022b [P] [US1] `confirm_record` の契約テスト `tests/contract/confirmRecord.test.ts`（下書き→UIリソース返却・副作用なし）
-- [ ] T022c [US1] `confirm_record` ツールを実装 `src/tools/confirmRecord.ts`（下書き→確認ウィジェットUIリソースを事前入力で返す。保存しない）
-- [ ] T022 [US1] 確認ウィジェット（最小）を実装 `src/widgets/confirmRecord/`（事前入力・`color`選択(white/red)・修正・承認→ブリッジで `record_wine` 直接呼び出し。表示ロジックは純粋関数に分離しユニットテスト。T022a の知見を反映）
-- [ ] T022d [US1] `confirm_record` をサーバーに登録し結線 `src/server.ts`
+- [X] T022a [SPIKE] [US1] 描画検証（結論）: リモート Streamable-HTTP（claude.ai/モバイル）では MCP Apps ウィジェットが描画されない（"No approval received"）。stdio/デスクトップでは可（bingo_mcp 前例＝差分はトランスポート）。elicitation も claude.ai 未対応（#153）。→ **テキスト確認フローへ転換**。`spikes/widget-render/`・research.md R5
+- [ ] T022b [P] [US1] `preview_record` の契約テスト `tests/contract/previewRecord.test.ts`（下書き→正規化サマリ＋structuredContent、副作用なし、検証エラーのフィールド別提示）
+- [ ] T022c [US1] `preview_record` ツールを実装 `src/tools/previewRecord.ts`（下書きを正規化・検証し、保存される内容をテキスト＋structuredContent で返す。保存しない）
+- [ ] T022 [US1] テキスト確認フロー結線: `preview_record` をサーバー登録 + `record_wine` の description を「ユーザーの明示承認後にのみ呼ぶ」に強化 `src/server.ts`
 - [X] T023 [US1] `record_wine` をサーバーに登録し結線 `src/server.ts`
 
 **チェックポイント**: US1 が単体で動作・テスト可能（MVP）。
