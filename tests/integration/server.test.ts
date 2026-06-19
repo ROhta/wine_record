@@ -17,6 +17,8 @@ describe('MCP サーバー骨組み', () => {
       const res = await fetch(`http://127.0.0.1:${port}/health`);
       expect(res.status).toBe(200);
       expect(await res.json()).toEqual({ status: 'ok' });
+      // Helmet のセキュアヘッダが既定適用されていること（ハードニング回帰ガード・T041）。
+      expect(res.headers.get('x-content-type-options')).toBe('nosniff');
     } finally {
       await new Promise<void>((resolve) => srv.close(() => resolve()));
     }
