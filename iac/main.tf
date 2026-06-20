@@ -3,9 +3,10 @@
 # 既存プロジェクト（手動作成済み）を terraform import して宣言的に管理する（手順は iac/README.md）。
 #
 # 方針:
-# - Deployment Protection（Vercel Authentication / SSO）を無効化（none）する。
-#   claude.ai のリモート MCP コネクタは /mcp にプレーン HTTPS で到達する必要があり、
-#   SSO 保護があると到達できないため authless にする（憲章 Security のトレードオフは README 参照）。
+# - Deployment Protection（Vercel Authentication / SSO）は **維持**する（standard_protection_new）。
+#   Vercel エッジ層で「チーム rohta のメンバー認証」を強制し、未認証のリクエストはアプリに届かない。
+#   ※この結果、claude.ai のリモート MCP コネクタはプレーン HTTPS では /mcp に到達できない。
+#     claude.ai から使う場合は別途、Protection Bypass トークンかアプリ層認証が必要（README 参照）。
 # - git 接続により、main への push で本番デプロイ、その他ブランチで preview デプロイを行う。
 # - UPSTASH_* 環境変数は Vercel の Upstash 統合がオーナーのため、ここでは管理しない
 #   （統合によるトークン自動ローテーションを壊さないため。in-line environment も使わない）。
@@ -20,8 +21,9 @@ resource "vercel_project" "wine_record" {
     production_branch = var.production_branch
   }
 
-  # Deployment Protection を解除（authless）。これが無いと claude.ai が /mcp に到達できない。
+  # Deployment Protection を維持（現状の standard_protection_new を明示）。
+  # 省略すると null（保護解除）へ動く恐れがあるため、現状値を明示して no-op にする。
   vercel_authentication = {
-    deployment_type = "none"
+    deployment_type = "standard_protection_new"
   }
 }

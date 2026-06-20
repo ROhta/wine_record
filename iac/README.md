@@ -3,14 +3,13 @@
 wine-record の Vercel プロジェクト設定を宣言的に管理する。State は HCP Terraform（リモート）。
 
 目的: Cloudflare ホスティングから Vercel に移行し、Blob / Upstash と合わせて Vercel に一元管理する。
-`record-wine` の MCP サーバー（Express + Streamable HTTP）を Vercel でホストし、claude.ai の
-リモート MCP コネクタから `https://<production-url>/mcp` で利用する。
+`record-wine` の MCP サーバー（Express + Streamable HTTP）を Vercel でホストする。
 
 ## 管理対象
 
 | リソース | 内容 |
 | --- | --- |
-| `vercel_project.wine_record` | プロジェクト設定。git 接続（main=本番 / その他=preview）、`framework=node`、`node_version=24.x`、**Deployment Protection 無効化（`vercel_authentication.deployment_type = "none"`）** |
+| `vercel_project.wine_record` | プロジェクト設定。git 接続（main=本番 / その他=preview）、`framework=node`、`node_version=24.x`、**Deployment Protection 維持（`vercel_authentication.deployment_type = "standard_protection_new"`）** |
 
 ### 管理しないもの（意図的）
 
@@ -18,11 +17,19 @@ wine-record の Vercel プロジェクト設定を宣言的に管理する。Sta
   壊さないため Terraform では管理しない。
 - **デプロイ成果物**: git push による自動デプロイに委ねる（`terraform apply` でデプロイはしない）。
 
-## セキュリティ上の注意（authless）
+## セキュリティ（Deployment Protection は維持）
 
-`vercel_authentication = none` により `/mcp` は**認証なしで公開**される。claude.ai コネクタが
-プレーン HTTPS で到達するための前提だが、第三者も `record_wine` を呼べてしまう。将来的な対策候補:
-レート制限、Anthropic egress CIDR 許可、ベアラ/署名検証。現状は既存設計（authless リモート MCP）に合わせる。
+`vercel_authentication = standard_protection_new` により、Vercel エッジ層で「チーム rohta の
+メンバー認証」を強制する。未認証のリクエストはアプリ（`/mcp`）に届かない。
+
+注意: この保護があるため、**claude.ai のリモート MCP コネクタはプレーン HTTPS では `/mcp` に
+到達できない**（SSO ログインを通過できないため）。claude.ai から利用する場合は、別途いずれかが必要:
+
+- **Protection Bypass トークン**（`x-vercel-protection-bypass` ヘッダ。コネクタが任意ヘッダを
+  送れる場合）、または
+- **アプリ層認証**（Express に Bearer 検証等を実装し、その上で Deployment Protection を緩める）。
+
+どちらを採るかは Phase 3 で別途検討する（現状は保護を維持し、公開 authless にはしない）。
 
 ## 前提（初回のみ・手動）
 
@@ -49,10 +56,10 @@ terraform init
 # 既存プロジェクトを import（team_id/project_id）
 terraform import vercel_project.wine_record team_YR2EVOhud8379Uz429mo0SDG/prj_a1grVcVSZU8K0OGwTi2eNOb8YpkA
 
-# 差分を確認（特に vercel_authentication が standard_protection_new → none に変わるはず）
+# 差分を確認（設定は現状一致のため、実質変更なし=import のみのはず）
 terraform plan
 
-# 問題なければ適用
+# 問題なければ適用（state への取り込みのみ。保護設定など現状は変えない）
 terraform apply
 ```
 
