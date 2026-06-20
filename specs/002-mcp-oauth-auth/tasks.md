@@ -24,9 +24,9 @@ description: "MCP コネクタ OAuth 認証（Auth0）のタスクリスト"
 
 **目的**: 依存追加と設定の土台。
 
-- [ ] T001 `express-oauth2-jwt-bearer` を追加する（`gh api repos/auth0/node-oauth2-jwt-bearer/releases/latest --jq '.tag_name'` で最新版を確認し）`package.json` の dependencies に入れて `npm install`。`npm run build`/`typecheck` が通ることを確認。
-- [ ] T002 `src/config.ts` の `EnvSchema` と `Config` に Auth0 設定を追加する（`AUTH0_ISSUER_BASE_URL`・`AUTH0_AUDIENCE` を任意、`Config.auth: {issuerBaseUrl, audience} | null`）。**両方設定で認証 ON / 両方未設定で OFF / 片方のみはエラー**。値はログ・エラーに出さない（憲章）。
-- [ ] T003 [P] `.env.example` に `AUTH0_ISSUER_BASE_URL` / `AUTH0_AUDIENCE` を追記する（プレースホルダ＋「本番では必須」コメント）。
+- [X] T001 `express-oauth2-jwt-bearer` を追加する（`gh api repos/auth0/node-oauth2-jwt-bearer/releases/latest --jq '.tag_name'` で最新版を確認し）`package.json` の dependencies に入れて `npm install`。`npm run build`/`typecheck` が通ることを確認。
+- [X] T002 `src/config.ts` の `EnvSchema` と `Config` に Auth0 設定を追加する（`AUTH0_ISSUER_BASE_URL`・`AUTH0_AUDIENCE` を任意、`Config.auth: {issuerBaseUrl, audience} | null`）。**両方設定で認証 ON / 両方未設定で OFF / 片方のみはエラー**。値はログ・エラーに出さない（憲章）。
+- [X] T003 [P] `.env.example` に `AUTH0_ISSUER_BASE_URL` / `AUTH0_AUDIENCE` を追記する（プレースホルダ＋「本番では必須」コメント）。
 
 ---
 
@@ -36,9 +36,9 @@ description: "MCP コネクタ OAuth 認証（Auth0）のタスクリスト"
 
 **⚠️ CRITICAL**: このフェーズ完了まで US1〜US3 の作業は開始できない。
 
-- [ ] T004 [P] `tests/unit/authConfig.test.ts` を作成する（**先に書いて落とす**）。`loadConfig` の Auth0 設定: 両方あり→`auth` 生成 / 両方なし→`auth=null` / 片方のみ→throw、を検証（env 注入で）。
-- [ ] T005 T004 を満たすよう `src/config.ts` を実装する（T002 の検証ルールを Green に）。
-- [ ] T006 `src/auth/tokenVerifier.ts` に `TokenVerifier` インターフェースと結果型を定義する（`verify(authorizationHeader): Promise<{ok:true, subject, scopes} | {ok:false, reason}>`）。テストで差し替え可能な注入シームにする（実体は US1 で Auth0 実装）。
+- [X] T004 [P] `tests/unit/authConfig.test.ts` を作成する（**先に書いて落とす**）。`loadConfig` の Auth0 設定: 両方あり→`auth` 生成 / 両方なし→`auth=null` / 片方のみ→throw、を検証（env 注入で）。
+- [X] T005 T004 を満たすよう `src/config.ts` を実装する（T002 の検証ルールを Green に）。
+- [X] T006 `src/auth/tokenVerifier.ts` に `TokenVerifier` インターフェースと結果型を定義する（`verify(authorizationHeader): Promise<{ok:true, subject, scopes} | {ok:false, reason}>`）。テストで差し替え可能な注入シームにする（実体は US1 で Auth0 実装）。
 - [ ] T007 `src/server.ts` の `createApp(deps)` / `buildExpressApp(resolveDeps)` に **任意の `tokenVerifier`** を受け取れるよう配線する（未指定＝認証 OFF で従来どおり通過。`/health` は常に認証外）。この時点では `/mcp` のゲートは「verifier があれば検証、無ければ素通し」の骨組みのみ。既存 52 テストが緑のまま維持されることを確認。
 
 **チェックポイント**: 認証シーム導入済み・既存挙動不変。ストーリー実装を開始できる。
@@ -53,14 +53,14 @@ description: "MCP コネクタ OAuth 認証（Auth0）のタスクリスト"
 
 ### US1 テスト（実装前に書いて落とす）⚠️
 
-- [ ] T008 [P] [US1] `tests/unit/protectedResourceMetadata.test.ts` を作成する。与えた `Config.auth` から RFC 9728 JSON（`resource`=audience / `authorization_servers`=[issuerBaseUrl]）が生成されることを検証（contracts/protected-resource-metadata.md）。
-- [ ] T009 [P] [US1] `tests/unit/wwwAuthenticate.test.ts` を作成する。`Bearer resource_metadata="<URL>"` のヘッダ書式を検証（contracts/auth-http-contract.md C1）。
+- [X] T008 [P] [US1] `tests/unit/protectedResourceMetadata.test.ts` を作成する。与えた `Config.auth` から RFC 9728 JSON（`resource`=audience / `authorization_servers`=[issuerBaseUrl]）が生成されることを検証（contracts/protected-resource-metadata.md）。
+- [X] T009 [P] [US1] `tests/unit/wwwAuthenticate.test.ts` を作成する。`Bearer resource_metadata="<URL>"` のヘッダ書式を検証（contracts/auth-http-contract.md C1）。
 - [ ] T010 [US1] `tests/integration/authGate.test.ts` を作成する（フェイク検証器を注入）。(a) 未認証 POST /mcp→401＋WWW-Authenticate、(b) GET /.well-known/oauth-protected-resource[/mcp]→200 JSON、(c) 有効トークン→initialize/tools/list 通過、(d) /health→200（認証外）。
 
 ### US1 実装
 
-- [ ] T011 [P] [US1] `src/auth/protectedResourceMetadata.ts` を実装する（T008 を Green に）。`Config.auth` から RFC 9728 JSON を生成する純関数。
-- [ ] T012 [P] [US1] `src/auth/wwwAuthenticate.ts` を実装する（T009 を Green に）。401 応答に付与する `WWW-Authenticate` 値を生成。
+- [X] T011 [P] [US1] `src/auth/protectedResourceMetadata.ts` を実装する（T008 を Green に）。`Config.auth` から RFC 9728 JSON を生成する純関数。
+- [X] T012 [P] [US1] `src/auth/wwwAuthenticate.ts` を実装する（T009 を Green に）。401 応答に付与する `WWW-Authenticate` 値を生成。
 - [ ] T013 [US1] `src/auth/tokenVerifier.ts` に `createAuth0Verifier(config)` を実装する。`express-oauth2-jwt-bearer` の `auth({issuerBaseURL, audience})` をラップし RS256/JWKS/iss/aud/exp を検証、`req.auth.payload` を内部型へ変換。検証失敗は `{ok:false}`。
 - [ ] T014 [US1] `src/server.ts` を実装する（T010 を Green に）。(a) `/.well-known/oauth-protected-resource` と `/.well-known/oauth-protected-resource/mcp` ルートを追加（認証外）、(b) `/mcp` で verifier 検証→失敗時 401＋WWW-Authenticate（秘匿情報なし）、(c) `buildDeps`/`createServerlessApp` で `config.auth` があれば `createAuth0Verifier` を注入。Helmet 既定は維持。
 - [ ] T015 [US1] 全ゲート（typecheck/lint/format:check/test/build）が緑であることを確認する。

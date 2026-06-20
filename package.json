@@ -50,6 +50,7 @@
 		"@modelcontextprotocol/sdk": "^1.29.0",
 		"@upstash/vector": "^1.2.3",
 		"express": "^5.2.1",
+		"express-oauth2-jwt-bearer": "^1.9.0",
 		"helmet": "^8.2.0",
 		"zod": "^4.4.3"
 	}
