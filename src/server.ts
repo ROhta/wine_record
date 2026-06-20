@@ -157,8 +157,13 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
 	return server
 }
 
-/** Express アプリを生成する。Helmet でセキュアヘッダを既定適用（憲章 Security）。 */
-export function createApp(deps: McpServerDeps): express.Express {
+/**
+ * Express アプリを生成する。Helmet でセキュアヘッダを既定適用（憲章 Security）。
+ * `resolveDeps` は /mcp 受信時に呼んで依存を解決する（直接注入なら定数を返すだけ、
+ * サーバーレスでは初回に config/Upstash を遅延構築する）。/health は依存に一切触れない
+ * liveness プローブとし、設定欠落でも 200 を返す（起動可否と設定可否を切り分けるため）。
+ */
+function buildExpressApp(resolveDeps: () => McpServerDeps): express.Express {
 	const app = express()
 	app.use(helmet())
 	app.use(express.json())
@@ -169,6 +174,16 @@ export function createApp(deps: McpServerDeps): express.Express {
 
 	// Streamable HTTP（ステートレス: リクエストごとに transport / server を生成。依存は共有）
 	app.post("/mcp", async (req, res) => {
+		let deps: McpServerDeps
+		try {
+			deps = resolveDeps()
+		} catch (err) {
+			// 設定欠落・タクソノミー未同梱など依存構築の失敗。原因はサーバーログにのみ出し
+			// （トークン等の秘匿情報を漏らさないため）、クライアントには汎用エラーを返す。
+			console.error("MCP 依存の構築に失敗しました:", err)
+			res.status(500).json({error: "server_misconfigured"})
+			return
+		}
 		const server = createMcpServer(deps)
 		const transport = new StreamableHTTPServerTransport({sessionIdGenerator: undefined})
 		res.on("close", () => {
@@ -180,6 +195,20 @@ export function createApp(deps: McpServerDeps): express.Express {
 	})
 
 	return app
+}
+
+/** Express アプリを生成する（依存を直接注入。テスト・ローカル起動用）。 */
+export function createApp(deps: McpServerDeps): express.Express {
+	return buildExpressApp(() => deps)
+}
+
+/**
+ * サーバーレス用 Express アプリ。依存（config/Upstash/タクソノミー）は初回 /mcp 時に
+ * 遅延構築・memo 化する。import 時に loadConfig を呼ばないため、env 無しのテスト環境でも安全。
+ */
+function createServerlessApp(): express.Express {
+	let cached: McpServerDeps | undefined
+	return buildExpressApp(() => (cached ??= buildDeps(loadConfig())))
 }
 
 /** 実依存（Upstash / タクソノミー）を構築して返す。store と taxonomy は一度だけ生成し共有する。 */
@@ -201,6 +230,14 @@ function buildDeps(config: Config): McpServerDeps {
 	const getJsaTaxonomy = createGetJsaTaxonomy({taxonomy})
 	return {recordWine, previewRecord, getJsaTaxonomy}
 }
+
+/**
+ * Vercel のサーバーレスエントリポイント。Vercel のバックエンド検出が src/server.ts を
+ * ルートエントリに選ぶため、ここで Express アプリを default export する
+ * （https://vercel.com/docs/frameworks/backend/express）。全パスがこの関数に入り、
+ * Express が /mcp・/health を内部ルーティングする。ローカル起動は下の start()。
+ */
+export default createServerlessApp()
 
 /** サーバーを起動する。 */
 export function start(): void {

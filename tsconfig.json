@@ -21,7 +21,6 @@
 		"moduleDetection": "force",
 		"allowJs": false,
 		"verbatimModuleSyntax": true,
-		"isolatedDeclarations": true,
 		"erasableSyntaxOnly": true,
 		"noUncheckedSideEffectImports": true,
 		"ignoreDeprecations": "6.0",
