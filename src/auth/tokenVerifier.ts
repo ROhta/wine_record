@@ -1,5 +1,5 @@
 import {auth, type AuthResult} from "express-oauth2-jwt-bearer"
-import type {Request, Response} from "express"
+import type {Request, RequestHandler, Response} from "express"
 
 /**
  * Bearer アクセストークン検証の抽象（注入可能なシーム）。
@@ -26,45 +26,56 @@ export type TokenVerifyResult = TokenVerifySuccess | TokenVerifyFailure
 
 export interface TokenVerifier {
 	/**
-	 * `Authorization` ヘッダ全体（例 `"Bearer <jwt>"`）を検証する。
+	 * 実際の Express リクエストを検証する。`Authorization` ヘッダの Bearer トークンを検証し、
 	 * 失敗時も例外を投げず `{ok:false}` を返す（秘匿情報を漏らさないため理由は分類のみ）。
+	 * 実 req を渡すことで、auth0 ミドルウェアが必要とする req のプロパティ
+	 * （`is`/`app`/`protocol`/`query`/`body` 等）が揃い、合成 req の不足による誤判定を避ける。
 	 */
-	verify(authorizationHeader: string | undefined): Promise<TokenVerifyResult>
+	verify(req: Request): Promise<TokenVerifyResult>
+}
+
+/** JWT payload からスコープを取り出す（OAuth `scope` 文字列 / Auth0 `permissions` 配列）。 */
+function extractScopes(payload: AuthResult["payload"] | undefined): string[] {
+	const scope = payload?.["scope"]
+	if (typeof scope === "string") return scope.split(" ").filter(Boolean)
+	const permissions = payload?.["permissions"]
+	if (Array.isArray(permissions)) return permissions.filter((p): p is string => typeof p === "string")
+	return []
 }
 
 /**
- * Auth0 を認可サーバーとする実体の検証器。`express-oauth2-jwt-bearer` の `auth()`
- * ミドルウェアをラップし、RS256/JWKS・issuer・audience・exp を検証する。
+ * Express 認証ミドルウェア（成功時に `req.auth` を設定して `next()`、失敗時に `next(err)` を呼ぶ）を
+ * `TokenVerifier` に変換する。ルートハンドラから渡される実 req で駆動する。
  *
- * `auth()` は Express ミドルウェアとしてのみ提供されるため、合成 req/next で駆動して
- * 成否を取り出す（成功時は req.auth に payload を設定し next()、失敗時は next(err) を呼び
- * res には触れない）。実トークン検証は CI ではなく実機（quickstart）で担保する。
+ * このマッピング（next() → ok / next(err) → fail / payload → subject・scopes）は、
+ * フェイクミドルウェアを注入して単体テストする（成功パスを含めて CI で検証可能にする）。
  */
-export function createAuth0Verifier(config: {issuerBaseUrl: string; audience: string}): TokenVerifier {
-	const middleware = auth({issuerBaseURL: config.issuerBaseUrl, audience: config.audience})
+export function createVerifierFromMiddleware(middleware: RequestHandler): TokenVerifier {
 	return {
-		verify(authorizationHeader) {
+		verify(req) {
 			return new Promise<TokenVerifyResult>(resolve => {
-				const headers: Record<string, string> = {}
-				if (authorizationHeader !== undefined) headers["authorization"] = authorizationHeader
-				// auth() が参照するのは主に req.headers。res は成否いずれでも触らない。
-				const req = {headers, method: "POST"} as unknown as Request & {auth?: AuthResult}
+				// auth0 ミドルウェアは検証経路で res に書き込まない（成否いずれも next を呼ぶ）。
 				const res = {} as unknown as Response
 				const done = (err?: unknown): void => {
 					if (err !== undefined && err !== null) {
-						resolve({ok: false, reason: authorizationHeader === undefined ? "missing" : "invalid"})
+						resolve({ok: false, reason: req.headers.authorization === undefined ? "missing" : "invalid"})
 						return
 					}
-					const payload = req.auth?.payload
-					const sub = typeof payload?.sub === "string" ? payload.sub : ""
-					const scope = payload?.["scope"]
-					const permissions = payload?.["permissions"]
-					const scopes = typeof scope === "string" ? scope.split(" ").filter(Boolean) : Array.isArray(permissions) ? permissions.filter((p): p is string => typeof p === "string") : []
-					resolve({ok: true, subject: sub, scopes})
+					const payload = (req as Request & {auth?: AuthResult}).auth?.payload
+					resolve({ok: true, subject: typeof payload?.sub === "string" ? payload.sub : "", scopes: extractScopes(payload)})
 				}
 				const ret: unknown = middleware(req, res, done)
 				if (ret instanceof Promise) ret.catch(() => resolve({ok: false, reason: "invalid"}))
 			})
 		},
 	}
+}
+
+/**
+ * Auth0 を認可サーバーとする実体の検証器。`express-oauth2-jwt-bearer` の `auth()` を
+ * そのまま用い、RS256/JWKS・issuer・audience・exp を検証する（実トークン検証は CI ではなく
+ * 実機 quickstart で担保）。
+ */
+export function createAuth0Verifier(config: {issuerBaseUrl: string; audience: string}): TokenVerifier {
+	return createVerifierFromMiddleware(auth({issuerBaseURL: config.issuerBaseUrl, audience: config.audience}))
 }

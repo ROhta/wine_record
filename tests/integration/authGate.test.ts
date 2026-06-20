@@ -13,8 +13,9 @@ const VALID = "Bearer valid-token"
 
 /** env / ネットワーク非依存のフェイク検証器。"valid-token" のみ受理。 */
 const fakeVerifier: TokenVerifier = {
-	verify(header) {
-		if (!header) return Promise.resolve({ok: false, reason: "missing"})
+	verify(req) {
+		const header = req.headers.authorization
+		if (header === undefined) return Promise.resolve({ok: false, reason: "missing"})
 		if (header === VALID) return Promise.resolve({ok: true, subject: "user1", scopes: []})
 		return Promise.resolve({ok: false, reason: "invalid"})
 	},

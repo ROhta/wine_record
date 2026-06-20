@@ -218,7 +218,7 @@ function buildExpressApp(resolveDeps: () => McpServerDeps, resolveAuth: () => Au
 		}
 		// 認証ゲート: ON なら Bearer トークンを検証。未認証/無効は依存を構築せず 401 で弾く。
 		if (gate !== null) {
-			const verdict = await gate.verifier.verify(req.headers.authorization)
+			const verdict = await gate.verifier.verify(req)
 			if (!verdict.ok) {
 				res
 					.status(401)
