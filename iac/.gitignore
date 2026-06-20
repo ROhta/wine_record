@@ -1,0 +1,25 @@
+# Terraform 作業ディレクトリ・プラグイン
+.terraform/
+.terraform.tfstate.lock.info
+
+# State（HCP 管理だが、ローカルフォールバック生成時の漏洩防止）
+*.tfstate
+*.tfstate.*
+
+# 変数ファイル（機密が入りうるため commit しない。値は HCP / 環境変数で管理）
+*.tfvars
+*.tfvars.json
+
+# クラッシュログ・CLI 設定
+crash.log
+crash.*.log
+.terraformrc
+terraform.rc
+
+# override は明示運用しない
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# 注: .terraform.lock.hcl は再現性のため commit する（ここでは ignore しない）
