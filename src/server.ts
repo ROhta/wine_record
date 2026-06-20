@@ -15,6 +15,20 @@ import {createGetJsaTaxonomy, type GetJsaTaxonomyResult} from "./tools/getJsaTax
 import {regionToParts} from "./domain/region.js"
 import {EXPRESSION_CATEGORIES, type ExpressionCategory} from "./domain/taxonomy.js"
 import type {FieldError} from "./domain/recordInput.js"
+import {type TokenVerifier, createAuth0Verifier} from "./auth/tokenVerifier.js"
+import {buildProtectedResourceMetadata, resourceMetadataUrl} from "./auth/protectedResourceMetadata.js"
+import {buildWwwAuthenticate} from "./auth/wwwAuthenticate.js"
+
+/**
+ * 認証ゲートの依存（OAuth 2.1 リソースサーバー）。`verifier` でトークンを検証し、
+ * `issuerBaseUrl`/`audience` から RFC 9728 メタデータと WWW-Authenticate を生成する。
+ * テストはフェイク verifier を注入、本番は config.auth から createAuth0Verifier を注入。
+ */
+export interface AuthGate {
+	verifier: TokenVerifier
+	issuerBaseUrl: string
+	audience: string
+}
 
 /**
  * MCP サーバーの依存。MCP 層は「ツール契約 ⇄ ドメイン結果」の変換だけを担い、
@@ -163,7 +177,7 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
  * サーバーレスでは初回に config/Upstash を遅延構築する）。/health は依存に一切触れない
  * liveness プローブとし、設定欠落でも 200 を返す（起動可否と設定可否を切り分けるため）。
  */
-function buildExpressApp(resolveDeps: () => McpServerDeps): express.Express {
+function buildExpressApp(resolveDeps: () => McpServerDeps, resolveAuth: () => AuthGate | null): express.Express {
 	const app = express()
 	app.use(helmet())
 	app.use(express.json())
@@ -172,8 +186,47 @@ function buildExpressApp(resolveDeps: () => McpServerDeps): express.Express {
 		res.json({status: "ok"})
 	})
 
+	// RFC 9728 Protected Resource Metadata（認証外・公開）。認証 OFF なら 404。
+	// claude.ai は WWW-Authenticate に加え、パス付き fallback も probe するため両方を配信する。
+	const serveMetadata = (_req: express.Request, res: express.Response): void => {
+		let gate: AuthGate | null
+		try {
+			gate = resolveAuth()
+		} catch (err) {
+			console.error("認証設定の構築に失敗しました:", err)
+			res.status(500).json({error: "server_misconfigured"})
+			return
+		}
+		if (gate === null) {
+			res.status(404).json({error: "not_found"})
+			return
+		}
+		res.json(buildProtectedResourceMetadata(gate))
+	}
+	app.get("/.well-known/oauth-protected-resource", serveMetadata)
+	app.get("/.well-known/oauth-protected-resource/mcp", serveMetadata)
+
 	// Streamable HTTP（ステートレス: リクエストごとに transport / server を生成。依存は共有）
 	app.post("/mcp", async (req, res) => {
+		let gate: AuthGate | null
+		try {
+			gate = resolveAuth()
+		} catch (err) {
+			console.error("認証設定の構築に失敗しました:", err)
+			res.status(500).json({error: "server_misconfigured"})
+			return
+		}
+		// 認証ゲート: ON なら Bearer トークンを検証。未認証/無効は依存を構築せず 401 で弾く。
+		if (gate !== null) {
+			const verdict = await gate.verifier.verify(req.headers.authorization)
+			if (!verdict.ok) {
+				res
+					.status(401)
+					.set("WWW-Authenticate", buildWwwAuthenticate(resourceMetadataUrl(gate.audience)))
+					.json({error: "unauthorized"})
+				return
+			}
+		}
 		let deps: McpServerDeps
 		try {
 			deps = resolveDeps()
@@ -191,24 +244,37 @@ function buildExpressApp(resolveDeps: () => McpServerDeps): express.Express {
 			void server.close()
 		})
 		await server.connect(transport)
-		await transport.handleRequest(req, res, req.body)
+		// MCP SDK と express-oauth2-jwt-bearer がともに Express.Request.auth を異なる型で
+		// 拡張するため、ここで req の型衝突が起きる。MCP 側の req.auth は本サーバーでは未使用なので、
+		// handleRequest が期待する型へ型のみキャストする（実行時の req はそのまま）。
+		await transport.handleRequest(req as unknown as Parameters<typeof transport.handleRequest>[0], res, req.body)
 	})
 
 	return app
 }
 
-/** Express アプリを生成する（依存を直接注入。テスト・ローカル起動用）。 */
-export function createApp(deps: McpServerDeps): express.Express {
-	return buildExpressApp(() => deps)
+/**
+ * Express アプリを生成する（依存を直接注入。テスト・ローカル起動用）。
+ * `auth` を渡すと認証ゲートが有効になる（省略時は認証 OFF＝従来どおり通過）。
+ */
+export function createApp(deps: McpServerDeps, auth?: AuthGate): express.Express {
+	return buildExpressApp(
+		() => deps,
+		() => auth ?? null,
+	)
 }
 
 /**
- * サーバーレス用 Express アプリ。依存（config/Upstash/タクソノミー）は初回 /mcp 時に
+ * サーバーレス用 Express アプリ。依存（config/Upstash/タクソノミー/認証）は初回リクエスト時に
  * 遅延構築・memo 化する。import 時に loadConfig を呼ばないため、env 無しのテスト環境でも安全。
  */
 function createServerlessApp(): express.Express {
-	let cached: McpServerDeps | undefined
-	return buildExpressApp(() => (cached ??= buildDeps(loadConfig())))
+	let cached: {deps: McpServerDeps; auth: AuthGate | null} | undefined
+	const resolve = (): {deps: McpServerDeps; auth: AuthGate | null} => (cached ??= buildContext(loadConfig()))
+	return buildExpressApp(
+		() => resolve().deps,
+		() => resolve().auth,
+	)
 }
 
 /** 実依存（Upstash / タクソノミー）を構築して返す。store と taxonomy は一度だけ生成し共有する。 */
@@ -229,6 +295,13 @@ function buildDeps(config: Config): McpServerDeps {
 	})
 	const getJsaTaxonomy = createGetJsaTaxonomy({taxonomy})
 	return {recordWine, previewRecord, getJsaTaxonomy}
+}
+
+/** config から MCP 依存と認証ゲートを構築する（認証は config.auth があるときのみ）。 */
+function buildContext(config: Config): {deps: McpServerDeps; auth: AuthGate | null} {
+	const deps = buildDeps(config)
+	const auth: AuthGate | null = config.auth ? {verifier: createAuth0Verifier(config.auth), issuerBaseUrl: config.auth.issuerBaseUrl, audience: config.auth.audience} : null
+	return {deps, auth}
 }
 
 /**

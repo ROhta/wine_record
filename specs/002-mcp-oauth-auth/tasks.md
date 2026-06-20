@@ -39,7 +39,7 @@ description: "MCP コネクタ OAuth 認証（Auth0）のタスクリスト"
 - [X] T004 [P] `tests/unit/authConfig.test.ts` を作成する（**先に書いて落とす**）。`loadConfig` の Auth0 設定: 両方あり→`auth` 生成 / 両方なし→`auth=null` / 片方のみ→throw、を検証（env 注入で）。
 - [X] T005 T004 を満たすよう `src/config.ts` を実装する（T002 の検証ルールを Green に）。
 - [X] T006 `src/auth/tokenVerifier.ts` に `TokenVerifier` インターフェースと結果型を定義する（`verify(authorizationHeader): Promise<{ok:true, subject, scopes} | {ok:false, reason}>`）。テストで差し替え可能な注入シームにする（実体は US1 で Auth0 実装）。
-- [ ] T007 `src/server.ts` の `createApp(deps)` / `buildExpressApp(resolveDeps)` に **任意の `tokenVerifier`** を受け取れるよう配線する（未指定＝認証 OFF で従来どおり通過。`/health` は常に認証外）。この時点では `/mcp` のゲートは「verifier があれば検証、無ければ素通し」の骨組みのみ。既存 52 テストが緑のまま維持されることを確認。
+- [X] T007 `src/server.ts` の `createApp(deps)` / `buildExpressApp(resolveDeps)` に **任意の `tokenVerifier`** を受け取れるよう配線する（未指定＝認証 OFF で従来どおり通過。`/health` は常に認証外）。この時点では `/mcp` のゲートは「verifier があれば検証、無ければ素通し」の骨組みのみ。既存 52 テストが緑のまま維持されることを確認。
 
 **チェックポイント**: 認証シーム導入済み・既存挙動不変。ストーリー実装を開始できる。
 
@@ -55,15 +55,15 @@ description: "MCP コネクタ OAuth 認証（Auth0）のタスクリスト"
 
 - [X] T008 [P] [US1] `tests/unit/protectedResourceMetadata.test.ts` を作成する。与えた `Config.auth` から RFC 9728 JSON（`resource`=audience / `authorization_servers`=[issuerBaseUrl]）が生成されることを検証（contracts/protected-resource-metadata.md）。
 - [X] T009 [P] [US1] `tests/unit/wwwAuthenticate.test.ts` を作成する。`Bearer resource_metadata="<URL>"` のヘッダ書式を検証（contracts/auth-http-contract.md C1）。
-- [ ] T010 [US1] `tests/integration/authGate.test.ts` を作成する（フェイク検証器を注入）。(a) 未認証 POST /mcp→401＋WWW-Authenticate、(b) GET /.well-known/oauth-protected-resource[/mcp]→200 JSON、(c) 有効トークン→initialize/tools/list 通過、(d) /health→200（認証外）。
+- [X] T010 [US1] `tests/integration/authGate.test.ts` を作成する（フェイク検証器を注入）。(a) 未認証 POST /mcp→401＋WWW-Authenticate、(b) GET /.well-known/oauth-protected-resource[/mcp]→200 JSON、(c) 有効トークン→initialize/tools/list 通過、(d) /health→200（認証外）。
 
 ### US1 実装
 
 - [X] T011 [P] [US1] `src/auth/protectedResourceMetadata.ts` を実装する（T008 を Green に）。`Config.auth` から RFC 9728 JSON を生成する純関数。
 - [X] T012 [P] [US1] `src/auth/wwwAuthenticate.ts` を実装する（T009 を Green に）。401 応答に付与する `WWW-Authenticate` 値を生成。
-- [ ] T013 [US1] `src/auth/tokenVerifier.ts` に `createAuth0Verifier(config)` を実装する。`express-oauth2-jwt-bearer` の `auth({issuerBaseURL, audience})` をラップし RS256/JWKS/iss/aud/exp を検証、`req.auth.payload` を内部型へ変換。検証失敗は `{ok:false}`。
-- [ ] T014 [US1] `src/server.ts` を実装する（T010 を Green に）。(a) `/.well-known/oauth-protected-resource` と `/.well-known/oauth-protected-resource/mcp` ルートを追加（認証外）、(b) `/mcp` で verifier 検証→失敗時 401＋WWW-Authenticate（秘匿情報なし）、(c) `buildDeps`/`createServerlessApp` で `config.auth` があれば `createAuth0Verifier` を注入。Helmet 既定は維持。
-- [ ] T015 [US1] 全ゲート（typecheck/lint/format:check/test/build）が緑であることを確認する。
+- [X] T013 [US1] `src/auth/tokenVerifier.ts` に `createAuth0Verifier(config)` を実装する。`express-oauth2-jwt-bearer` の `auth({issuerBaseURL, audience})` をラップし RS256/JWKS/iss/aud/exp を検証、`req.auth.payload` を内部型へ変換。検証失敗は `{ok:false}`。
+- [X] T014 [US1] `src/server.ts` を実装する（T010 を Green に）。(a) `/.well-known/oauth-protected-resource` と `/.well-known/oauth-protected-resource/mcp` ルートを追加（認証外）、(b) `/mcp` で verifier 検証→失敗時 401＋WWW-Authenticate（秘匿情報なし）、(c) `buildDeps`/`createServerlessApp` で `config.auth` があれば `createAuth0Verifier` を注入。Helmet 既定は維持。
+- [X] T015 [US1] 全ゲート（typecheck/lint/format:check/test/build）が緑であることを確認する。
 
 **チェックポイント**: 認証ゲートが自動テストで成立（claude.ai 実機は US2 のインフラ完了後）。
 
@@ -77,7 +77,7 @@ description: "MCP コネクタ OAuth 認証（Auth0）のタスクリスト"
 
 ### US2 テスト
 
-- [ ] T016 [US2] `tests/integration/authGate.test.ts` に「有効トークン→record_wine がゲートを通り、フェイクストアに 1 件 upsert される」ケースを追加する（既存ツール挙動が認証通過後は不変＝FR-008 を担保）。
+- [X] T016 [US2] `tests/integration/authGate.test.ts` に「有効トークン→record_wine がゲートを通り、フェイクストアに 1 件 upsert される」ケースを追加する（既存ツール挙動が認証通過後は不変＝FR-008 を担保）。
 
 ### US2 実装・インフラ（手動設定を含む）
 
@@ -99,12 +99,12 @@ description: "MCP コネクタ OAuth 認証（Auth0）のタスクリスト"
 
 ### US3 テスト
 
-- [ ] T022 [US3] `tests/integration/authGate.test.ts` に拒否系を追加する（フェイク検証器が「無効/期限切れ/aud 不一致」を返す各ケース→401、ツールハンドラが呼ばれない、応答ボディは種別のみ）。contracts/auth-http-contract.md C3。
-- [ ] T023 [US3] 秘匿情報非漏洩の回帰テストを追加する（401 応答・ログにトークン値/鍵/スタックが含まれないことを assert）。
+- [X] T022 [US3] `tests/integration/authGate.test.ts` に拒否系を追加する（フェイク検証器が「無効/期限切れ/aud 不一致」を返す各ケース→401、ツールハンドラが呼ばれない、応答ボディは種別のみ）。contracts/auth-http-contract.md C3。
+- [X] T023 [US3] 秘匿情報非漏洩の回帰テストを追加する（401 応答・ログにトークン値/鍵/スタックが含まれないことを assert）。
 
 ### US3 実装
 
-- [ ] T024 [US3] T022/T023 を Green にするよう `src/server.ts` の 401 経路を仕上げる（エラー応答は `{error:"unauthorized"}` 等の種別のみ、verifier 失敗理由を内部ログにも秘匿情報なしで記録）。US1 のゲートで大半は満たされる想定で、差分のみ対応。
+- [X] T024 [US3] T022/T023 を Green にするよう `src/server.ts` の 401 経路を仕上げる（エラー応答は `{error:"unauthorized"}` 等の種別のみ、verifier 失敗理由を内部ログにも秘匿情報なしで記録）。US1 のゲートで大半は満たされる想定で、差分のみ対応。
 
 **チェックポイント**: 全ユーザーストーリーが独立して機能。
 
