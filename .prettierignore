@@ -7,6 +7,7 @@ coverage/
 specs/
 docs/
 spikes/
+iac/
 data/
 *.md
 LICENSE
