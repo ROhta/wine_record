@@ -8,7 +8,7 @@ terraform {
     organization = "rohta"
 
     workspaces {
-      name = "wine-record"
+      name = "wine_records"
     }
   }
 

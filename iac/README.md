@@ -28,7 +28,7 @@ wine-record の Vercel プロジェクト設定を宣言的に管理する。Sta
 
 1. **HCP Terraform の organization / workspace を作成**
    - organization 名は `iac/versions.tf` の `cloud.organization` と一致させること（既定 `rohta`）。
-   - workspace 名 `wine-record`、Execution Mode は `Remote` 推奨。
+   - workspace 名 `wine_records`、Execution Mode は `Remote` 推奨。
 2. **Vercel API トークンを HCP workspace に登録**
    - HCP workspace の Variables に **環境変数（Environment variable）**として
      `VERCEL_API_TOKEN`（**sensitive**）を設定。値は Vercel ダッシュボードの Account Settings → Tokens で発行。
