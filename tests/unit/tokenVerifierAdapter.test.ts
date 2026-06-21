@@ -46,10 +46,6 @@ describe("createVerifierFromMiddleware（auth0 ミドルウェア → TokenVerif
 
 	it("ミドルウェアが reject しても ok=false に倒す（例外を投げない）", async () => {
 		const rejecting: RequestHandler = () => Promise.reject(new Error("boom"))
-		expect(await verifier(rejecting).verify(reqWith("Bearer x"))).toEqual({ok: false, reason: "invalid"})
+		expect(await createVerifierFromMiddleware(rejecting).verify(reqWith("Bearer x"))).toEqual({ok: false, reason: "invalid"})
 	})
 })
-
-function verifier(mw: RequestHandler) {
-	return createVerifierFromMiddleware(mw)
-}
