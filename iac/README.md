@@ -9,7 +9,7 @@ wine-record の Vercel プロジェクト設定を宣言的に管理する。Sta
 
 | リソース | 内容 |
 | --- | --- |
-| `vercel_project.wine_record` | プロジェクト設定。git 接続（main=本番 / その他=preview）、`framework=node`、`node_version=24.x`、**Deployment Protection 維持（`vercel_authentication.deployment_type = "standard_protection_new"`）** |
+| `vercel_project.wine_record` | プロジェクト設定。git 接続（main=本番 / その他=preview）、`framework=node`、`node_version=24.x`、**Deployment Protection 無効化（`vercel_authentication.deployment_type = "none"`）** |
 
 ### 管理しないもの（意図的）
 
@@ -17,19 +17,17 @@ wine-record の Vercel プロジェクト設定を宣言的に管理する。Sta
   壊さないため Terraform では管理しない。
 - **デプロイ成果物**: git push による自動デプロイに委ねる（`terraform apply` でデプロイはしない）。
 
-## セキュリティ（Deployment Protection は維持）
+## セキュリティ（保護はアプリ層 OAuth に移行）
 
-`vercel_authentication = standard_protection_new` により、Vercel エッジ層で「チーム rohta の
-メンバー認証」を強制する。未認証のリクエストはアプリ（`/mcp`）に届かない。
+`vercel_authentication = none` により Vercel エッジ層の Deployment Protection（SSO）は無効。
+保護の責務は **アプリ層 OAuth（Auth0・US 002）** に移行済み:
 
-注意: この保護があるため、**claude.ai のリモート MCP コネクタはプレーン HTTPS では `/mcp` に
-到達できない**（SSO ログインを通過できないため）。claude.ai から利用する場合は、別途いずれかが必要:
+- `/mcp` は Bearer アクセストークン検証で保護され、未認証は `401 + WWW-Authenticate` を返す。
+- claude.ai のリモート MCP コネクタはプレーン HTTPS で `/mcp` に到達し、Auth0 の OAuth フロー
+  （手動登録した client_id/secret・PKCE）でトークンを取得して接続する。
 
-- **Protection Bypass トークン**（`x-vercel-protection-bypass` ヘッダ。コネクタが任意ヘッダを
-  送れる場合）、または
-- **アプリ層認証**（Express に Bearer 検証等を実装し、その上で Deployment Protection を緩める）。
-
-どちらを採るかは Phase 3 で別途検討する（現状は保護を維持し、公開 authless にはしない）。
+→ `/mcp` は「**OAuth で保護された公開エンドポイント**」であり、authless ではない。
+詳細は `specs/002-mcp-oauth-auth/`（research.md D2/D5/D7・quickstart.md）。
 
 ## 前提（初回のみ・手動）
 
