@@ -3,13 +3,13 @@
 # 既存プロジェクト（手動作成済み）を terraform import して宣言的に管理する（手順は iac/README.md）。
 #
 # 方針:
-# - Deployment Protection（Vercel Authentication / SSO）は **維持**する（standard_protection_new）。
-#   Vercel エッジ層で「チーム rohta のメンバー認証」を強制し、未認証のリクエストはアプリに届かない。
-#   ※この結果、claude.ai のリモート MCP コネクタはプレーン HTTPS では /mcp に到達できない。
-#     claude.ai から使う場合は別途、Protection Bypass トークンかアプリ層認証が必要（README 参照）。
+# - Deployment Protection（Vercel エッジ層 SSO）は **無効化**する（none）。
+#   保護の責務はアプリ層 OAuth（Auth0・US 002）に移行済み: /mcp は Bearer トークン検証で保護され、
+#   未認証は 401 + WWW-Authenticate を返す。エッジ SSO を残すと claude.ai がプレーン HTTPS で
+#   /mcp に到達できず（SSO ログインを通過できない）二重ゲートになるため外す。
+#   ※ これにより /mcp は「OAuth で保護された公開エンドポイント」になる（authless ではない）。
 # - git 接続により、main への push で本番デプロイ、その他ブランチで preview デプロイを行う。
-# - UPSTASH_* 環境変数は Vercel の Upstash 統合がオーナーのため、ここでは管理しない
-#   （統合によるトークン自動ローテーションを壊さないため。in-line environment も使わない）。
+# - UPSTASH_* / AUTH0_* 環境変数は Vercel 側（統合・ダッシュボード）がオーナーのため、ここでは管理しない。
 resource "vercel_project" "wine_record" {
   name         = "wine-record"
   framework    = "node"
@@ -21,9 +21,8 @@ resource "vercel_project" "wine_record" {
     production_branch = var.production_branch
   }
 
-  # Deployment Protection を維持（現状の standard_protection_new を明示）。
-  # 省略すると null（保護解除）へ動く恐れがあるため、現状値を明示して no-op にする。
+  # Deployment Protection を無効化（アプリ層 OAuth へ移行済み）。
   vercel_authentication = {
-    deployment_type = "standard_protection_new"
+    deployment_type = "none"
   }
 }
