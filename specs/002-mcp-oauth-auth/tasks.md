@@ -81,11 +81,11 @@ description: "MCP コネクタ OAuth 認証（Auth0）のタスクリスト"
 
 ### US2 実装・インフラ（手動設定を含む）
 
-- [ ] T017 [US2] **Auth0 テナント設定**（quickstart.md ステップ1・手動）。DCR 有効化 / API 作成（Identifier=`https://wine-record-rohta.vercel.app/mcp`）/ **Default Audience** 設定 / Third-Party 既定スコープ / 必要なら connection を is_domain_connection 昇格。issuer・audience を控える。
-- [ ] T018 [US2] **環境変数**を設定する（quickstart.md ステップ2）。Vercel に `AUTH0_ISSUER_BASE_URL`・`AUTH0_AUDIENCE` を登録、ローカル `.env` にも設定（リポジトリに literal を置かない）。
+- [ ] T017 [US2] **Auth0 テナント設定**（quickstart.md ステップ1・手動・**DCR 不使用**）。API 作成（Identifier=`https://wine-record-rohta.vercel.app/mcp`）/ **Default Audience** 設定 / **Application（Regular Web App）作成**（Callback=`https://claude.ai/api/mcp/auth_callback`）。issuer・audience・client_id・client_secret を控える。※ DCR は無料プランで不可のため手動クライアントを使う。
+- [ ] T018 [US2] **環境変数**を設定する（quickstart.md ステップ2）。Vercel に `AUTH0_ISSUER_BASE_URL`・`AUTH0_AUDIENCE` を登録、ローカル `.env` にも設定（client_id/secret はサーバー env でなく claude.ai 側に入力）。リポジトリに literal を置かない。
 - [ ] T019 [US2] `iac/main.tf` の `vercel_authentication.deployment_type` を `none` に更新し、README の該当記述も「アプリ層 OAuth へ移行」に修正。`cd iac && terraform plan && terraform apply`（エッジ SSO 解除）。
 - [ ] T020 [US2] 本番 curl で確認する（quickstart.md ステップ4）。未認証 POST /mcp→401＋WWW-Authenticate、`/.well-known/oauth-protected-resource`→200 JSON。
-- [ ] T021 [US2] **claude.ai 実機検証**（quickstart.md ステップ5・手動）。コネクタ URL 登録→OAuth 同意→接続済み→ラベル写真→preview_record→承認→record_wine→wineId 取得→Upstash で 1 件増を裏取り。
+- [ ] T021 [US2] **claude.ai 実機検証**（quickstart.md ステップ5・手動）。コネクタ URL 登録→**Advanced settings に client_id/secret 入力**→OAuth 同意→接続済み→ラベル写真→preview_record→承認→record_wine→wineId 取得→Upstash で 1 件増を裏取り。
 
 **チェックポイント**: US1（接続）と US2（認証済み記録）が成立。ホスト稼働の価値を実証。
 
