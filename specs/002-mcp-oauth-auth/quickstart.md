@@ -68,7 +68,7 @@ curl -s https://wine-record-rohta.vercel.app/.well-known/oauth-protected-resourc
 ## ステップ 5: claude.ai 実機検証（手動・本機能の受け入れ）
 
 1. claude.ai → 設定 → コネクタ → カスタムコネクタを追加。URL: `https://wine-record-rohta.vercel.app/mcp`。
-   **Advanced settings** を開き、ステップ 1-3 で作成した **OAuth Client ID** と **Client Secret** を入力する（DCR を使わない手動クライアント）。
+   **Advanced settings** を開き、ステップ 1 の項目 3（Application 作成）で控えた **OAuth Client ID** と **Client Secret** を入力する（DCR を使わない手動クライアント）。
 2. **OAuth ログイン/同意画面が表示される**こと（US1・SC-002）。ログインして同意。
 3. コネクタが「接続済み」になり、`record_wine` / `preview_record` / `get_jsa_taxonomy` が一覧に出る（US1）。
 4. ラベル写真 → `preview_record` → 承認 → `record_wine` で保存 → wineId が返る（US2・SC-003）。

@@ -16,7 +16,7 @@
 | フィールド | 必須 | 規則 |
 | --- | --- | --- |
 | `resource` | ✅ | 正規 MCP URL（= Auth0 API Identifier = トークンの `aud`）。`AuthConfig.audience` から導出。 |
-| `authorization_servers` | ✅ | 1 要素以上。Auth0 issuer（`AuthConfig.issuerBaseUrl`）。claude.ai はここから Auth0 の AS メタデータ/DCR/JWKS を辿る。 |
+| `authorization_servers` | ✅ | 1 要素以上。Auth0 issuer（`AuthConfig.issuerBaseUrl`）。claude.ai はここから Auth0 の AS メタデータ(RFC 8414)/JWKS を辿る（クライアント登録は DCR でなく手動 client_id/secret。research.md D2）。 |
 | `scopes_supported` | 任意 | 定義したスコープ（本機能では空でも可）。 |
 | `resource_name` | 任意 | 人間可読名。 |
 
