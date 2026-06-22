@@ -8,8 +8,9 @@
 
 claude.ai のリモート MCP コネクタが wine-record に「認証付き」で接続できるようにする。
 自サーバー（Express + Streamable HTTP, `/mcp`）を **OAuth 2.1 リソースサーバー**化し、
-Bearer アクセストークンの検証ゲートを `/mcp` の前段に置く。トークン発行は **Auth0**（認可サーバー）に委譲し、
-claude.ai は Auth0 の **Dynamic Client Registration (DCR, RFC 7591)** で自動登録する。
+Bearer アクセストークンの検証ゲートを `/mcp` の前段に置く。トークン発行は **Auth0**（認可サーバー）に委譲する。
+Auth0 無料プランは DCR（自動登録）が使えないため、claude.ai には **事前登録した OAuth クライアント**の
+client_id/secret を Advanced settings で設定する（`custom_connection`・DCR 非依存。詳細は research.md D2）。
 
 技術的アプローチ:
 - トークン検証は Auth0 の `express-oauth2-jwt-bearer`（`auth()`）で RS256 JWT を JWKS 検証（issuer + audience 必須）。

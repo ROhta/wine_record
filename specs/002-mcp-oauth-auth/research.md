@@ -13,12 +13,13 @@ Anthropic コネクタ認証ドキュメント、各 RFC、Auth0 公式ドキュ
   - Vercel エッジ SSO 維持 → 却下（claude.ai はプレーン HTTPS で /mcp に到達する必要があり、Vercel SSO を通過できない＝原理的に不可）。
   - 静的 Bearer トークン手貼り → 却下（claude.ai は `static_bearer` 未対応と公式明記）。
 
-## D2. claude.ai が要求する接続要件
+## D2. claude.ai が要求する接続要件（無料プランは手動クライアント）
 
-- **Decision**: 認証種別は `oauth_dcr`（OAuth + Dynamic Client Registration）。コールバックは `https://claude.ai/api/mcp/auth_callback`。PKCE S256 必須。
-- **Rationale**: Anthropic 公式の認証種別に `oauth_dcr`/`oauth_cimd`/`oauth_anthropic_creds`/`custom_connection`/`none` の5つ。カスタム URL コネクタで現実的なのは DCR（または CIMD）。claude.ai は毎接続で PKCE `code_challenge`(S256) を送る。WWW-Authenticate に `resource_metadata` が無い場合は `/.well-known/oauth-protected-resource[/<path>]` を probe する fallback あり。
+- **Decision**: 認証種別は `custom_connection`（claude.ai の「Advanced settings」で事前登録済みの OAuth `client_id`/`client_secret` を手動入力）。コールバックは `https://claude.ai/api/mcp/auth_callback`。PKCE S256 必須。**DCR は使わない**。
+- **Rationale**: Anthropic 公式の認証種別は `oauth_dcr`/`oauth_cimd`/`oauth_anthropic_creds`/`custom_connection`/`none` の5つ。**Auth0 の DCR（`/oidc/register`）は無料/Developer プランでは非公開**で、Professional 以上 or サポート有効化が必要（調査で判明）。一方 claude.ai のカスタムコネクタは Advanced settings で手動 client_id/secret を受け付けるため、Auth0 に Application を1つ事前登録すれば DCR 不要で接続できる。サーバー実装（メタデータ・トークン検証）は DCR の有無に関わらず不変。claude.ai は毎接続で PKCE `code_challenge`(S256) を送る。WWW-Authenticate に `resource_metadata` が無い場合は `/.well-known/oauth-protected-resource[/<path>]` を probe する fallback あり。
 - **Alternatives considered**:
-  - `oauth_cimd`（Client ID Metadata Document）→ 将来検討。Auth0 公式は本番では CIMD 推奨だが、まず DCR で単一ユーザー検証を通す（縦切り優先）。
+  - `oauth_dcr`（自動登録）→ Auth0 無料プランで不可（有料 or サポート依頼）。本機能は無料前提のため不採用。将来 有料化すれば DCR に移行可能（サーバー実装は不変）。
+  - `oauth_cimd`（Client ID Metadata Document）→ 将来検討。
   - `oauth_anthropic_creds` → ディレクトリ掲載コネクタ向けで、カスタム URL には不適。
 
 ## D3. リソースサーバー側の必須実装（仕様 MUST）
@@ -39,21 +40,19 @@ Anthropic コネクタ認証ドキュメント、各 RFC、Auth0 公式ドキュ
   - `@modelcontextprotocol/express`（requireBearerAuth + mcpAuthMetadataRouter）→ MCP ネイティブだが追加パッケージかつトークン検証器は別途実装が必要。auth0 プラグイン採用方針に合わせ express-oauth2-jwt-bearer を主、メタデータ/WWW-Authenticate は自前の薄実装に。
   - `jose` で手書き検証 → 車輪の再発明。SDK に委ねる。
 
-## D5. Auth0 側の設定（claude.ai が DCR で繋がるための要点）
+## D5. Auth0 側の設定（無料プラン・手動クライアント）
 
-- **Decision**: 次を Auth0 テナントに設定（手順は quickstart.md）。
-  1. **DCR 有効化**: Settings → Advanced → Dynamic Client Registration（OIDC Dynamic Application Registration）を ON。
-  2. **API 作成**: Applications → APIs → Create API、**Identifier = 正規 MCP URL**（例 `https://wine-record-rohta.vercel.app/mcp`）。これが `audience`。署名は RS256。
-  3. **Default Audience 設定**: Settings → General → Default Audience を上記 Identifier に。
-  4. **Default Permissions for Third-Party Applications**: 該当 API でスコープを定義（DCR クライアントは third-party 扱い）。
-  5. **接続の昇格**: 必要なら接続を `is_domain_connection=true`（DCR アプリでログイン手段を有効化）。
-- **Rationale（最重要の落とし穴）**: claude.ai（MCP クライアント）は認可リクエストに **`resource` は送るが `audience` を送らない**。Auth0 は `audience` 無しだと**不透明(opaque)トークン**を発行し、リソースサーバーで JWT として検証できない。**Default Audience を設定**すると標準 JWT が発行され検証可能になる。
-- **Alternatives considered**: API ごとに audience を明示要求 → claude.ai が送らないため不成立。Default Audience がほぼ必須。
+- **Decision**: 次を Auth0 テナントに設定（手順は quickstart.md）。**DCR は有効化しない**。
+  1. **API 作成**: Applications → APIs → Create API、**Identifier = 正規 MCP URL**（例 `https://wine-record-rohta.vercel.app/mcp`）。これが `audience`。署名は RS256。
+  2. **Default Audience 設定**: Settings → General → Default Audience を上記 Identifier に。
+  3. **Application 作成（手動クライアント）**: Applications → Applications → Create Application →「Regular Web Application」。Allowed Callback URLs に `https://claude.ai/api/mcp/auth_callback`。発行された `client_id`/`client_secret` を claude.ai の Advanced settings に入力する。
+- **Rationale（最重要の落とし穴）**: claude.ai（MCP クライアント）は認可リクエストに **`resource` は送るが `audience` を送らない**。Auth0 は `audience` 無しだと**不透明(opaque)トークン**を発行し、リソースサーバーで JWT として検証できない。**Default Audience を設定**すると標準 JWT が発行され検証可能になる。Application を手動登録するのは DCR が無料プランで使えないため（D2）。
+- **Alternatives considered**: API ごとに audience を明示要求 → claude.ai が送らないため不成立。Default Audience がほぼ必須。DCR による Application 自動生成 → 無料プラン非対応。
 
 ## D6. Auth0 が公開するエンドポイント
 
-- **Decision**: 自サーバーの Protected Resource Metadata の `authorization_servers` に Auth0 issuer (`https://<tenant>.<region>.auth0.com/`) を載せ、以降は claude.ai が Auth0 の `/.well-known/oauth-authorization-server`・`registration_endpoint`(DCR)・`jwks.json`・PKCE S256 を利用する。
-- **Rationale**: Auth0 が RFC 8414 メタデータ・RFC 7591 DCR・JWKS・PKCE を標準提供。リソースサーバーは「Auth0 を指す」だけでよい。
+- **Decision**: 自サーバーの Protected Resource Metadata の `authorization_servers` に Auth0 issuer (`https://<tenant>.<region>.auth0.com/`) を載せ、以降は claude.ai が Auth0 の `/.well-known/oauth-authorization-server`・`jwks.json`・PKCE S256 を利用する。クライアント登録は DCR（`registration_endpoint`）でなく手動 client_id/secret（D2）で代替。
+- **Rationale**: Auth0 が RFC 8414 メタデータ・JWKS・PKCE を標準提供。リソースサーバーは「Auth0 を指す」だけでよい。
 - **Alternatives considered**: 自サーバーで AS メタデータをプロキシ配信 → 不要（claude.ai は authorization_servers から直接 Auth0 を引く）。
 
 ## D7. ホスティング基盤（Vercel Deployment Protection）

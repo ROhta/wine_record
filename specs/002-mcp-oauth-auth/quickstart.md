@@ -11,15 +11,19 @@
 
 ## ステップ 1: Auth0 テナント設定（手動・初回）
 
-1. **DCR 有効化**: Auth0 Dashboard → Settings → Advanced → **Dynamic Client Registration (OIDC Dynamic Application Registration)** を ON → Save。
-2. **API 作成**: Applications → APIs → **Create API**。
+> **無料プラン**: Auth0 の DCR（`/oidc/register`）は無料/Developer プランでは使えない（Professional 以上 or サポート有効化）。
+> 本手順は **DCR を使わず**、OAuth クライアントを手動で1つ事前登録し、claude.ai の Advanced settings に
+> client_id/secret を入力する方式（`custom_connection`）。サーバー実装は DCR の有無に関わらず不変。
+
+1. **API 作成**（リソースサーバー）: Applications → APIs → **Create API**。
    - Name: `wine-record MCP`
    - **Identifier**: `https://wine-record-rohta.vercel.app/mcp`（= audience。末尾スラッシュ無し）
    - Signing Algorithm: RS256
-3. **Default Audience**: Settings → General → **Default Audience** に上記 Identifier を設定（**重要**: claude.ai は `resource` のみ送り `audience` を送らないため、未設定だと opaque token になり JWT 検証不能）。
-4. **Default Permissions for Third-Party Applications**: 作成した API の Settings で、third-party（DCR）アプリに許可するスコープを定義（本機能では最小で可）。
-5. **接続の昇格（必要時）**: ログイン手段（DB/Google 等）を DCR アプリで使えるよう、対象 connection を `is_domain_connection=true` に（Management API もしくは CLI）。
-6. 控える値: テナントの **issuer**（`https://<tenant>.<region>.auth0.com/`）と **audience**（上記 Identifier）。
+2. **Default Audience**: Settings → General → **Default Audience** に上記 Identifier を設定（**重要**: claude.ai は `resource` のみ送り `audience` を送らないため、未設定だと opaque token になり JWT 検証不能）。
+3. **Application 作成**（手動クライアント）: Applications → Applications → **Create Application** → **Regular Web Application**。
+   - Settings → **Allowed Callback URLs** に `https://claude.ai/api/mcp/auth_callback`。
+   - **Client ID** と **Client Secret** を控える（ステップ 5 で claude.ai の Advanced settings に入力）。
+4. 控える値: テナントの **issuer**（`https://<tenant>.<region>.auth0.com/`）と **audience**（上記 Identifier）、**client_id**/**client_secret**。テスト用に API の **Test** タブの `access_token` も控える（ローカル検証用）。
 
 ## ステップ 2: 環境変数の設定
 
@@ -64,6 +68,7 @@ curl -s https://wine-record-rohta.vercel.app/.well-known/oauth-protected-resourc
 ## ステップ 5: claude.ai 実機検証（手動・本機能の受け入れ）
 
 1. claude.ai → 設定 → コネクタ → カスタムコネクタを追加。URL: `https://wine-record-rohta.vercel.app/mcp`。
+   **Advanced settings** を開き、ステップ 1 の項目 3（Application 作成）で控えた **OAuth Client ID** と **Client Secret** を入力する（DCR を使わない手動クライアント）。
 2. **OAuth ログイン/同意画面が表示される**こと（US1・SC-002）。ログインして同意。
 3. コネクタが「接続済み」になり、`record_wine` / `preview_record` / `get_jsa_taxonomy` が一覧に出る（US1）。
 4. ラベル写真 → `preview_record` → 承認 → `record_wine` で保存 → wineId が返る（US2・SC-003）。
