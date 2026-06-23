@@ -20,7 +20,7 @@
 
 1. **API 作成**（リソースサーバー）: Applications → APIs → **Create API**。
    - Name: `wine-record MCP` / **Identifier**: `https://wine-record-rohta.vercel.app/mcp`（= audience。末尾スラッシュ無し）/ Signing Algorithm: RS256
-   - **(A) `allow_offline_access` を ON**（claude.ai は `scope=offline_access` を要求するため）。
+   - **`allow_offline_access` を ON**（補助。claude.ai は `scope=offline_access` を要求するため）。
    - **(A) `subject_type_authorization.user.policy` を `allow_all` に**（決定打）。API 既定が `require_client_grant` だと、authorization_code（ユーザーフロー）でも client-grant 必須になり全クライアントを拒否する。ダッシュボードに出ないことがあるため CLI 推奨:
      ```sh
      auth0 api patch "resource-servers/<API_ID>" \

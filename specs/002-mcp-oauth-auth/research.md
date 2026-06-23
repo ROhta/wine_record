@@ -77,7 +77,7 @@ Anthropic コネクタ認証ドキュメント、各 RFC、Auth0 公式ドキュ
 - **Rationale**: いずれも claude.ai の OAuth 挙動（`resource` 送出・`offline_access` 要求・手動クライアント）に Auth0 を合わせるため。client-grant（client_credentials 用）は user フローには無関係と判明（Mgmt API は grant 無しで `/authorize` 通過）。
 - **デバッグ手法**: claude.ai UI 越しでなく `/authorize` を curl で直接叩き、`audience`/`scope`/設定を1変数ずつ変えて切り分けた（`/u/login` への 302 = 成功）。
 - **Alternatives considered**: client-grant 作成 → user フローでは効かず却下。default_audience 単独 → 不十分（D5 の想定を実機で更新）。
-- 注: これらは Auth0 テナント側の運用設定で、リポジトリ（iac/）の管理外。再現は quickstart.md と [[auth0-mcp-resource-parameter-profile]] 参照。
+- 注: これらは Auth0 テナント側の運用設定で、リポジトリ（iac/）の管理外。再現手順は [quickstart.md](./quickstart.md) のステップ1を参照。
 
 ## 未解決（NEEDS CLARIFICATION）
 
