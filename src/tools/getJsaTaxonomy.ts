@@ -24,8 +24,8 @@ export type GetJsaTaxonomyResult = {ok: true; value: TaxonomyView} | {ok: false;
 
 function parseCategory(raw: unknown): {ok: true; value: ExpressionCategory | null} | {ok: false} {
 	if (raw === undefined || raw === null) return {ok: true, value: null}
-	if (raw === "appearance" || raw === "aroma" || raw === "taste") return {ok: true, value: raw}
-	return {ok: false}
+	const match = EXPRESSION_CATEGORIES.find(c => c === raw)
+	return match !== undefined ? {ok: true, value: match} : {ok: false}
 }
 
 /**

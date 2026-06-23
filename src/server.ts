@@ -172,6 +172,22 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
 }
 
 /**
+ * 依存・設定の遅延構築を実行し、失敗時は原因をサーバーログにのみ出して 500 を送る。
+ * 構築失敗の原因（トークン等の秘匿情報を含みうる）はクライアントに返さず汎用エラーに丸める。
+ * 戻り値は判別可能ユニオン: `{ok:false}` は「500 を送信済み」を表す（呼び出し側は早期離脱するだけ）。
+ * `resolve` が正当に `null` を返す場合（認証 OFF）と区別するため、`T | null` の番兵は使わない。
+ */
+function resolveOrFail<T>(resolve: () => T, res: express.Response, logMsg: string): {ok: true; value: T} | {ok: false} {
+	try {
+		return {ok: true, value: resolve()}
+	} catch (err) {
+		console.error(logMsg, err)
+		res.status(500).json({error: "server_misconfigured"})
+		return {ok: false}
+	}
+}
+
+/**
  * Express アプリを生成する。Helmet でセキュアヘッダを既定適用（憲章 Security）。
  * `resolveDeps` は /mcp 受信時に呼んで依存を解決する（直接注入なら定数を返すだけ、
  * サーバーレスでは初回に config/Upstash を遅延構築する）。/health は依存に一切触れない
@@ -189,54 +205,37 @@ function buildExpressApp(resolveDeps: () => McpServerDeps, resolveAuth: () => Au
 	// RFC 9728 Protected Resource Metadata（認証外・公開）。認証 OFF なら 404。
 	// claude.ai は WWW-Authenticate に加え、パス付き fallback も probe するため両方を配信する。
 	const serveMetadata = (_req: express.Request, res: express.Response): void => {
-		let gate: AuthGate | null
-		try {
-			gate = resolveAuth()
-		} catch (err) {
-			console.error("認証設定の構築に失敗しました:", err)
-			res.status(500).json({error: "server_misconfigured"})
-			return
-		}
-		if (gate === null) {
+		const gate = resolveOrFail(resolveAuth, res, "認証設定の構築に失敗しました:")
+		if (!gate.ok) return
+		if (gate.value === null) {
 			res.status(404).json({error: "not_found"})
 			return
 		}
-		res.json(buildProtectedResourceMetadata(gate))
+		res.json(buildProtectedResourceMetadata(gate.value))
 	}
 	app.get("/.well-known/oauth-protected-resource", serveMetadata)
 	app.get("/.well-known/oauth-protected-resource/mcp", serveMetadata)
 
 	// Streamable HTTP（ステートレス: リクエストごとに transport / server を生成。依存は共有）
 	app.post("/mcp", async (req, res) => {
-		let gate: AuthGate | null
-		try {
-			gate = resolveAuth()
-		} catch (err) {
-			console.error("認証設定の構築に失敗しました:", err)
-			res.status(500).json({error: "server_misconfigured"})
-			return
-		}
+		const gate = resolveOrFail(resolveAuth, res, "認証設定の構築に失敗しました:")
+		if (!gate.ok) return
 		// 認証ゲート: ON なら Bearer トークンを検証。未認証/無効は依存を構築せず 401 で弾く。
-		if (gate !== null) {
-			const verdict = await gate.verifier.verify(req)
+		if (gate.value !== null) {
+			const verdict = await gate.value.verifier.verify(req)
 			if (!verdict.ok) {
 				res
 					.status(401)
-					.set("WWW-Authenticate", buildWwwAuthenticate(resourceMetadataUrl(gate.audience)))
+					.set("WWW-Authenticate", buildWwwAuthenticate(resourceMetadataUrl(gate.value.audience)))
 					.json({error: "unauthorized"})
 				return
 			}
 		}
-		let deps: McpServerDeps
-		try {
-			deps = resolveDeps()
-		} catch (err) {
-			// 設定欠落・タクソノミー未同梱など依存構築の失敗。原因はサーバーログにのみ出し
-			// （トークン等の秘匿情報を漏らさないため）、クライアントには汎用エラーを返す。
-			console.error("MCP 依存の構築に失敗しました:", err)
-			res.status(500).json({error: "server_misconfigured"})
-			return
-		}
+		// 設定欠落・タクソノミー未同梱など依存構築の失敗は、原因をサーバーログにのみ出し（秘匿情報を
+		// 漏らさないため）、クライアントには汎用 500 を返す（resolveOrFail が送出済み）。
+		const resolved = resolveOrFail(resolveDeps, res, "MCP 依存の構築に失敗しました:")
+		if (!resolved.ok) return
+		const deps = resolved.value
 		const server = createMcpServer(deps)
 		const transport = new StreamableHTTPServerTransport({sessionIdGenerator: undefined})
 		res.on("close", () => {

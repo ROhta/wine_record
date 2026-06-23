@@ -25,12 +25,13 @@
 - [x] `/authorize` が `/u/login` へ 302（curl で実証・認可成立）
 - [x] record_wine 往復＆ Upstash 1 件増の最終裏取り（2026-06-23 実機）: 「このワインを記録して」→ preview_record（ベリーA 吉 / 赤 / マルサン葡萄酒 / 日本 / 2023）→ 「OK」→ record_wine →「保存しました🍷」。Upstash `overall` が 1→2 件に増加を確認（SC-003 クリア）
 
-## 効いた Auth0 構成（quickstart.md ステップ1・research.md D9 に記載）
+## 効いた Auth0 構成
 
-- API `subject_type_authorization.user.policy = allow_all`（決定打）
-- テナント Resource Parameter Compatibility Profile = ON
-- first-party Regular Web Application（`is_first_party:true`）
-- API `allow_offline_access = ON` / Default Audience = API Identifier
+決定打は API の `subject_type_authorization.user.policy = allow_all`。
+構成の全項目と根拠・適用手順はドリフトを避けて一次情報に集約する（ここでは再掲しない）:
+
+- 決定の根拠: [research.md](../research.md) D9
+- 適用手順（CLI 含む）: [quickstart.md](../quickstart.md) ステップ 1
 
 ## メモ
 

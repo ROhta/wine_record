@@ -1,6 +1,7 @@
 import {readFileSync} from "node:fs"
 import {z} from "zod"
 import type {ExpressionTaxonomy} from "./taxonomy.js"
+import {zodFieldNames} from "../zodFieldNames.js"
 
 const SubcategorySchema = z.object({
 	name: z.string().min(1),
@@ -24,8 +25,7 @@ const TaxonomySchema = z.object({
 export function parseTaxonomy(raw: unknown): ExpressionTaxonomy {
 	const result = TaxonomySchema.safeParse(raw)
 	if (!result.success) {
-		const fields = [...new Set(result.error.issues.map(i => i.path.map(String).join(".")))].sort()
-		throw new Error(`JSA タクソノミーが不正です: ${fields.join(", ")}`)
+		throw new Error(`JSA タクソノミーが不正です: ${zodFieldNames(result.error).join(", ")}`)
 	}
 	return result.data
 }
