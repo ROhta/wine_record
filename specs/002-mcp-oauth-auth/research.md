@@ -67,6 +67,18 @@ Anthropic コネクタ認証ドキュメント、各 RFC、Auth0 公式ドキュ
 - **Rationale**: 既存 `server.ts` の「依存注入＋遅延構築＋env 非依存テスト」パターンを踏襲。実 Auth0 への到達は quickstart.md の手動実機検証で担保（CI では行わない）。
 - **Alternatives considered**: 実 Auth0 を CI で叩く → 不安定・秘匿情報依存。注入で代替。
 
+## D9. Auth0 側で実際に必要だった認可設定（2026-06-23 実機接続で確定）
+
+- **Decision**: claude.ai 接続を成立させるには、Auth0 側で次が**すべて**必要だった（手順は quickstart.md ステップ1）:
+  1. **API `subject_type_authorization.user.policy = allow_all`**（決定打）。既定の `require_client_grant` だと authorization_code でも client-grant 必須になり `/authorize` が全クライアントを拒否（`invalid_request: ... not authorized to access resource server`）。
+  2. **Resource Parameter Compatibility Profile = ON**（テナント）。claude.ai は `resource`(RFC 8707) を送るため。
+  3. **first-party Regular Web Application**（`is_first_party:true`）。API 自動生成の M2M Test App（`non_interactive`）や third-party 不可。
+  4. `allow_offline_access = ON`（claude.ai は `scope=offline_access` 要求）。callback 登録・Authorization Code グラント。
+- **Rationale**: いずれも claude.ai の OAuth 挙動（`resource` 送出・`offline_access` 要求・手動クライアント）に Auth0 を合わせるため。client-grant（client_credentials 用）は user フローには無関係と判明（Mgmt API は grant 無しで `/authorize` 通過）。
+- **デバッグ手法**: claude.ai UI 越しでなく `/authorize` を curl で直接叩き、`audience`/`scope`/設定を1変数ずつ変えて切り分けた（`/u/login` への 302 = 成功）。
+- **Alternatives considered**: client-grant 作成 → user フローでは効かず却下。default_audience 単独 → 不十分（D5 の想定を実機で更新）。
+- 注: これらは Auth0 テナント側の運用設定で、リポジトリ（iac/）の管理外。再現手順は [quickstart.md](./quickstart.md) のステップ1を参照。
+
 ## 未解決（NEEDS CLARIFICATION）
 
 なし（spec の前提で確定済み。Auth0 テナント/リージョンの具体値は実装時に `.env` で与える運用情報であり、設計上の未解決ではない）。
