@@ -39,14 +39,8 @@ export function buildOverallUpsert(r: WineRecord): UpsertItem {
 	}
 }
 
-const ASPECTS: {
-	namespace: AspectNamespace
-	field: "appearanceTerms" | "aromaTerms" | "tasteTerms"
-}[] = [
-	{namespace: "appearance", field: "appearanceTerms"},
-	{namespace: "aroma", field: "aromaTerms"},
-	{namespace: "taste", field: "tasteTerms"},
-]
+/** 観点別 namespace の一覧。各 namespace `X` は記録の `${X}Terms` フィールドを格納する。 */
+const ASPECT_NAMESPACES = ["appearance", "aroma", "taste"] as const satisfies readonly AspectNamespace[]
 
 /**
  * 観点別 namespace（appearance/aroma/taste）の upsert アイテムを構築する。
@@ -56,8 +50,8 @@ const ASPECTS: {
  */
 export function buildAspectUpserts(r: WineRecord): {namespace: AspectNamespace; item: UpsertItem}[] {
 	const items: {namespace: AspectNamespace; item: UpsertItem}[] = []
-	for (const {namespace, field} of ASPECTS) {
-		const terms = r[field]
+	for (const namespace of ASPECT_NAMESPACES) {
+		const terms = r[`${namespace}Terms`]
 		if (terms.length === 0) continue
 		items.push({
 			namespace,

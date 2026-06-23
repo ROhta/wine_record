@@ -28,12 +28,6 @@ export interface ValidatedRecord {
 
 export type ValidationResult = {ok: true; value: ValidatedRecord} | {ok: false; errors: FieldError[]}
 
-const CATEGORY_FIELD: Record<ExpressionCategory, "appearanceTerms" | "aromaTerms" | "tasteTerms"> = {
-	appearance: "appearanceTerms",
-	aroma: "aromaTerms",
-	taste: "tasteTerms",
-}
-
 /** ある色・カテゴリで許可される全用語の集合（サブカテゴリ横断）。 */
 function collectAllowedTerms(taxonomy: ExpressionTaxonomy, color: WineColor, category: ExpressionCategory): Set<string> {
 	const set = new Set<string>()
@@ -98,7 +92,7 @@ export function validateRecordInput(input: unknown, taxonomy: ExpressionTaxonomy
 
 	const terms: Record<ExpressionCategory, string[]> = {appearance: [], aroma: [], taste: []}
 	for (const category of EXPRESSION_CATEGORIES) {
-		const field = CATEGORY_FIELD[category]
+		const field = `${category}Terms` as const
 		const arr = asStringArray(obj[field])
 		terms[category] = arr
 		if (color !== null) {

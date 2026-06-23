@@ -1,4 +1,5 @@
 import {z} from "zod"
+import {zodFieldNames} from "./zodFieldNames.js"
 
 /**
  * 環境変数スキーマ（キーは実際の環境変数名）。
@@ -61,8 +62,7 @@ export interface Config {
 export function loadConfig(env: Record<string, string | undefined> = process.env): Config {
 	const result = EnvSchema.safeParse(env)
 	if (!result.success) {
-		const fields = [...new Set(result.error.issues.map(i => i.path.map(String).join(".")))].sort()
-		throw new Error(`環境変数が不正または欠落しています: ${fields.join(", ")}`)
+		throw new Error(`環境変数が不正または欠落しています: ${zodFieldNames(result.error).join(", ")}`)
 	}
 	const e = result.data
 	return {
