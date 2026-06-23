@@ -23,7 +23,7 @@
 
 - [x] **接続成立**（2026-06-23）: カスタムコネクタ URL 登録 → Advanced settings に client_id/secret → OAuth ログイン/同意 → 接続済み
 - [x] `/authorize` が `/u/login` へ 302（curl で実証・認可成立）
-- [ ] record_wine 往復＆ Upstash 1 件増の最終裏取り（ユーザー任意・接続成立済みのため実行可能）
+- [x] record_wine 往復＆ Upstash 1 件増の最終裏取り（2026-06-23 実機）: 「このワインを記録して」→ preview_record（ベリーA 吉 / 赤 / マルサン葡萄酒 / 日本 / 2023）→ 「OK」→ record_wine →「保存しました🍷」。Upstash `overall` が 1→2 件に増加を確認（SC-003 クリア）
 
 ## 効いた Auth0 構成（quickstart.md ステップ1・research.md D9 に記載）
 
@@ -34,5 +34,5 @@
 
 ## メモ
 
-- 未チェック項目（record_wine 往復の最終裏取り）は接続成立済みのため、ユーザーが claude.ai でいつでも実行可能。
+- 全項目チェック済み。002（MCP コネクタ OAuth 認証）は実機まで含めて完了（2026-06-23）。
 - Auth0 テナント側の設定はリポジトリ管理外（iac/ の対象は Vercel のみ）。再現手順は quickstart.md。
