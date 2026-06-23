@@ -43,11 +43,19 @@ npm run dev            # tsx watch で起動（既定 :3000）
 `.env` は **Upstash の 2 変数だけ**設定すれば US1+US2 は動く（画像ストレージ変数は US3 用で任意）。
 埋め込みインデックスは `BAAI/bge-m3`（dense・1024次元）で作成しておくこと（[research.md R1](specs/001-record-wine/research.md)）。
 
-### Claude から使う（リモートコネクタ）
+### Claude から使う（リモートコネクタ・OAuth 認証付き）
 
-ローカルの `:3000` を [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) 等で公開し、
-その `https://.../mcp` を claude.ai の「カスタムコネクタ」に登録する。モバイル/web から
-「`record_wine` ツールを使って」と伝えてラベル写真を渡す。
+本番は **Vercel にホスト**（`https://wine-record-rohta.vercel.app/mcp`）し、**Auth0 による OAuth 認証**付きで
+claude.ai の「カスタムコネクタ」から接続する（US 002）。`/mcp` は Bearer トークン検証で保護され、
+未認証は `401 + WWW-Authenticate` を返す（公開だが authless ではない）。
+
+- 認証を有効化するサーバー側 env: `AUTH0_ISSUER_BASE_URL` / `AUTH0_AUDIENCE`（両方設定で ON、両方未設定で OFF）。
+- claude.ai のコネクタ追加 → **Advanced settings** に Auth0 アプリの client_id/secret を入力 → ログイン/同意 → 接続。
+- Auth0 側のセットアップ手順・ハマりどころは [`specs/002-mcp-oauth-auth/quickstart.md`](specs/002-mcp-oauth-auth/quickstart.md)。
+
+ローカル開発では `AUTH0_*` 未設定（認証 OFF）で動かし、`:3000` を
+[cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) 等で公開して試すこともできる。
+インフラ（Vercel プロジェクト設定）は [`iac/`](iac/) で Terraform 管理。
 
 ## スクリプト
 
@@ -68,6 +76,7 @@ npm run format       # prettier --write
 
 ## ドキュメント
 
-- 仕様 / 計画 / 調査 / タスク: [`specs/001-record-wine/`](specs/001-record-wine/)
+- 仕様 / 計画 / 調査 / タスク: [`specs/001-record-wine/`](specs/001-record-wine/)（記録機能）、[`specs/002-mcp-oauth-auth/`](specs/002-mcp-oauth-auth/)（MCP コネクタ OAuth 認証 / Auth0）
+- インフラ（Vercel / Terraform・HCP）: [`iac/`](iac/)
 - プロジェクト原則: [`.specify/memory/constitution.md`](.specify/memory/constitution.md)
 - 全体設計: [`docs/superpowers/specs/2026-06-17-wine-record-design.md`](docs/superpowers/specs/2026-06-17-wine-record-design.md)
