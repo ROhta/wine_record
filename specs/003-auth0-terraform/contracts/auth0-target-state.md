@@ -32,7 +32,7 @@
 | `grant_types` | `["authorization_code", "refresh_token"]` |
 | `oidc_conformant` | `true` |
 | `token_endpoint_auth_method` | 本番値（例 `client_secret_post`。import で確認して合わせる） |
-| `client_secret` | 管理しない（output 禁止・state 非露出・ローテーションしない） |
+| `client_secret` | 管理しない（`output` 禁止・ローテーションしない。state は機密を含みうる前提で HCP 暗号化保護） |
 
 **検証**: `auth0_client` の `plan` 差分ゼロ、かつ `-/+ destroy and then create replacement`（recreate）が
 **出ないこと**。recreate が出たら force-new 属性（`is_first_party` 等）を本番値に合わせて消すまで apply しない。

@@ -20,8 +20,9 @@ workspace `wine_records`）に **auth0/auth0 provider** で取り込み、`terra
   `is_first_party`／`callbacks`／`grant_types`／`app_type`）。
 - 既存リソースは **`terraform import`** で取り込み、HCL を本番実体に合わせて**反復的に**収束させる
   （差分ゼロになるまで `apply` しない）。
-- `client_secret` は provider の `auth0_client` リソースから既に**削除済み**（data source 経由のみ）。
-  resource 管理では secret を触らないため、apply による secret ローテーション経路が無い。出力もしない。
+- `client_secret` は provider の `auth0_client` リソースで**書き込み不可**（読み取りは data source 経由）。
+  resource 管理では secret を触らないため、apply による secret ローテーション経路が無い。`output` せず、
+  state は機密を含みうる前提で HCP 暗号化保護＋ローカル非コミットとする。
 - 接続維持の機構は「**force-new／不変属性（特に `is_first_party`）を本番実体に pin**」。
 - Terraform 実行用の Auth0 Management API 資格情報（M2M）は**手動ブートストラップ・管理外**。
   Terraform に自分の足場（自身の資格情報）を管理させない（apply で自己ロックアウトを防ぐ）。
@@ -30,7 +31,7 @@ workspace `wine_records`）に **auth0/auth0 provider** で取り込み、`terra
 
 **言語/バージョン**: Terraform HCL（`required_version >= 1.9`・既存 `iac/` に合わせる）
 
-**主要な依存**: `auth0/auth0` provider（`~> 1.0`・`client_secret` 削除済み＝v1 系。`subject_type_authorization`
+**主要な依存**: `auth0/auth0` provider（`~> 1.0`・`client_secret` 書き込み不可化＝v1 系。`subject_type_authorization`
 対応版を lock で固定）、既存の `vercel/vercel ~> 5.3`、HCP Terraform Cloud backend
 
 **ストレージ**: Terraform state（HCP・リモート・暗号化）。ローカル state はコミットしない
@@ -65,7 +66,7 @@ Auth0 テナント `bingo-next.jp.auth0.com`（他用途と共有）
 | IV. 意味的/構造的の分離 | 該当なし | 検索機能に無関係 |
 | V. 縦切り・YAGNI | ✅ 準拠 | import→差分ゼロの薄い縦切り。投機的抽象なし。スコープを API+Application に限定、テナント設定は管理外、M2M は管理外 |
 | VI. インフラのコード化（IaC） | ✅ 本機能が体現 | wine-record 固有 Auth0 設定を `iac/` の Terraform 単一真実源に。準拠は `terraform plan` 差分ゼロで機械検証。手動変更（テナント設定・M2M）は管理外として文書化 |
-| セキュリティと機密情報 | ✅ 準拠 | `client_secret` は resource 管理外（data source のみ）＝state に書かない・出力しない。M2M 資格情報は HCP sensitive env（リポジトリに置かない）。state は HCP 暗号化。M2M 資格情報と connector の client_secret は**別物**として混同しない |
+| セキュリティと機密情報 | ✅ 準拠 | `client_secret` は resource で書き込み不可（data source のみ）＝apply が触らない（ローテーションしない）。state は機密を含みうる前提で **HCP 暗号化リモート state** により保護し、`client_secret` を出力しない・ローカル state を非コミット。M2M 資格情報は HCP sensitive env（リポジトリに置かない）。M2M 資格情報と connector の client_secret は**別物**として混同しない |
 
 **設計後の再評価**: Phase 1 完了後も上記は不変（新たな違反なし）。詳細は本ファイル末尾の再評価メモ参照。
 

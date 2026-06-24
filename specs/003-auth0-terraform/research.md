@@ -49,17 +49,18 @@
 - **Rationale**: SC-002（再ログイン・再同意なし）を満たすには client を作り直さないことが必須。
   import 後の最初の `plan` に `forces replacement` が出たら、該当属性を本番値に合わせて消す
   （消えるまで `apply` しない・D2）。
-- **secret について**: provider の新しい版で **`client_secret` は `auth0_client` リソースから削除**され、
-  `auth0_client` データソース経由でのみ読める。よって resource 管理は secret を**書き換えない**
-  （`rotate_secret` のような明示操作をしない限りローテーションは起きない）。secret を `output` しない限り
-  state にも露出しない。→ secret ローテーションは設計上の経路外。脅威は recreate のみ（上記で対処）。
+- **secret について**: provider の新しい版では **`client_secret` は `auth0_client` リソースで書き込めず
+  （読み取りは `auth0_client` データソース経由）**、resource 管理は secret を**書き換えない**
+  （`rotate_secret` のような明示操作をしない限りローテーションは起きない）。state については **機密を含みうる前提**で扱い
+  （憲章セキュリティ節）、HCP 暗号化リモート state・`client_secret` を `output` しない・ローカル state 非コミットで保護する。
+  → secret ローテーションは設計上の経路外。脅威は recreate のみ（上記で対処）。
 - **Alternatives considered**: client を作り直して env を更新 → claude.ai 側の再接続が必要になり SC-002
   違反。却下。
 
 ## D4. 機密と state の取り扱い
 
 - **Decision**:
-  - connector の `client_secret` は **output しない**（resource からも削除済みのため state にも書かれない）。
+  - connector の `client_secret` は **output しない**。state には機密が含まれうる前提で扱い、HCP 暗号化リモート state で保護する。
   - Terraform 実行用の Auth0 **Management API 資格情報**（M2M の domain/client_id/client_secret）は
     HCP ワークスペースの **sensitive 環境変数**として注入（`AUTH0_DOMAIN`・`AUTH0_CLIENT_ID`・
     `AUTH0_CLIENT_SECRET`。provider が標準で読む）。リポジトリ・tfvars に literal を置かない。
