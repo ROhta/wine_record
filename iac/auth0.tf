@@ -4,7 +4,8 @@
 # specs/003-auth0-terraform/contracts/auth0-target-state.md（収束オラクル）。
 #
 # 取り込み方針（既存リソースを壊さない）:
-# - 新規 create ではなく **terraform import** で取り込む（手順は iac/README.md / quickstart.md）。
+# - 新規 create ではなく **import** で取り込む。imports.tf の import ブロック（config-driven import）が
+#   plan/apply で取り込むため `terraform import` CLI は不要（手順は iac/README.md / quickstart.md）。
 #   create すると client_id / audience が変わり、稼働中の claude.ai 接続が壊れる。
 # - import 後の plan はほぼ差分が出る。**HCL を本番実体に合わせる方向にのみ編集**し、
 #   差分ゼロになるまで apply しない。下記の値が本番と食い違う場合は、本番（import 結果）を正として

@@ -59,12 +59,14 @@ description: "タスクリスト: Auth0 設定の Terraform 管理（IaC 化）"
 - [x] T006 [US1] `iac/auth0.tf` に `auth0_resource_server.wine_record_api` を contracts C1 の目標値で記述する（`identifier`・`signing_alg=RS256`・`allow_offline_access=true`・`subject_type_authorization { user { policy="allow_all" } client { policy="require_client_grant" } }`）
 - [x] T007 [US1] `iac/auth0.tf` に `auth0_client.connector` を contracts C2 の目標値で記述する（`is_first_party=true`・`app_type="regular_web"`・`callbacks=["https://claude.ai/api/mcp/auth_callback"]`・`grant_types=["authorization_code","refresh_token"]`・`oidc_conformant=true`・`token_endpoint_auth_method`。`client_secret` は記述・output しない）
 
-### 取り込みと収束（本番操作）
+### 取り込みと収束（本番操作・config-driven import）
 
-- [ ] T008 [US1] (運用者) 既存 API を import する: `cd iac && terraform import auth0_resource_server.wine_record_api "<API_ID>"`
-- [ ] T009 [US1] (運用者) 既存 Application を import する: `cd iac && terraform import auth0_client.connector "<CLIENT_ID>"`
-- [ ] T010 [US1] (運用者＋HCL 編集) `terraform plan` を実行し、差分と recreate（`-/+`）の有無を確認する。**HCL を本番方向にのみ編集して差分ゼロへ収束**させる（`auth0.tf` を contracts に合わせる）。**差分ゼロになるまで `terraform apply` を実行しない**。`auth0_client` に recreate が出たら `is_first_party` 等の force-new 属性を本番値に pin して消す。Vercel 側に差分が出ていないことも確認する
-- [ ] T011 [US1] (運用者) 差分ゼロを確認後、`terraform apply`（差分なし＝no-op）で state とコードの整合を確定する。本番の設定値は変えない
+> `iac/imports.tf` の import ブロックで取り込むため **`terraform import` CLI は不要**。`plan`/`apply` が取り込む。
+
+- [ ] T008 [US1] (運用者) 取り込み対象 ID を変数で設定する: `auth0_resource_server_id`（既存 API の内部 ID＝`auth0 api get resource-servers` の `id`）を HCP workspace の Terraform 変数 or gitignore 済み `*.tfvars` に設定
+- [ ] T009 [US1] (運用者) 取り込み対象 ID を変数で設定する: `auth0_connector_client_id`（connector の client_id＝claude.ai Advanced settings / Auth0 ダッシュボード）を同様に設定
+- [ ] T010 [US1] (運用者＋HCL 編集) `terraform plan` を実行し、「import される 2 リソース」＋差分・recreate（`-/+`）の有無を確認する。**HCL を本番方向にのみ編集して差分ゼロへ収束**させる（`auth0.tf` を contracts に合わせる）。**plan が「import のみ・changes なし」になるまで `terraform apply` を実行しない**。recreate は `prevent_destroy=true` がエラーで止める。Vercel 側に差分が出ていないことも確認する
+- [ ] T011 [US1] (運用者) plan が「import のみ・changes なし」を確認後、`terraform apply` で**取り込みを実行**する（既存リソースを state に取り込むだけ。本番の設定値は変えない）
 
 ### 検証
 
