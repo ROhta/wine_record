@@ -15,7 +15,7 @@
 | `region` | `RegionPath`（国/地方/地区/村・各 `string\|null`） | 構造条件（任意） | 001 `normalizeRegion` を再利用 |
 | `vintage` | `Vintage`（`number\|"NV"\|null`） | 構造条件（任意） | 001 `normalizeVintage` を再利用 |
 | `color` | `"white"\|"red"\|null` | 構造条件（任意） | 001 `parseWineColor` を再利用 |
-| `weights` | `{appearance?:number; aroma?:number; taste?:number}` | 観点重み（任意） | 各 ≥ 0・有限。未指定観点は既定 1 |
+| `weights` | `{appearance?:number; aroma?:number; taste?:number}` | 観点重み（任意） | 各 **> 0**・有限（**0 以下は検証エラー**）。未指定観点は既定 1。これにより指定観点の重み総和 Σ(wₐ)>0 が保証され、合成式の 0 除算（NaN）を排除する |
 | `limit` | `number` | 返却件数上限 | 整数・≥1。未指定は既定 **10**（FR-008） |
 
 - **不変条件**: `appearance/aroma/taste` のいずれか、または `region/vintage/color` のいずれかが非空（FR-009）。
