@@ -1,6 +1,28 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
+provider "registry.terraform.io/auth0/auth0" {
+  version     = "1.50.0"
+  constraints = "~> 1.0"
+  hashes = [
+    "h1:dj+6tMJEGUQoCRs+epq4DggTh+q7c+3BITqo1nbvINc=",
+    "zh:0694fdfd43ed5d3c7bf6e50e8921a9c3b7e65f42d47e45bae504dea02c02d474",
+    "zh:257cbd532799e543a750e88ae988697754e32595417e7d02c3ca65504ee1c83d",
+    "zh:34dc0252301ee02e48f355efff0aabe903fc063371808b89b71e4e8370824afa",
+    "zh:40f8b2b2c68058ca87a7574a1209f76f57cf7912530953dc53c85fdd259945a4",
+    "zh:49ae095c7bedcd07f35c4ec4baa70e1af97e2987809240ae0081934c12204d37",
+    "zh:50ae4c0589099b4e5692c2b868e416c7304651b347fbbaeca82a4a7da3089a3a",
+    "zh:5f997ac632e88cd5f842bfc6c4bad0264cda3862523ebc1ba6e38c3a9fc49e09",
+    "zh:6feed52e43338c65f94551ff07618917da7c23b6483b492d57eed716771f3101",
+    "zh:801d9cdc9a4263ee176fad720e0f39195f4c37239354f1d4c137f9034441befa",
+    "zh:8ddddbf456fbdaedfb05515be9966b2b622418aa260e9ba8f408070a2b4c592c",
+    "zh:aa33343c505bc72323cd2b68721b6352b437f413d31c15b1a8c5fafa9654cf25",
+    "zh:b217a9339f552570620bd8642c1e61a62916858a32096a2aa7ddf64b1245d057",
+    "zh:bc415b2e712b9f38765d66a66f9b1d8f355d8d2a80768006d541b8439372900a",
+    "zh:d9a421c17ec2f2499bb0f6ce7e6ac7c72bd98b5e72ac437f7cd0788d6884db6d",
+  ]
+}
+
 provider "registry.terraform.io/vercel/vercel" {
   version     = "5.3.0"
   constraints = "~> 5.3"

@@ -31,7 +31,7 @@
 | `callbacks` | `["https://claude.ai/api/mcp/auth_callback"]` |
 | `grant_types` | `["authorization_code", "refresh_token"]` |
 | `oidc_conformant` | `true` |
-| `token_endpoint_auth_method` | 本番値（例 `client_secret_post`。import で確認して合わせる） |
+| `token_endpoint_auth_method` | **本イテレーションでは管理外**（provider v1.x で `auth0_client` から削除→`auth0_client_credentials` で管理。secret 管理面を避け follow-up へ。宣言しないので差分対象外。本番は `client_secret_post` のまま） |
 | `client_secret` | 管理しない（`output` 禁止・ローテーションしない。state は機密を含みうる前提で HCP 暗号化保護） |
 
 **検証**: `auth0_client` の `plan` 差分ゼロ、かつ `-/+ destroy and then create replacement`（recreate）が
