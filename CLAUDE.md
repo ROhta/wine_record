@@ -3,7 +3,8 @@
 追加のコンテキストについては、現在のプランを参照してください:
 `specs/001-record-wine/plan.md` (record-wine 機能)、
 `specs/002-mcp-oauth-auth/plan.md` (MCP コネクタ OAuth 認証 / Auth0)、
-`specs/003-auth0-terraform/plan.md` (Auth0 設定の Terraform 管理 / IaC)。
+`specs/003-auth0-terraform/plan.md` (Auth0 設定の Terraform 管理 / IaC)、
+`specs/004-wine-aspect-search/plan.md` (観点独立のワイン類似検索)。
 
 プロジェクトの原則: `.specify/memory/constitution.md`。
 全体設計: `docs/superpowers/specs/2026-06-17-wine-record-design.md`。
