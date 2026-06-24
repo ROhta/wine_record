@@ -122,8 +122,9 @@ API・Application は手動作成済みのため、**create ではなく import*
 変わり接続が壊れる）。取り込みは `imports.tf` の **import ブロック**で行うため、**`terraform import` CLI は不要**
 （`terraform plan`/`apply` が取り込みを実行する）。
 
-1. **取り込み対象 ID を変数で与える**（非機密＝識別子。HCP workspace の Terraform 変数、または gitignore 済み
-   `*.tfvars`）:
+1. **取り込み対象 ID を変数で与える**（**import 時のみ**。非機密＝識別子。HCP workspace の Terraform 変数、
+   または gitignore 済み `*.tfvars`）。両変数は既定が空文字で、import ブロックは `for_each` で「値があるときだけ」
+   有効化される。よって**日常運用・ドリフト検知など import 不要の run では設定不要**（毎回要求されない）:
    - `auth0_resource_server_id` = 既存 API の内部 ID（`auth0 api get resource-servers` の `id`）
    - `auth0_connector_client_id` = connector の Client ID（claude.ai の Advanced settings / Auth0 ダッシュボード）
 
@@ -142,8 +143,9 @@ API・Application は手動作成済みのため、**create ではなく import*
    terraform apply  # plan が「import のみ・changes なし」になってから実行（取り込みを実行）
    ```
 
-import ブロック（`imports.tf`）は取り込み後も残してよい（idempotent・state 喪失時に自動再取り込み＝SC-006）。
-不要なら apply 成功後に削除可。
+import ブロック（`imports.tf`）は取り込み後も残してよい（idempotent・state 喪失時に変数を再設定すれば自動再取り込み
+＝SC-006）。取り込み後は **import 用変数を空に戻す**と import ブロックが無効化され、日常運用がノーフリクションになる。
+不要なら apply 成功後に `imports.tf` を削除してもよい（変数は既定空のため孤児にならない）。
 
 ### 差分ゼロへの収束（★最重要の安全規律）
 

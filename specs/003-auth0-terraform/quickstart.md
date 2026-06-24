@@ -37,7 +37,8 @@ cd iac && terraform init   # auth0 provider を取得し lock を更新
 新規作成ではなく **import** で取り込む（`create` は client_id/audience を変え接続を壊す）。
 `iac/imports.tf` の **import ブロック**が `plan`/`apply` で取り込むため、CLI の `terraform import` は打たない。
 
-取り込み対象 ID を変数で与える（非機密。HCP workspace の Terraform 変数 or gitignore 済み `*.tfvars`）:
+取り込み対象 ID を変数で与える（**import 時のみ**。非機密。HCP workspace の Terraform 変数 or gitignore 済み
+`*.tfvars`）。両変数は既定が空で import ブロックは `for_each` で gate されるため、**import 不要の run では設定不要**:
 
 ```hcl
 # 例: iac/import.auto.tfvars（*.tfvars は commit されない）
@@ -45,7 +46,8 @@ auth0_resource_server_id  = "<既存 API の内部 ID>"   # auth0 api get resour
 auth0_connector_client_id = "<connector の client_id>" # claude.ai Advanced settings / Auth0 ダッシュボード
 ```
 
-以降はステップ 4 の `terraform plan`（収束）→ `apply`（取り込み実行）で取り込まれる。
+以降はステップ 4 の `terraform plan`（収束）→ `apply`（取り込み実行）で取り込まれる。取り込み後は変数を空に戻すと
+import ブロックが無効化され、日常運用がノーフリクションになる。
 
 ## ステップ 4: 差分ゼロへ収束（★最重要の安全規律）
 
