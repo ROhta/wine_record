@@ -26,8 +26,8 @@ description: "タスクリスト: Auth0 設定の Terraform 管理（IaC 化）"
 
 **目的**: 既存 `iac/`（HCP workspace `wine_records`・Vercel 管理済み）に Auth0 provider を追加する。本番には触れない。
 
-- [ ] T001 [P] `iac/versions.tf` の `required_providers` に `auth0/auth0`（`~> 1.0`）を追加する（既存 `vercel/vercel ~> 5.3`・HCP backend は不変）
-- [ ] T002 [P] `iac/providers.tf` に `provider "auth0" {}` ブロックを追加する（資格情報は env 経由＝`AUTH0_DOMAIN`/`AUTH0_CLIENT_ID`/`AUTH0_CLIENT_SECRET`。変数化・tfvars 化しない）
+- [x] T001 [P] `iac/versions.tf` の `required_providers` に `auth0/auth0`（`~> 1.0`）を追加する（既存 `vercel/vercel ~> 5.3`・HCP backend は不変）
+- [x] T002 [P] `iac/providers.tf` に `provider "auth0" {}` ブロックを追加する（資格情報は env 経由＝`AUTH0_DOMAIN`/`AUTH0_CLIENT_ID`/`AUTH0_CLIENT_SECRET`。変数化・tfvars 化しない）
 
 ---
 
@@ -38,8 +38,8 @@ description: "タスクリスト: Auth0 設定の Terraform 管理（IaC 化）"
 **⚠️ CRITICAL**: T003 完了まで Phase 3 以降の本番操作（import/plan）は開始できない。
 
 - [ ] T003 (運用者) Auth0 Management API 用の M2M アプリを**手動ブートストラップ**し（最小スコープ: `read:clients`/`update:clients`/`read:resource_servers`/`update:resource_servers`）、発行された domain/client_id/client_secret を HCP workspace `wine_records` の **sensitive 環境変数**（`AUTH0_DOMAIN`/`AUTH0_CLIENT_ID`/`AUTH0_CLIENT_SECRET`）に登録する。このアプリは**管理外**（Terraform 管理に含めない＝自己ロックアウト回避）
-- [ ] T004 `iac/README.md` に Auth0 セクションを追記する: M2M ブートストラップ手順／**管理外設定**（テナント Default Audience・Resource Parameter Compatibility Profile）の現在値・理由・変更注意／**M2M 資格情報と connector の client_secret は別物**である旨
-- [ ] T005 (運用者) `cd iac && terraform init` で `auth0` provider を取得し `.terraform.lock.hcl` を更新する。解決された版が `subject_type_authorization` に対応することを確認する（非対応なら `terraform init -upgrade`）
+- [x] T004 `iac/README.md` に Auth0 セクションを追記する: M2M ブートストラップ手順／**管理外設定**（テナント Default Audience・Resource Parameter Compatibility Profile）の現在値・理由・変更注意／**M2M 資格情報と connector の client_secret は別物**である旨
+- [x] T005 (一部エージェント実施: `init -backend=false` で provider 取得・lock 更新済み。運用者は import 前に backend 付き `terraform init` を実行) `cd iac && terraform init` で `auth0` provider を取得し `.terraform.lock.hcl` を更新する。解決された版が `subject_type_authorization` に対応することを確認する（非対応なら `terraform init -upgrade`）
 
 **チェックポイント**: provider 取得済み・M2M 資格情報が HCP に登録済み → import に進める
 
@@ -56,8 +56,8 @@ description: "タスクリスト: Auth0 設定の Terraform 管理（IaC 化）"
 
 ### 実装（HCL 作成）
 
-- [ ] T006 [US1] `iac/auth0.tf` に `auth0_resource_server.wine_record_api` を contracts C1 の目標値で記述する（`identifier`・`signing_alg=RS256`・`allow_offline_access=true`・`subject_type_authorization { user { policy="allow_all" } client { policy="require_client_grant" } }`）
-- [ ] T007 [US1] `iac/auth0.tf` に `auth0_client.connector` を contracts C2 の目標値で記述する（`is_first_party=true`・`app_type="regular_web"`・`callbacks=["https://claude.ai/api/mcp/auth_callback"]`・`grant_types=["authorization_code","refresh_token"]`・`oidc_conformant=true`・`token_endpoint_auth_method`。`client_secret` は記述・output しない）
+- [x] T006 [US1] `iac/auth0.tf` に `auth0_resource_server.wine_record_api` を contracts C1 の目標値で記述する（`identifier`・`signing_alg=RS256`・`allow_offline_access=true`・`subject_type_authorization { user { policy="allow_all" } client { policy="require_client_grant" } }`）
+- [x] T007 [US1] `iac/auth0.tf` に `auth0_client.connector` を contracts C2 の目標値で記述する（`is_first_party=true`・`app_type="regular_web"`・`callbacks=["https://claude.ai/api/mcp/auth_callback"]`・`grant_types=["authorization_code","refresh_token"]`・`oidc_conformant=true`・`token_endpoint_auth_method`。`client_secret` は記述・output しない）
 
 ### 取り込みと収束（本番操作）
 
@@ -82,7 +82,7 @@ description: "タスクリスト: Auth0 設定の Terraform 管理（IaC 化）"
 
 **依存**: US1（リソースが管理下・差分ゼロであること）。
 
-- [ ] T013 [US2] `iac/README.md` に設定変更の運用手順を記述する（コード編集 → `terraform plan` で差分確認 → PR レビュー → `terraform apply`。差分は最小限であることを確認する）
+- [x] T013 [US2] `iac/README.md` に設定変更の運用手順を記述する（コード編集 → `terraform plan` で差分確認 → PR レビュー → `terraform apply`。差分は最小限であることを確認する）
 - [ ] T014 [US2] (運用者) 実証: 管理下設定を1つ変更（例 `callbacks` に検証用 URL を1件追加）→ `plan` がその1件のみを差分表示 → `apply` → 反映確認 → 変更を元に戻す。**SC-003** を記録する
 
 **チェックポイント**: US1＋US2 が独立して動作（取り込み＋レビュー付き変更）
@@ -97,7 +97,7 @@ description: "タスクリスト: Auth0 設定の Terraform 管理（IaC 化）"
 
 **依存**: US1（管理下であること）。
 
-- [ ] T015 [US3] `iac/README.md` にドリフト検知・還流の運用を記述する（定期 `terraform plan` でドリフト確認 → コードへ反映 or `apply` で revert）
+- [x] T015 [US3] `iac/README.md` にドリフト検知・還流の運用を記述する（定期 `terraform plan` でドリフト確認 → コードへ反映 or `apply` で revert）
 - [ ] T016 [US3] (運用者) 実証: 管理下設定をコンソールで1つ手動変更 → `terraform plan` がドリフトを差分表示 → `apply` で revert（または HCL に反映して差分ゼロへ）。**SC-004** を記録する
 
 **チェックポイント**: 全ユーザーストーリーが独立して機能
@@ -108,9 +108,9 @@ description: "タスクリスト: Auth0 設定の Terraform 管理（IaC 化）"
 
 **目的**: ドキュメント完成・機密非漏洩・再現性の確認。
 
-- [ ] T017 [P] `iac/README.md` を最終整備する（管理対象／管理外の一覧・別運用者向け再現手順＝**SC-006**）
-- [ ] T018 [P] (運用者) 機密 literal スキャン: `git grep` 等で `client_secret`／Management API トークンの literal がリポジトリに無いことを確認する（**SC-005**）
-- [ ] T019 (運用者) `cd iac && terraform fmt && terraform validate` を実行し、整形・構文を確認する
+- [x] T017 [P] `iac/README.md` を最終整備する（管理対象／管理外の一覧・別運用者向け再現手順＝**SC-006**）
+- [x] T018 [P] (エージェント実施済み: `git grep` で実トークン literal 0 件を確認) 機密 literal スキャン: `git grep` 等で `client_secret`／Management API トークンの literal がリポジトリに無いことを確認する（**SC-005**）
+- [x] T019 (エージェント実施済み: `terraform fmt -check` clean・`init -backend=false` 後 `terraform validate` Success) `cd iac && terraform fmt && terraform validate` を実行し、整形・構文を確認する
 - [ ] T020 (運用者) [quickstart.md](./quickstart.md) の検証手順を一通り実行し、完了の定義（contracts 合格条件・接続維持・機密なし）を確認する
 
 ---

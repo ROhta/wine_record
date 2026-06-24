@@ -1,6 +1,8 @@
-# iac/ — Vercel を Terraform で管理（HCP backend）
+# iac/ — Vercel / Auth0 を Terraform で管理（HCP backend）
 
-wine-record の Vercel プロジェクト設定を宣言的に管理する。State は HCP Terraform（リモート）。
+wine-record の Vercel プロジェクト設定と Auth0（MCP コネクタ OAuth）のテナント設定を宣言的に管理する。
+State は HCP Terraform（リモート・暗号化。単一 workspace `wine_records` で両 provider を扱う）。
+Auth0 の手順は本ファイル末尾の「Auth0（US 003）」を参照。
 
 目的: Cloudflare ホスティングから Vercel に移行し、Blob / Upstash と合わせて Vercel に一元管理する。
 `record-wine` の MCP サーバー（Express + Streamable HTTP）を Vercel でホストする。
@@ -73,3 +75,104 @@ terraform apply    # 設定変更を反映
 ```
 
 アプリのコード変更は git push による自動デプロイで反映される（Terraform は介在しない）。
+
+---
+
+# Auth0（US 003・MCP コネクタ OAuth のテナント設定）
+
+002 で手動構築した Auth0 構成（claude.ai 接続に必要な API・Application）をコード化し、`terraform plan`
+を本番に対して**差分ゼロ**にする。稼働中の claude.ai 接続を壊さない（`client_id`・`audience` 不変）ことが
+最重要。設計の詳細は `specs/003-auth0-terraform/`（plan.md・research.md・contracts・quickstart.md）。
+
+## 管理対象
+
+| リソース | 内容 |
+| --- | --- |
+| `auth0_resource_server.wine_record_api` | API（リソースサーバー）。`identifier`(=audience)・`signing_alg`・`allow_offline_access`・`subject_type_authorization.user.policy=allow_all`（002 の決定打） |
+| `auth0_client.connector` | claude.ai 用 first-party Application。`is_first_party`・`callbacks`・`grant_types`・`app_type` 等。`client_secret` は管理しない（後述） |
+
+両リソースに `lifecycle { prevent_destroy = true }` を設定し、`client_id`/`audience` が変わる
+destroy→recreate を機械的に防ぐ（接続維持・SC-002）。
+
+## 管理しないもの（意図的・管理外）
+
+| 設定 | 管理外の理由 |
+| --- | --- |
+| **テナント全体設定**（Default Audience・Resource Parameter Compatibility Profile） | テナント `bingo-next.jp.auth0.com` は**他プロジェクトと共有**。`auth0_tenant` をコード管理すると他用途に波及する。現在値: Default Audience = API Identifier、Compatibility Profile = ON（claude.ai が `resource`(RFC 8707) を送るため）。変更時は共有影響に注意 |
+| **Terraform 実行用 M2M アプリ** | Terraform に自身の足場（アクセス資格情報）を管理させると apply で自己ロックアウトしうる |
+| **connector の `client_secret`** | provider の新版で `auth0_client` リソースから書き込み不可（読み取りは `auth0_client` データソース）。`output` しない。state は機密を含みうる前提で HCP 暗号化により保護 |
+| **connector のクライアント認証方式**（`client_secret_post`） | provider v1.x で `auth0_client` から削除され `auth0_client_credentials`（secret も統べる）が必要。connector の secret 管理面に踏み込むため**本イテレーションでは見送り**（import 実証後の follow-up）。宣言しないので差分は出ず、本番は 002 設定の `client_secret_post` のまま |
+
+> ⚠️ **2 つの secret を混同しないこと**: ①**Terraform 実行用 M2M** の client_secret（Terraform → Auth0 Management API）と、②**connector** の client_secret（claude.ai → Auth0 OAuth）は別物。①のみ HCP env に登録し、②は触らない。
+
+## 前提（初回のみ・手動ブートストラップ）
+
+Terraform が Auth0 Management API を操作するための M2M アプリを**手動で 1 つ**用意する（管理外）:
+
+1. Auth0 → Applications → **Machine to Machine**。Management API を認可し、最小スコープ
+   `read:clients` / `update:clients` / `read:resource_servers` / `update:resource_servers` を付与。
+2. 発行された **domain / client_id / client_secret** を HCP workspace `wine_records` の
+   **sensitive 環境変数**として登録: `AUTH0_DOMAIN` / `AUTH0_CLIENT_ID` / `AUTH0_CLIENT_SECRET`。
+   - リポジトリ・tfvars・チャットに値を貼らないこと。
+3. この M2M アプリは Terraform 管理に**含めない**（自己ロックアウト回避）。
+
+## 初回適用（既存リソースの取り込み）
+
+API・Application は手動作成済みのため、**create ではなく import**（create すると client_id/audience が
+変わり接続が壊れる）。本番リソースの ID は `auth0 api get resource-servers` / `auth0 api get clients` で取得。
+
+```sh
+cd iac
+terraform init   # auth0 provider を取得し lock を更新（subject_type_authorization 対応版を確認）
+
+# 既存 API / Application を import
+terraform import auth0_resource_server.wine_record_api "<API_ID>"
+terraform import auth0_client.connector "<CLIENT_ID>"
+```
+
+### 差分ゼロへの収束（★最重要の安全規律）
+
+import 直後の `plan` はほぼ差分が出る（provider 既定 vs 本番設定）。これを **`auth0.tf` を本番方向にのみ
+編集**して消す。収束オラクルは `specs/003-auth0-terraform/contracts/auth0-target-state.md`。
+
+```sh
+terraform plan   # 差分と recreate（-/+）の有無を確認
+```
+
+- **`plan` が 0 changes になるまで `terraform apply` を実行しない。** 収束途中の apply / create が稼働中の
+  API・client を書き換え／再作成して接続を壊す最大要因。
+- `auth0_client` に recreate（`-/+ ... forces replacement`）が出たら、原因属性（特に `is_first_party`）を
+  本番値に合わせる。`prevent_destroy = true` のため、recreate を伴う apply は**エラーで止まる**（安全側）。
+- 本番値が `auth0.tf` と食い違う場合は、**本番（import 結果）を正**として `auth0.tf` を合わせ、差異を
+  contracts に反映する。
+- 単一 workspace のため、plan に **Vercel 側の差分が出ていないこと**も毎回確認する。
+
+```sh
+terraform apply   # 差分ゼロを確認後のみ。no-op で state とコードの整合を確定（本番値は変えない）
+```
+
+## 日常運用
+
+### 設定変更（US2・コードレビュー経由）
+
+```sh
+cd iac
+# auth0.tf を編集 → plan で差分（その変更のみ）を確認 → PR レビュー → apply
+terraform plan
+terraform apply
+```
+
+コンソールでのサイレントな手動変更は避け、変更はコード＋ PR で行う。
+
+### ドリフト検知と還流（US3）
+
+定期的に `terraform plan` を実行し、コード外（コンソール手動）の変更を**ドリフトとして検知**する。
+検知したら、意図した変更ならコード（`auth0.tf` / contracts）に反映し、意図しないものは `apply` で revert する
+（再度 `plan` が 0 changes に戻ることを確認）。
+
+## 完了の確認（受け入れ）
+
+- `terraform plan` が 0 changes（SC-001）。`plan` に recreate（`-/+`）が無い。
+- claude.ai → wine-record 接続が再ログイン・再同意なしで動作（`client_id`・`audience` 不変・SC-002）。
+- リポジトリに機密 literal（client_secret・M2M token）が無い（`git grep` で 0 件・SC-005）。
+- 本ファイルの手順だけで別運用者が再現できる（SC-006）。
