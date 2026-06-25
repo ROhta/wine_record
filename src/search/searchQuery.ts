@@ -38,7 +38,7 @@ export function hasStructuralFilter(q: SearchQuery): boolean {
 	return regionToParts(q.region).length > 0 || q.vintage !== null || q.color !== null
 }
 
-/** 観点表現の重みづけ付きキー（searchWines が走査する対象）。 */
+/** weights を解決する。未指定の観点は 1。各重みは `> 0` の有限数として検証し、満たさなければ errors に積む。 */
 function resolveWeights(raw: unknown, errors: FieldError[]): AspectWeights {
 	const obj = asRecord(raw)
 	const weights: AspectWeights = {appearance: 1, aroma: 1, taste: 1}

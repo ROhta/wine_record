@@ -165,4 +165,46 @@ describe("searchWines（US3: 構造的絞り込み）", () => {
 		expect(r.ok).toBe(true)
 		if (r.ok) expect(r.items).toEqual([])
 	})
+
+	it("SC-003: vintage(number) で exact 一致・他の年は除外", async () => {
+		const store = makeSearchStore({
+			queryHits: {
+				taste: [
+					{id: "v19", score: 0.9},
+					{id: "v20", score: 0.8},
+				],
+			},
+			records: {v19: rec({name: "V19", vintage: 2019}), v20: rec({name: "V20", vintage: 2020})},
+		})
+		const r = await createSearchWines({store})({taste: "x", vintage: 2019})
+		expect(r.ok).toBe(true)
+		if (r.ok) expect(r.items.map(i => i.wineId)).toEqual(["v19"])
+	})
+
+	it('SC-003: vintage "NV" で exact 一致（vintageFromMeta の NV 解釈・構造のみ）', async () => {
+		const store = makeSearchStore({
+			records: {nv: rec({name: "NV", vintage: "NV"}), v19: rec({name: "V19", vintage: 2019})},
+		})
+		const r = await createSearchWines({store})({vintage: "NV"})
+		expect(r.ok).toBe(true)
+		if (r.ok) expect(r.items.map(i => i.wineId)).toEqual(["nv"])
+	})
+
+	it("SC-003: 産地の深い階層（region.region）で exact 一致・他地方は除外", async () => {
+		const store = makeSearchStore({
+			queryHits: {
+				taste: [
+					{id: "rioja", score: 0.9},
+					{id: "ribera", score: 0.8},
+				],
+			},
+			records: {
+				rioja: rec({name: "Rioja", country: "スペイン", region: "リオハ"}),
+				ribera: rec({name: "Ribera", country: "スペイン", region: "リベラ・デル・ドゥエロ"}),
+			},
+		})
+		const r = await createSearchWines({store})({taste: "x", region: {country: "スペイン", region: "リオハ"}})
+		expect(r.ok).toBe(true)
+		if (r.ok) expect(r.items.map(i => i.wineId)).toEqual(["rioja"])
+	})
 })
