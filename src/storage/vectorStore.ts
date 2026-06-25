@@ -29,13 +29,17 @@ export interface QueryHit {
 }
 
 /**
- * 観点別検索の前提となる namespace 付き I/O の薄いラッパ（骨組み）。
- * 記録→namespace へのマッピングや結合テキスト生成は US1/US2（T020/T029）で実装する。
+ * namespace 付き I/O の薄いラッパ。記録（001）と観点独立検索（004）が利用する。
  */
 export interface VectorStore {
 	upsert(namespace: Namespace, item: UpsertItem): Promise<void>
 	fetch(namespace: Namespace, ids: readonly string[]): Promise<FetchedRecord[]>
 	query(namespace: Namespace, opts: {data: string; topK: number; excludeId?: string}): Promise<QueryHit[]>
+	/**
+	 * namespace の全レコードを列挙する（メタデータ込み）。クエリベクトル無しの取得に使う。
+	 * 構造条件のみの検索（FR-012）で `overall` を走査するため（004）。
+	 */
+	scan(namespace: Namespace): Promise<FetchedRecord[]>
 }
 
 /** Upstash Vector を裏に持つ VectorStore を生成する。 */
@@ -52,6 +56,17 @@ export function createVectorStore(config: Config): VectorStore {
 		async query(namespace, opts) {
 			const res = await index.namespace(namespace).query({data: opts.data, topK: opts.topK})
 			return res.filter(r => String(r.id) !== opts.excludeId).map(r => ({id: String(r.id), score: r.score}))
+		},
+		async scan(namespace) {
+			const out: FetchedRecord[] = []
+			let cursor = "0"
+			for (;;) {
+				const res = await index.namespace(namespace).range({cursor, limit: 100, includeMetadata: true})
+				for (const v of res.vectors) out.push({id: String(v.id), metadata: v.metadata ?? null})
+				if (!res.nextCursor) break
+				cursor = String(res.nextCursor)
+			}
+			return out
 		},
 	}
 }

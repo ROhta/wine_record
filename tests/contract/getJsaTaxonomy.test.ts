@@ -29,6 +29,7 @@ function makeDeps(): McpServerDeps {
 		recordWine: createRecordWine({...common, store: noStore, generateId: () => "w", now: () => "t"}),
 		previewRecord: createPreviewRecord(common),
 		getJsaTaxonomy: createGetJsaTaxonomy({taxonomy: tax}),
+		searchWines: () => Promise.resolve({ok: true, items: []}),
 	}
 }
 

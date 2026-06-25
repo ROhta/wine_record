@@ -6,6 +6,7 @@ const noopDeps: McpServerDeps = {
 	recordWine: () => Promise.resolve({ok: true, wineId: "x", recordedAt: "x"}),
 	previewRecord: () => ({ok: false, errors: []}),
 	getJsaTaxonomy: () => ({ok: true, value: {color: "white", version: "t"}}),
+	searchWines: () => Promise.resolve({ok: true, items: []}),
 }
 
 describe("MCP サーバー骨組み", () => {

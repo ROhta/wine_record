@@ -1,6 +1,7 @@
 import {createRecordWine, type RecordWineDeps} from "../../src/tools/recordWine.js"
 import {createPreviewRecord} from "../../src/tools/previewRecord.js"
 import {createGetJsaTaxonomy} from "../../src/tools/getJsaTaxonomy.js"
+import {createSearchWines} from "../../src/search/searchWines.js"
 import type {McpServerDeps} from "../../src/server.js"
 import type {VectorStore} from "../../src/storage/vectorStore.js"
 import {testTaxonomy} from "./taxonomy.js"
@@ -26,5 +27,6 @@ export function makeServerDeps(): {deps: McpServerDeps; upserts: RecordedUpsert[
 	const recordWine = createRecordWine(makeRecordWineDeps(store))
 	const previewRecord = createPreviewRecord({taxonomy: testTaxonomy, allowedImageBaseUrl})
 	const getJsaTaxonomy = createGetJsaTaxonomy({taxonomy: testTaxonomy})
-	return {deps: {recordWine, previewRecord, getJsaTaxonomy}, upserts}
+	const searchWines = createSearchWines({store})
+	return {deps: {recordWine, previewRecord, getJsaTaxonomy, searchWines}, upserts}
 }
