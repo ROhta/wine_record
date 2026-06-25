@@ -21,7 +21,7 @@ description: "タスクリスト: 観点独立のワイン類似検索"
 
 **目的**: テストの足場。本機能は既存 `src/` に追加するため新規プロジェクト初期化は不要。
 
-- [ ] T001 [P] テスト用フェイク `VectorStore` を `tests/fixtures/vectorStore.ts` に整備/拡張する（namespace ごとに `query` 結果（id+score）と `fetch` メタデータを差し込めるように。後続の `scan` も見据える）
+- [x] T001 [P] テスト用フェイク `VectorStore` を `tests/fixtures/vectorStore.ts` に整備/拡張する（namespace ごとに `query` 結果（id+score）と `fetch` メタデータを差し込めるように。後続の `scan` も見据える）
 
 ---
 
@@ -29,8 +29,8 @@ description: "タスクリスト: 観点独立のワイン類似検索"
 
 **目的**: 全ストーリーが使う入力検証。これが無いとどのストーリーも検索を受け付けられない。
 
-- [ ] T002 [P] `tests/unit/searchQuery.test.ts` に検証テストを作成（FR-009: 観点も構造も全空→フィールド別エラー／`weights`≤0→エラー／`limit`<1→エラー／観点表現の trim／構造条件の正規化）★先行・失敗を確認
-- [ ] T003 `src/search/searchQuery.ts` を実装（SearchQuery の検証・正規化。001 の `normalizeRegion`/`normalizeVintage`/`parseWineColor`/`cleanOptionalString` と `FieldError` を再利用。重複実装しない）
+- [x] T002 [P] `tests/unit/searchQuery.test.ts` に検証テストを作成（FR-009: 観点も構造も全空→フィールド別エラー／`weights`≤0→エラー／`limit`<1→エラー／観点表現の trim／構造条件の正規化）★先行・失敗を確認
+- [x] T003 `src/search/searchQuery.ts` を実装（SearchQuery の検証・正規化。001 の `normalizeRegion`/`normalizeVintage`/`parseWineColor`/`cleanOptionalString` と `FieldError` を再利用。重複実装しない）
 
 **チェックポイント**: 入力検証が緑 → 各ストーリーの検索ロジックに進める
 
@@ -45,15 +45,15 @@ description: "タスクリスト: 観点独立のワイン類似検索"
 
 ### テスト（★先行）
 
-- [ ] T004 [P] [US1] `tests/unit/combineScores.test.ts` を作成（**SC-002**: 2観点とも 0.8 のワイン(score 0.8) > 味わいのみ 0.9 のワイン(score 0.45)／単一観点では素通し／**FR-011** 決定性: 同点は丸め＋`wineId` 昇順で安定／欠損観点は s=0 だが重みは分母に残す）★先行・失敗を確認
-- [ ] T005 [US1] `src/search/combineScores.ts` を実装（純関数。総合スコア `Σ(wₐ·sₐ)/Σ(wₐ)`（指定全観点・欠損 sₐ=0・重みは分母）＋ `(round(score,P) desc, wineId asc)` の決定的ソート）
-- [ ] T006 [P] [US1] `tests/integration/searchWines.test.ts` に単一観点の結合テストを作成（観点 namespace を `query`→候補 id を `overall` から `fetch` でハイドレート→表示情報＋スコア。**US1 シナリオ3**: その観点の表現を持たないワインは結果に出ない）★先行・フェイク store
+- [x] T004 [P] [US1] `tests/unit/combineScores.test.ts` を作成（**SC-002**: 2観点とも 0.8 のワイン(score 0.8) > 味わいのみ 0.9 のワイン(score 0.45)／単一観点では素通し／**FR-011** 決定性: 同点は丸め＋`wineId` 昇順で安定／欠損観点は s=0 だが重みは分母に残す）★先行・失敗を確認
+- [x] T005 [US1] `src/search/combineScores.ts` を実装（純関数。総合スコア `Σ(wₐ·sₐ)/Σ(wₐ)`（指定全観点・欠損 sₐ=0・重みは分母）＋ `(round(score,P) desc, wineId asc)` の決定的ソート）
+- [x] T006 [P] [US1] `tests/integration/searchWines.test.ts` に単一観点の結合テストを作成（観点 namespace を `query`→候補 id を `overall` から `fetch` でハイドレート→表示情報＋スコア。**US1 シナリオ3**: その観点の表現を持たないワインは結果に出ない）★先行・フェイク store
 
 ### 実装
 
-- [ ] T007 [US1] `src/search/searchWines.ts` を実装（検索オーケストレーション: 指定された観点ごとに `query(namespace, {data, topK=min(corpus,1000)})`→候補 id を union→`fetch("overall", ids)` でハイドレート→`combineScores`→`limit` 件。SearchResultItem に表示情報を載せる。**読み取り専用**＝upsert/delete を呼ばない・FR-010）
-- [ ] T008 [US1] `src/tools/searchWines.ts` を実装（`createSearchWines` ハンドラ: 入力→`searchQuery` 検証→`searchWines`→テキスト＋`structuredContent` に整形。検証失敗は既存 `errorResult` を再利用）
-- [ ] T009 [US1] `src/server.ts` に `search_wines` を `registerTool`（入力スキーマ・description）し、`buildDeps` に `searchWines` 依存を配線する
+- [x] T007 [US1] `src/search/searchWines.ts` を実装（検索オーケストレーション: 指定された観点ごとに `query(namespace, {data, topK=min(corpus,1000)})`→候補 id を union→`fetch("overall", ids)` でハイドレート→`combineScores`→`limit` 件。SearchResultItem に表示情報を載せる。**読み取り専用**＝upsert/delete を呼ばない・FR-010）
+- [x] T008 [US1] `src/tools/searchWines.ts` を実装（`createSearchWines` ハンドラ: 入力→`searchQuery` 検証→`searchWines`→テキスト＋`structuredContent` に整形。検証失敗は既存 `errorResult` を再利用）
+- [x] T009 [US1] `src/server.ts` に `search_wines` を `registerTool`（入力スキーマ・description）し、`buildDeps` に `searchWines` 依存を配線する
 
 **チェックポイント**: US1 完了 = 単一観点の観点別意味検索が端から端まで動く（MVP）
 
@@ -70,11 +70,11 @@ description: "タスクリスト: 観点独立のワイン類似検索"
 
 ### テスト（★先行）
 
-- [ ] T010 [P] [US2] `tests/integration/searchWines.test.ts` に複数観点ケースを追加（**SC-002** 統合: 両観点を満たすワイン > 片方のみ／**FR-001** 観点独立: 外観句は `appearance` namespace のみ・味わい句は `taste` のみに渡る（取り違えない）／**FR-006** 観点別内訳スコアが結果に出る／**FR-003** 重みで順位が動く）★先行・失敗を確認
+- [x] T010 [P] [US2] `tests/integration/searchWines.test.ts` に複数観点ケースを追加（**SC-002** 統合: 両観点を満たすワイン > 片方のみ／**FR-001** 観点独立: 外観句は `appearance` namespace のみ・味わい句は `taste` のみに渡る（取り違えない）／**FR-006** 観点別内訳スコアが結果に出る／**FR-003** 重みで順位が動く）★先行・失敗を確認
 
 ### 実装
 
-- [ ] T011 [US2] `src/search/searchWines.ts` / `src/tools/searchWines.ts` / `src/server.ts` に `weights` 入力を配線して `combineScores` に渡し、各結果に観点別 `aspectScores` 内訳を含める（combineScores は T005 で重み対応済み）
+- [x] T011 [US2] `src/search/searchWines.ts` / `src/tools/searchWines.ts` / `src/server.ts` に `weights` 入力を配線して `combineScores` に渡し、各結果に観点別 `aspectScores` 内訳を含める（combineScores は T005 で重み対応済み）
 
 **チェックポイント**: US1＋US2 = 観点独立検索の差別化価値が成立
 
@@ -91,12 +91,12 @@ description: "タスクリスト: 観点独立のワイン類似検索"
 
 ### テスト（★先行）
 
-- [ ] T012 [P] [US3] `tests/integration/searchWines.test.ts` に構造ケースを追加（**SC-003** color/region 階層/vintage の exact 一致・条件外の混入0件／**FR-012** 構造のみ（観点表現なし）は合致一覧を `wineId` 昇順・スコアなしで返す／空コーパス・合致ゼロは `items:[]`（エラーにしない・エッジ））★先行・失敗を確認
+- [x] T012 [P] [US3] `tests/integration/searchWines.test.ts` に構造ケースを追加（**SC-003** color/region 階層/vintage の exact 一致・条件外の混入0件／**FR-012** 構造のみ（観点表現なし）は合致一覧を `wineId` 昇順・スコアなしで返す／空コーパス・合致ゼロは `items:[]`（エラーにしない・エッジ））★先行・失敗を確認
 
 ### 実装
 
-- [ ] T013 [US3] `src/storage/vectorStore.ts` の `VectorStore` interface に `scan(namespace): Promise<FetchedRecord[]>` を追加し、実装（Upstash `range({cursor,limit,includeMetadata})` を `nextCursor` 枯渇まで反復）。`tests/fixtures/vectorStore.ts` のフェイクにも `scan` を実装（seam パリティ・D8）
-- [ ] T014 [US3] `src/search/searchWines.ts` に構造フィルタを追加（ハイドレート済みメタデータに対し color/region 階層/vintage の **exact 一致**で候補を絞る・FR-004）。観点表現が無い構造のみクエリは `scan("overall")`→exact フィルタ→`wineId` 昇順で返す（FR-012）
+- [x] T013 [US3] `src/storage/vectorStore.ts` の `VectorStore` interface に `scan(namespace): Promise<FetchedRecord[]>` を追加し、実装（Upstash `range({cursor,limit,includeMetadata})` を `nextCursor` 枯渇まで反復）。`tests/fixtures/vectorStore.ts` のフェイクにも `scan` を実装（seam パリティ・D8）
+- [x] T014 [US3] `src/search/searchWines.ts` に構造フィルタを追加（ハイドレート済みメタデータに対し color/region 階層/vintage の **exact 一致**で候補を絞る・FR-004）。観点表現が無い構造のみクエリは `scan("overall")`→exact フィルタ→`wineId` 昇順で返す（FR-012）
 
 **チェックポイント**: 全ユーザーストーリーが独立して機能
 
@@ -104,9 +104,9 @@ description: "タスクリスト: 観点独立のワイン類似検索"
 
 ## Phase 6: 仕上げと横断的な関心事
 
-- [ ] T015 [P] `README.md` のツール表に `search_wines` を追記し、`src/server.ts` の description を最終調整する
-- [ ] T016 全ゲート（`npm run typecheck && npm run lint && npm run format:check && npm run test && npm run build`）が緑であることを確認する
-- [ ] T017 [quickstart.md](./quickstart.md) の自動ゲート（C1/C2/C4/C9/C11/C12）を実行して確認する（実機 SC-001/004/005 は手動・接続後）
+- [x] T015 [P] `README.md` のツール表に `search_wines` を追記し、`src/server.ts` の description を最終調整する
+- [x] T016 全ゲート（`npm run typecheck && npm run lint && npm run format:check && npm run test && npm run build`）が緑であることを確認する
+- [x] T017 [quickstart.md](./quickstart.md) の自動ゲート（C1/C2/C4/C9/C11/C12）を実行して確認する（実機 SC-001/004/005 は手動・接続後）
 
 ---
 

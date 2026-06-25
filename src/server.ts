@@ -12,6 +12,7 @@ import {createVectorStore} from "./storage/vectorStore.js"
 import {createRecordWine, type RecordWineResult} from "./tools/recordWine.js"
 import {createPreviewRecord, type PreviewRecordResult} from "./tools/previewRecord.js"
 import {createGetJsaTaxonomy, type GetJsaTaxonomyResult} from "./tools/getJsaTaxonomy.js"
+import {createSearchWines, type SearchResult} from "./search/searchWines.js"
 import {regionToParts} from "./domain/region.js"
 import {EXPRESSION_CATEGORIES, type ExpressionCategory} from "./domain/taxonomy.js"
 import type {FieldError} from "./domain/recordInput.js"
@@ -40,6 +41,8 @@ export interface McpServerDeps {
 	previewRecord: (input: unknown) => PreviewRecordResult
 	/** get_jsa_taxonomy: 表現選択の語彙を color 別・カテゴリ別に返す（読み取り専用・US2）。 */
 	getJsaTaxonomy: (input: unknown) => GetJsaTaxonomyResult
+	/** search_wines: 観点独立の意味検索＋構造的絞り込み（読み取り専用・004）。 */
+	searchWines: (input: unknown) => Promise<SearchResult>
 }
 
 /**
@@ -168,6 +171,48 @@ export function createMcpServer(deps: McpServerDeps): McpServer {
 		},
 	)
 
+	// search_wines: 観点独立の意味検索＋構造的絞り込み（読み取り専用・004）。
+	server.registerTool(
+		"search_wines",
+		{
+			title: "ワインを観点別に検索する",
+			description: "記録済みワインを、外観・香り・味わいの自然文表現で観点ごとに独立して意味検索し、産地・ヴィンテージ・色で構造的に絞り込む（読み取り専用）。" + "自然文（「外観は…味わいは…スペインの赤」）は呼び出し側で観点別の表現と構造条件に分解して渡すこと。" + "appearance/aroma/taste（観点表現）または region/vintage/color（構造条件）の最低ひとつが必須。weights で観点重み（>0・既定均等）、limit で件数（既定 10）。",
+			inputSchema: {
+				appearance: z.string().optional().describe("外観の表現（自然文・任意）"),
+				aroma: z.string().optional().describe("香りの表現（自然文・任意）"),
+				taste: z.string().optional().describe("味わいの表現（自然文・任意）"),
+				region: z.object({country: z.string().nullish(), region: z.string().nullish(), subregion: z.string().nullish(), commune: z.string().nullish()}).nullish().describe("産地の構造的絞り込み（階層・任意・exact 一致）"),
+				vintage: z.union([z.number(), z.string()]).nullish().describe('ヴィンテージの絞り込み（収穫年 / "NV" / null・任意）'),
+				color: z.string().optional().describe('色の絞り込み（"white" または "red"・任意）'),
+				weights: z.object({appearance: z.number().optional(), aroma: z.number().optional(), taste: z.number().optional()}).nullish().describe("観点重み（各 > 0・未指定は均等）"),
+				limit: z.number().optional().describe("返却件数上限（≥1・既定 10）"),
+			},
+		},
+		async (args): Promise<CallToolResult> => {
+			const result = await deps.searchWines(args)
+			if (!result.ok) {
+				return errorResult(result.errors)
+			}
+			const items = result.items
+			if (items.length === 0) {
+				return {content: [{type: "text", text: "該当するワインは見つかりませんでした。"}], structuredContent: {items}}
+			}
+			const lines = items.map((it, i) => {
+				const region = regionToParts(it.region).join(" > ") || "—"
+				const head = `${String(i + 1)}. ${it.name ?? "—"}${it.producer !== null ? `（${it.producer}）` : ""} / ${region} / ${it.vintage ?? "—"} / ${it.color ?? "—"}`
+				if (it.score === undefined) return head
+				const breakdown = EXPRESSION_CATEGORIES.map(c => {
+					const s = it.aspectScores?.[c]
+					return s === undefined ? null : `${CATEGORY_LABELS[c]} ${s.toFixed(3)}`
+				})
+					.filter((x): x is string => x !== null)
+					.join("・")
+				return `${head} — スコア ${it.score.toFixed(3)}${breakdown !== "" ? `（${breakdown}）` : ""}`
+			})
+			return {content: [{type: "text", text: [`${String(items.length)} 件ヒット`, ...lines].join("\n")}], structuredContent: {items}}
+		},
+	)
+
 	return server
 }
 
@@ -293,7 +338,8 @@ function buildDeps(config: Config): McpServerDeps {
 		allowedImageBaseUrl: config.r2.publicBaseUrl,
 	})
 	const getJsaTaxonomy = createGetJsaTaxonomy({taxonomy})
-	return {recordWine, previewRecord, getJsaTaxonomy}
+	const searchWines = createSearchWines({store})
+	return {recordWine, previewRecord, getJsaTaxonomy, searchWines}
 }
 
 /** config から MCP 依存と認証ゲートを構築する（認証は config.auth があるときのみ）。 */

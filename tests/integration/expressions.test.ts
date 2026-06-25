@@ -52,6 +52,7 @@ describe("US2 表現選択の記録反映（観点別 namespace）", () => {
 			},
 			fetch: () => Promise.resolve([]),
 			query: () => Promise.resolve([]),
+			scan: () => Promise.resolve([]),
 		}
 		const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
 		try {

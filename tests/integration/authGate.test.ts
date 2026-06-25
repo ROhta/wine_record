@@ -82,12 +82,12 @@ describe("認証ゲート（US1/US2/US3）", () => {
 		}
 	})
 
-	it("US1: 有効トークンなら initialize/tools/list を通過し 3 ツールが見える", async () => {
+	it("US1: 有効トークンなら initialize/tools/list を通過し 4 ツールが見える", async () => {
 		const {server, base} = startApp()
 		try {
 			const client = await connect(base, VALID)
 			const tools = await client.listTools()
-			expect(tools.tools.map(t => t.name).sort()).toEqual(["get_jsa_taxonomy", "preview_record", "record_wine"])
+			expect(tools.tools.map(t => t.name).sort()).toEqual(["get_jsa_taxonomy", "preview_record", "record_wine", "search_wines"])
 			await client.close()
 		} finally {
 			await close(server)
