@@ -1,0 +1,13 @@
+lockfile_version: '1'
+generated_at: '2026-06-29T11:37:07.320173+00:00'
+dependencies: []
+local_deployed_files:
+- .github/instructions/apm-workflow.instructions.md
+- .github/instructions/local-dev-workflow.instructions.md
+- .github/instructions/pr-review.instructions.md
+- .github/instructions/setup.instructions.md
+local_deployed_file_hashes:
+  .github/instructions/apm-workflow.instructions.md: sha256:9c191d58fca449aa44fba3d3cbdef4a9f9e7941227f01e06380ab97d444bb46a
+  .github/instructions/local-dev-workflow.instructions.md: sha256:94c8c2597e6650d6de02c7e78373f48e715b3ea53aad9600c0caad2229408004
+  .github/instructions/pr-review.instructions.md: sha256:3706bc20de85b40023e728a80fce50e85d4deb76cefc567c598de93094018bb9
+  .github/instructions/setup.instructions.md: sha256:6e5016c64102adefeb41f87765baeb6edfa5a0d60c02d0ca033fa6caf314b657
