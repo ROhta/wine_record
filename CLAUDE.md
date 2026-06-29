@@ -7,5 +7,5 @@
 `specs/004-wine-aspect-search/plan.md` (観点独立のワイン類似検索)。
 
 プロジェクトの原則: `.specify/memory/constitution.md`。
-全体設計: `docs/superpowers/specs/2026-06-17-wine-record-design.md`。
+全体設計: `docs/design/overview.md`。
 <!-- SPECKIT END -->

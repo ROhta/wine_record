@@ -10,7 +10,7 @@
 vision がラベルの文字を読み、リモート MCP サーバーが「確認 UI（MCP Apps ウィジェット）の
 描画」「JSA 表現タクソノミーの供給」「Upstash Vector への構造化保存」「ラベル画像の
 オブジェクトストレージ永続化」を担う。技術的詳細は
-[設計ドキュメント](../../docs/superpowers/specs/2026-06-17-wine-record-design.md) を参照。
+[設計ドキュメント](../../docs/design/overview.md) を参照。
 
 ## 技術コンテキスト
 
