@@ -37,7 +37,7 @@ description: "タスクリスト: Auth0 設定の Terraform 管理（IaC 化）"
 
 **⚠️ CRITICAL**: T003 完了まで Phase 3 以降の本番操作（import/plan）は開始できない。
 
-- [ ] T003 (運用者) Auth0 Management API 用の M2M アプリを**手動ブートストラップ**し（最小スコープ: `read:clients`/`update:clients`/`read:resource_servers`/`update:resource_servers`）、発行された domain/client_id/client_secret を HCP workspace `wine_records` の **sensitive 環境変数**（`AUTH0_DOMAIN`/`AUTH0_CLIENT_ID`/`AUTH0_CLIENT_SECRET`）に登録する。このアプリは**管理外**（Terraform 管理に含めない＝自己ロックアウト回避）
+- [x] T003 (運用者) Auth0 Management API 用の M2M アプリを**手動ブートストラップ**し（最小スコープ: `read:clients`/`update:clients`/`read:resource_servers`/`update:resource_servers`）、発行された domain/client_id/client_secret を HCP workspace `wine_records` の **sensitive 環境変数**（`AUTH0_DOMAIN`/`AUTH0_CLIENT_ID`/`AUTH0_CLIENT_SECRET`）に登録する。このアプリは**管理外**（Terraform 管理に含めない＝自己ロックアウト回避）
 - [x] T004 `iac/README.md` に Auth0 セクションを追記する: M2M ブートストラップ手順／**管理外設定**（テナント Default Audience・Resource Parameter Compatibility Profile）の現在値・理由・変更注意／**M2M 資格情報と connector の client_secret は別物**である旨
 - [x] T005 (一部エージェント実施: `init -backend=false` で provider 取得・lock 更新済み。運用者は import 前に backend 付き `terraform init` を実行) `cd iac && terraform init` で `auth0` provider を取得し `.terraform.lock.hcl` を更新する。解決された版が `subject_type_authorization` に対応することを確認する（非対応なら `terraform init -upgrade`）
 
@@ -63,14 +63,15 @@ description: "タスクリスト: Auth0 設定の Terraform 管理（IaC 化）"
 
 > `iac/imports.tf` の import ブロックで取り込むため **`terraform import` CLI は不要**。`plan`/`apply` が取り込む。
 
-- [ ] T008 [US1] (運用者) 取り込み対象 ID を変数で設定する: `auth0_resource_server_id`（既存 API の内部 ID＝`auth0 api get resource-servers` の `id`）を HCP workspace の Terraform 変数 or gitignore 済み `*.tfvars` に設定
-- [ ] T009 [US1] (運用者) 取り込み対象 ID を変数で設定する: `auth0_connector_client_id`（connector の client_id＝claude.ai Advanced settings / Auth0 ダッシュボード）を同様に設定
-- [ ] T010 [US1] (運用者＋HCL 編集) `terraform plan` を実行し、「import される 2 リソース」＋差分・recreate（`-/+`）の有無を確認する。**HCL を本番方向にのみ編集して差分ゼロへ収束**させる（`auth0.tf` を contracts に合わせる）。**plan が「import のみ・changes なし」になるまで `terraform apply` を実行しない**。recreate は `prevent_destroy=true` がエラーで止める。Vercel 側に差分が出ていないことも確認する
-- [ ] T011 [US1] (運用者) plan が「import のみ・changes なし」を確認後、`terraform apply` で**取り込みを実行**する（既存リソースを state に取り込むだけ。本番の設定値は変えない）
+- [x] T008 [US1] (運用者) 取り込み対象 ID を変数で設定する: `auth0_resource_server_id`（既存 API の内部 ID＝`auth0 api get resource-servers` の `id`）を HCP workspace の Terraform 変数 or gitignore 済み `*.tfvars` に設定
+- [x] T009 [US1] (運用者) 取り込み対象 ID を変数で設定する: `auth0_connector_client_id`（connector の client_id＝claude.ai Advanced settings / Auth0 ダッシュボード）を同様に設定
+- [x] T010 [US1] (運用者＋HCL 編集) `terraform plan` を実行し、「import される 2 リソース」＋差分・recreate（`-/+`）の有無を確認する。**HCL を本番方向にのみ編集して差分ゼロへ収束**させる（`auth0.tf` を contracts に合わせる）。**plan が「import のみ・changes なし」になるまで `terraform apply` を実行しない**。recreate は `prevent_destroy=true` がエラーで止める。Vercel 側に差分が出ていないことも確認する
+- [x] T011 [US1] (運用者) plan が「import のみ・changes なし」を確認後、`terraform apply` で**取り込みを実行**する（既存リソースを state に取り込むだけ。本番の設定値は変えない）
 
 ### 検証
 
-- [ ] T012 [US1] (運用者) 受け入れ検証を行い記録する: **SC-001**（`terraform plan` が 0 changes）／**SC-002**（claude.ai で `get_jsa_taxonomy` 等を呼び、再ログイン・再同意なしに成功。`client_id`・`audience` 不変）
+- [x] T012 [US1] (運用者) 受け入れ検証を行い記録する: **SC-001**（`terraform plan` が 0 changes）／**SC-002**（claude.ai で `get_jsa_taxonomy` 等を呼び、再ログイン・再同意なしに成功。`client_id`・`audience` 不変）
+  - 実施記録（2026-06-29）: import 2件 apply 完了（`2 imported, 0 changed, 0 destroyed`）→ `terraform plan` = **No changes**（SC-001 達成）。0 changed/0 destroyed のため `client_id`・`audience` 不変＝claude.ai 接続維持（SC-002）。`auth0.tf` の `name` を本番値 `wine_records` に収束。M2M は Management API への client-grant 付与で認可。
 
 **チェックポイント**: US1 完了 = Auth0 構成がコード管理下・差分ゼロ・接続維持。これが MVP
 
