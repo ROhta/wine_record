@@ -23,14 +23,12 @@ wine_record は、ラベル写真からワインを記録するリモート MCP 
 - **RFC 9728**（Protected Resource Metadata）と **RFC 8707**（`resource` パラメータ）に対応し、claude.ai のリモートコネクタが HTTPS のみで接続できます。
 - 認証ゲートが有効になるのは、`AUTH0_ISSUER_BASE_URL` と `AUTH0_AUDIENCE` の**両方を設定したとき**だけです（ローカル開発では無効）。
 - Auth0 のテナント設定は Terraform で管理しています（後述の 8）。`prevent_destroy` により `client_id` と `audience` を不変に保ち、稼働中の接続を壊しません。
-- 関連: [README「Claude から使う」](../README.md#claude-から使うリモートコネクタoauth-認証付き)、[`iac/README.md`（Auth0）](../iac/README.md)、[`specs/002-mcp-oauth-auth/`](../specs/002-mcp-oauth-auth/)。
 
 ### 2. 入力検証・最小副作用
 
 - 入力検証は **`validateRecordInput` に集約**しています（`name`・`color` は必須、`*Terms` は当該 color の JSA 語彙にある値のみ、検証は `zod` スキーマ）。語彙にない値はサーバー側で拒否します。
 - `record_wine` の `imageUrl` は、許可した自前ストレージの https（ホスト完全一致）のみを受理します（fail-closed）。
 - データを書き込む（upsert する）のは、明示的な承認を経て呼ぶ `record_wine` だけです。`preview_record`・`get_jsa_taxonomy`・`search_wines` は副作用のない読み取り専用です。
-- 関連: [README「セキュリティ」](../README.md#セキュリティ)。
 
 ### 3. HTTP 層
 
@@ -45,7 +43,6 @@ wine_record は、ラベル写真からワインを記録するリモート MCP 
 - Upstash の接続情報は **Vercel の Upstash 統合が所有**します（トークンの自動ローテーションを壊さないよう、Terraform では管理しません）。
 - connector の `client_secret` と、Terraform 実行用 M2M の `client_secret` は別物です（混同しないこと）。Terraform は connector の secret を宣言も `output` もしません。
 - リポジトリに機密値の literal を置きません（`specs/003` の受け入れ基準 SC-005: `git grep` で 0 件）。
-- 関連: [`iac/README.md`（Auth0・「2 つの secret を混同しないこと」）](../iac/README.md)。
 
 ### 5. シークレット漏洩の防止（GitHub）
 
@@ -58,7 +55,6 @@ wine_record は、ラベル写真からワインを記録するリモート MCP 
 - **GitHub Actions は commit SHA で固定**します（リポジトリポリシー `sha_pinning_required`）。Dependabot は SHA とバージョンコメントを合わせて更新するため、pin の形式は保たれます。
 - `npm ci` により、lockfile ベースで再現性のあるインストールを行います。
 - **厳格な型付け**（`@tsconfig/strictest` + `typescript-eslint`）により、型レベルの誤りを CI で検出します。
-- 関連: [`.github/workflows/ci.yml`](workflows/ci.yml)、[`.github/dependabot.yml`](dependabot.yml)。
 
 ### 7. CI・変更管理
 
@@ -72,7 +68,6 @@ wine_record は、ラベル写真からワインを記録するリモート MCP 
 - 重要なリソースには `lifecycle { prevent_destroy = true }` を設定し、誤った destroy / recreate を機械的に防ぎます。
 - **ドリフト検知**として、`terraform plan` を常に「0 changes」に保つことで、コンソールでの黙示的な手動変更を検知します（憲章 原則 VI）。
 - Vercel エッジ層の Deployment Protection は**意図的に無効**（`none`）にし、保護の責務をアプリ層の OAuth に一本化しています（二重ゲートを避けるため）。
-- 関連: [`iac/README.md`](../iac/README.md)、[`specs/003-auth0-terraform/`](../specs/003-auth0-terraform/)。
 
 ---
 
