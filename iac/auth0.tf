@@ -21,8 +21,8 @@
 
 # API（リソースサーバー）。Identifier = MCP の audience（AUTH0_AUDIENCE と一致）。
 resource "auth0_resource_server" "wine_record_api" {
-  # name は本番の現名に合わせる（import 後に plan で確認・調整）。
-  name        = "wine-record MCP"
+  # name は本番の現名（import で確認: "wine_records"）。差分ゼロのため本番値に合わせる。
+  name        = "wine_records"
   identifier  = "https://wine-record-rohta.vercel.app/mcp"
   signing_alg = "RS256"
 
