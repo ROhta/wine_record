@@ -1,0 +1,16 @@
+name: wine-record
+version: 1.0.0
+description: wine_record プロジェクトの AI エージェント向け指示
+author: ROhta
+# Which agent platforms to deploy to.
+# Resolution order: --target flag > this field > auto-detect from filesystem.
+# Accepted values: vscode, agents, copilot, claude, cursor, opencode, codex,
+# gemini, antigravity, windsurf, kiro, agent-skills, all
+targets:
+  - copilot
+  - codex
+dependencies:
+  apm: []
+  mcp: []
+includes: auto
+scripts: {}

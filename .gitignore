@@ -143,3 +143,12 @@ vite.config.ts.timestamp-*
 .vite/
 
 # wine_record
+
+# APM 生成物（SoT は .apm/instructions/ と apm.yml。詳細は .apm/instructions/apm-workflow.instructions.md）
+# 追跡するのは .apm/instructions/・apm.yml・apm.lock.yaml・.github/copilot-instructions.md のみ。
+apm_modules/
+AGENTS.md
+.github/instructions/
+.codex/
+.mcp.json
+.vscode/mcp.json
