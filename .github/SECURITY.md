@@ -1,6 +1,6 @@
 # セキュリティポリシー
 
-wine_record は、ラベル写真からワインを記録するリモート MCP サーバーです（Node/TypeScript・Express + Streamable HTTP・Vercel ホスト・Auth0 OAuth・Upstash Vector）。本書は、このリポジトリで実施しているセキュリティ対策の**索引**です。各対策の詳細は README・`iac/README.md`・`specs/` も参照してください。
+wine_record は、ラベル写真からワインを記録するリモート MCP サーバーです（Node/TypeScript・Express + Streamable HTTP・Vercel ホスト・Auth0 OAuth・Upstash Vector）。本書は、このリポジトリで実施しているセキュリティ対策の**索引**です。
 
 ## 脆弱性の報告
 
