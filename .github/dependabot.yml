@@ -1,0 +1,89 @@
+# Dependabot による依存更新（ROhta/bingo_next の設定を本リポジトリ構成に合わせて移植）。
+#
+# 共通方針:
+# - グループ化（groups: "*"）で 1 エコシステム = 1 PR にまとめ、ノイズを抑える。
+# - cooldown で新リリース直後の更新を一定期間待ち、地雷バージョンを踏みにくくする。
+# - rebase-strategy: auto / branch separator "_" / labels: dependencies で運用を bingo_next と揃える。
+version: 2
+updates:
+  # npm（ルートの package.json）。
+  # minor/patch は ignore し major のみ PR 化する（日常更新のノイズ抑制。
+  # セキュリティ更新は Dependabot security updates として別途発火するため影響なし）。
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "10:00"
+      timezone: "Asia/Tokyo"
+    allow:
+      - dependency-type: "all"
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 10
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 5
+    pull-request-branch-name:
+      separator: "_"
+    rebase-strategy: "auto"
+    versioning-strategy: increase-if-necessary
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
+    groups:
+      npm-all-dependencies:
+        patterns:
+          - "*"
+
+  # Terraform（iac/ のプロバイダ・モジュール）。本リポジトリの iac はフラット構成のため directory: "/iac"。
+  - package-ecosystem: "terraform"
+    directory: "/iac"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "10:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 10
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "_"
+    rebase-strategy: "auto"
+    groups:
+      terraform-all-dependencies:
+        patterns:
+          - "*"
+
+  # GitHub Actions（.github/workflows/）。CI は SHA 固定（sha_pinning_required）。
+  # Dependabot は更新時に SHA とバージョンコメント（# v4.4.0）を併せて書き換えるため pin 形式は保たれる。
+  # ただし npm 同様 minor/patch は ignore（bingo_next 踏襲）のため、PR 化されるのは major 更新時のみ
+  # （アクションのリリースは大半が minor なので pin は major まで据え置き。セキュリティ更新は別途発火）。
+  # composite action（.github/actions/）は未使用のため directory は "/" のみ。
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "thursday"
+      time: "10:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 10
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: "_"
+    rebase-strategy: "auto"
+    groups:
+      github-all-dependencies:
+        patterns:
+          - "*"
