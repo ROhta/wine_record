@@ -6,7 +6,6 @@ coverage/
 .remember/
 specs/
 docs/
-spikes/
 iac/
 data/
 *.md

@@ -1,7 +1,7 @@
 # フェーズ0 調査: ワインの記録
 
 技術的な未確定事項の決定と根拠。詳細な背景は
-[設計ドキュメント](../../docs/superpowers/specs/2026-06-17-wine-record-design.md) を参照。
+[設計ドキュメント](../../docs/design/overview.md) を参照。
 
 ## R1. 埋め込みモデル
 
