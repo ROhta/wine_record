@@ -1,0 +1,10 @@
+# pnpm 11 の設定（単一パッケージだが pnpm はこのファイルで下記を管理する）。
+# allowBuilds: 依存の postinstall ビルドスクリプト実行可否（既定はブロック）。
+#   esbuild は tsx / vitest が使う native バイナリのビルドに必要なため許可する。
+# minimumReleaseAgeExclude: pnpm 既定のリリース cooldown（新しすぎる版の抑止）から除外する版。
+#   既にインストール済みの最近公開版を通すため pnpm が自動追記する。
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - express-oauth2-jwt-bearer@1.9.1
+  - prettier@3.9.3

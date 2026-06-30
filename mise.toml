@@ -1,0 +1,11 @@
+# wine_record のツールバージョン単一真実源（SSoT）。
+# node / pnpm / terraform / apm を mise で管理する。
+# ローカル・CI は本ファイルを消費する。mise が届かない環境は別途同期（README / .apm/instructions/setup 参照）:
+#   - Vercel 本番ビルド: node=iac/main.tf の node_version（24.x）、pnpm=package.json の packageManager
+#   - Terraform Cloud リモート実行: terraform 版は TFC workspace 設定（iac/versions.tf の required_version を満たす）
+[tools]
+node = "24.16.0"
+pnpm = "11.9.0"
+terraform = "1.13.0"
+# Agent Package Manager（AI エージェント instructions 管理）。registry 未収録のため github backend で取得。
+"github:microsoft/apm" = { version = "0.23.0", extract_all = "true" }
