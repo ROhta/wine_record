@@ -8,6 +8,6 @@ local_deployed_files:
 - .github/instructions/setup.instructions.md
 local_deployed_file_hashes:
   .github/instructions/apm-workflow.instructions.md: sha256:9c191d58fca449aa44fba3d3cbdef4a9f9e7941227f01e06380ab97d444bb46a
-  .github/instructions/local-dev-workflow.instructions.md: sha256:94c8c2597e6650d6de02c7e78373f48e715b3ea53aad9600c0caad2229408004
+  .github/instructions/local-dev-workflow.instructions.md: sha256:03b3c793e34d9b923efaed442c1c4aeb520ea632bcb3441ddf6149d4cc60659f
   .github/instructions/pr-review.instructions.md: sha256:3706bc20de85b40023e728a80fce50e85d4deb76cefc567c598de93094018bb9
-  .github/instructions/setup.instructions.md: sha256:6e5016c64102adefeb41f87765baeb6edfa5a0d60c02d0ca033fa6caf314b657
+  .github/instructions/setup.instructions.md: sha256:b8c3c8d9e2896e7610405b1a65134e23b16d71c352b942626ce977afba1f9b43

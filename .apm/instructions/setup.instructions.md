@@ -9,15 +9,17 @@ applyTo: "**/{package.json,tsconfig.json,tsconfig.build.json,vitest.config.ts,.e
 
 ## 前提
 
-- Node.js 24 / npm。**pnpm・mise は使わない**（bingo_next とは異なる）。
+- ツールは [mise](https://mise.jdx.dev/) で管理する（`mise.toml` が SSoT: **node / pnpm / terraform / apm**）。パッケージマネージャは **pnpm**（npm ではない）。
+- mise はシェルで有効化（`mise activate`）するか、各コマンドを `mise exec -- <cmd>` で実行する。
 - 必要アカウント: [Upstash](https://upstash.com/)（Vector）、本番ホスティング [Vercel](https://vercel.com/)、Terraform バックエンド [HCP Terraform](https://cloud.hashicorp.com/)。
 
 ## ローカル起動
 
 ```bash
-npm ci
+mise trust && mise install   # node / pnpm / terraform / apm を導入
+pnpm install
 cp .env.example .env   # UPSTASH_VECTOR_REST_URL / _TOKEN を設定（画像ストレージ変数は US3 用・任意）
-npm run dev            # tsx watch（既定 :3000）
+pnpm dev               # tsx watch（既定 :3000）
 ```
 
 - 埋め込みインデックスは `BAAI/bge-m3`（dense・1024 次元）で作成しておく。
@@ -26,11 +28,11 @@ npm run dev            # tsx watch（既定 :3000）
 ## 品質ゲート（コミット前・CI と同一）
 
 ```bash
-npm run typecheck
-npm run lint
-npm run format:check
-npm test
-npm run build
+pnpm run typecheck
+pnpm run lint
+pnpm run format:check
+pnpm test
+pnpm run build
 ```
 
 `pre-commit` フック（husky + lint-staged）がコミット時に `eslint --fix` + `prettier` を自動適用する。

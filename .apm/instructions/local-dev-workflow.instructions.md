@@ -27,7 +27,7 @@ applyTo: "**"
 
 実装が完了したと判断したら、順に実行する。**前ステップが完了するまで次に進まない。**
 
-1. **品質ゲートを完遂**する: `npm run typecheck && npm run lint && npm run format:check && npm test && npm run build`。失敗したら根本原因を解決してから次へ。
+1. **品質ゲートを完遂**する: `pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm test && pnpm run build`。失敗したら根本原因を解決してから次へ。
 2. ブランチを push し、PR を作成する。
    - PR 本文は [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) の項目（`## 期待する挙動・状態` / `## 確認済み項目` / `## 見てほしいところ`）を埋める。
    - チェックボックスはコミット前に検証済みの項目のみ `[x]`、Preview デプロイ待ちなど未確認のものは `[ ]` のまま残す。

@@ -10,5 +10,5 @@ iac/
 data/
 *.md
 LICENSE
-package-lock.json
+pnpm-lock.yaml
 apm.lock.yaml
