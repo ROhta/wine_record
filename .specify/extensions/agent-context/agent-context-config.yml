@@ -1,4 +1,6 @@
-context_file: CLAUDE.md
+# Spec Kit のプランポインタの書き込み先。CLAUDE.md は apm 生成物（gitignore）になったため、
+# apm の SoT である .apm/instructions/ 配下に書き、apm compile で CLAUDE.md/AGENTS.md へ畳み込む。
+context_file: .apm/instructions/spec-context.instructions.md
 context_markers:
   start: <!-- SPECKIT START -->
   end: <!-- SPECKIT END -->

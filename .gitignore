@@ -148,7 +148,9 @@ vite.config.ts.timestamp-*
 # 追跡するのは .apm/instructions/・apm.yml・apm.lock.yaml・.github/copilot-instructions.md のみ。
 apm_modules/
 AGENTS.md
+CLAUDE.md
 .github/instructions/
+.claude/rules/
 .codex/
 .mcp.json
 .vscode/mcp.json
