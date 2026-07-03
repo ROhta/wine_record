@@ -1,11 +1,11 @@
 lockfile_version: '1'
-generated_at: '2026-07-03T06:03:23.630507+00:00'
+generated_at: '2026-07-03T06:17:19.046714+00:00'
 apm_version: 0.23.0
 dependencies:
 - repo_url: ROhta/apm-config
   name: apm-config-base
   host: github.com
-  resolved_commit: f90a76e42cd782cdaf09afc3a4b81f2568996c50
+  resolved_commit: 04a97be5ee8f9d44cf71c06a1f30782e7bf7052c
   resolved_ref: main
   version: 1.0.0
   virtual_path: base
@@ -17,11 +17,11 @@ dependencies:
   - .github/instructions/language.instructions.md
   - .github/instructions/pr-review.instructions.md
   deployed_file_hashes:
-    .claude/rules/language.md: sha256:fd5dce23859bfd7ca0167c3b23dbd23fcfcad42a1d1151c7f12e9e9f454ec31a
+    .claude/rules/language.md: sha256:ba3ab130598d94ac7e96e60a393f3d0fd9a00e69a3a6db7415690a53f5aea8ff
     .claude/rules/pr-review.md: sha256:0e7cef3447bda3658af7375a8b2366e6992bad65fd75a6c89bdd83e8623ae5cf
-    .github/instructions/language.instructions.md: sha256:8565f23792360b90d0787670500da9acb58d31e9a1184908a08d8c0e016a7399
+    .github/instructions/language.instructions.md: sha256:18d17cabd53bf121ee02a80acfd67e071e5f3b5523d15f5c156f8a993e831092
     .github/instructions/pr-review.instructions.md: sha256:3706bc20de85b40023e728a80fce50e85d4deb76cefc567c598de93094018bb9
-  content_hash: sha256:c95ee3daefa47c016f4f4ba4392cdc0149d25f05447c5bf76a4f885b37322b35
+  content_hash: sha256:f4df283381982bfb8ca40375ce62986e1be28a01709ca596a2ac9c2e3eda5401
   declared_license: GPL-3.0-or-later
 local_deployed_files:
 - .claude/rules/apm-workflow.md
