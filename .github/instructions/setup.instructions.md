@@ -1,6 +1,6 @@
 ---
 description: wine_record の環境構築・開発コマンド
-applyTo: "**/{package.json,tsconfig.json,tsconfig.build.json,vitest.config.ts,.env.example,*.tf,*.tfvars}"
+applyTo: "**/{mise.toml,package.json,tsconfig.json,tsconfig.build.json,vitest.config.ts,.env.example,*.tf,*.tfvars}"
 ---
 
 # 環境構築・開発

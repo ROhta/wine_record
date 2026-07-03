@@ -35,9 +35,9 @@ local_deployed_files:
 local_deployed_file_hashes:
   .claude/rules/apm-workflow.md: sha256:0cc93ae02745be4c519da7dbea98e7191865739524055dfc6a744dab7d02ffb6
   .claude/rules/local-dev-workflow.md: sha256:c1dfa36d8b6d4a99ffd9321d9b18ab930aa5035eb1a78af25823745737bf6e05
-  .claude/rules/setup.md: sha256:ea1da0f28948839fb15016a303dc7b20a60f4344e19d60e9f68e894288729efc
+  .claude/rules/setup.md: sha256:7a14ebc1c01fee814a626bc0c34c929d5649477e1c5de1b06e7cf73e7194a55d
   .claude/rules/spec-context.md: sha256:9cc27ca26043519a373db6bfe9392430a803a8add7b01c2df2c92e96e09954b0
   .github/instructions/apm-workflow.instructions.md: sha256:e8d6a94bfb83fa3488b45086c20f317f5de0910f24313f50c6f41345150b030e
   .github/instructions/local-dev-workflow.instructions.md: sha256:59ac86f4caef9f4655a291100ad746080faf0e831c465394a06f87cf6e9020d7
-  .github/instructions/setup.instructions.md: sha256:b8c3c8d9e2896e7610405b1a65134e23b16d71c352b942626ce977afba1f9b43
+  .github/instructions/setup.instructions.md: sha256:1a9e35e53e4755b1096b23a1bc3e7dc58191ec4fd80a3386253e9da83e3c52d3
   .github/instructions/spec-context.instructions.md: sha256:1b19086575cdb44f5664e4d5a44a4aa5adb56392597eda1e5ac06a4a716e2c46
