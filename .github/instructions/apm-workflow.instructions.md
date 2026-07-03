@@ -42,7 +42,7 @@ apm install   # プリミティブ再デプロイ（.github/instructions/・.cla
 apm compile   # CLAUDE.md / AGENTS.md を更新
 ```
 
-`apm.lock.yaml` を除く生成物は `.gitignore` 対象のためコミットには含まれない。`apm compile` は既定で Spec Kit の constitution ブロックを取り込む（`--with-constitution`）。
+生成物のうち `apm.lock.yaml` と `.github/instructions/*.instructions.md`（クラウド Copilot 経路確保のための例外）は追跡対象としてコミットする。それ以外の生成物（`CLAUDE.md` / `AGENTS.md` / `.claude/rules/` など）は `.gitignore` 対象のためコミットには含まれない。`apm compile` は既定で Spec Kit の constitution ブロックを取り込む（`--with-constitution`）。
 
 ## GitHub Copilot Code Review への指示伝達
 

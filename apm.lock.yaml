@@ -1,11 +1,11 @@
 lockfile_version: '1'
-generated_at: '2026-07-03T04:52:05.355484+00:00'
+generated_at: '2026-07-03T06:03:23.630507+00:00'
 apm_version: 0.23.0
 dependencies:
 - repo_url: ROhta/apm-config
   name: apm-config-base
   host: github.com
-  resolved_commit: 61dafe8abf9eb8f97321af70b96e8faada55c64c
+  resolved_commit: f90a76e42cd782cdaf09afc3a4b81f2568996c50
   resolved_ref: main
   version: 1.0.0
   virtual_path: base
@@ -17,11 +17,11 @@ dependencies:
   - .github/instructions/language.instructions.md
   - .github/instructions/pr-review.instructions.md
   deployed_file_hashes:
-    .claude/rules/language.md: sha256:728adb7d1068d818e9ec6e39ec88a86d261522c2a68bc1cecc4be9e7d863816c
+    .claude/rules/language.md: sha256:fd5dce23859bfd7ca0167c3b23dbd23fcfcad42a1d1151c7f12e9e9f454ec31a
     .claude/rules/pr-review.md: sha256:0e7cef3447bda3658af7375a8b2366e6992bad65fd75a6c89bdd83e8623ae5cf
-    .github/instructions/language.instructions.md: sha256:44b26baea53b03acf26e54697735f70cd33f7f202b4e08583295ad5495a4b22e
+    .github/instructions/language.instructions.md: sha256:8565f23792360b90d0787670500da9acb58d31e9a1184908a08d8c0e016a7399
     .github/instructions/pr-review.instructions.md: sha256:3706bc20de85b40023e728a80fce50e85d4deb76cefc567c598de93094018bb9
-  content_hash: sha256:28c69459f04a7926f33dd4a42d81c9abb2f86c0b598c0ab9629586de482d904c
+  content_hash: sha256:c95ee3daefa47c016f4f4ba4392cdc0149d25f05447c5bf76a4f885b37322b35
   declared_license: GPL-3.0-or-later
 local_deployed_files:
 - .claude/rules/apm-workflow.md
@@ -33,11 +33,11 @@ local_deployed_files:
 - .github/instructions/setup.instructions.md
 - .github/instructions/spec-context.instructions.md
 local_deployed_file_hashes:
-  .claude/rules/apm-workflow.md: sha256:0cc93ae02745be4c519da7dbea98e7191865739524055dfc6a744dab7d02ffb6
+  .claude/rules/apm-workflow.md: sha256:c069a9ceacaf9e81fbb72d1e1d7a887542286fb4390c6e0a93badf181385606f
   .claude/rules/local-dev-workflow.md: sha256:c1dfa36d8b6d4a99ffd9321d9b18ab930aa5035eb1a78af25823745737bf6e05
   .claude/rules/setup.md: sha256:7a14ebc1c01fee814a626bc0c34c929d5649477e1c5de1b06e7cf73e7194a55d
   .claude/rules/spec-context.md: sha256:9cc27ca26043519a373db6bfe9392430a803a8add7b01c2df2c92e96e09954b0
-  .github/instructions/apm-workflow.instructions.md: sha256:e8d6a94bfb83fa3488b45086c20f317f5de0910f24313f50c6f41345150b030e
+  .github/instructions/apm-workflow.instructions.md: sha256:8c02972d2cb0109f17b8fd536875dccf10b781de084d7b02687e2e1b9bbc33c8
   .github/instructions/local-dev-workflow.instructions.md: sha256:59ac86f4caef9f4655a291100ad746080faf0e831c465394a06f87cf6e9020d7
   .github/instructions/setup.instructions.md: sha256:1a9e35e53e4755b1096b23a1bc3e7dc58191ec4fd80a3386253e9da83e3c52d3
   .github/instructions/spec-context.instructions.md: sha256:1b19086575cdb44f5664e4d5a44a4aa5adb56392597eda1e5ac06a4a716e2c46
