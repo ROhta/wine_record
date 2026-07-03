@@ -29,7 +29,7 @@ applyTo: "**"
 
 1. **品質ゲートを完遂**する: `pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm test && pnpm run build`。失敗したら根本原因を解決してから次へ。
 2. ブランチを push し、PR を作成する。
-   - PR 本文は [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) の項目（`## 期待する挙動・状態` / `## 確認済み項目` / `## 見てほしいところ`）を埋める。
+   - PR 本文は [`.github/PULL_REQUEST_TEMPLATE.md`](../PULL_REQUEST_TEMPLATE.md) の項目（`## 期待する挙動・状態` / `## 確認済み項目` / `## 見てほしいところ`）を埋める。
    - チェックボックスはコミット前に検証済みの項目のみ `[x]`、Preview デプロイ待ちなど未確認のものは `[ ]` のまま残す。
    - PR タイトルは Conventional Commits 形式で、本文と同じく日本語で書く。
    - PR の assignee に、現在の `gh` CLI 認証ユーザーを設定する（`gh pr create --assignee @me`、または作成後に `gh pr edit <pr> --add-assignee @me`）。
@@ -114,4 +114,4 @@ query($owner:String!,$repo:String!,$pr:Int!){
 ## 関連ルール
 
 - レビュー応答の文章ルール: 共通パッケージ `ROhta/apm-config/base`（`pr-review.instructions.md`）から配信。生成物は `.github/instructions/pr-review.instructions.md` / `.claude/rules/pr-review.md`。
-- 環境構築・コマンド: [`setup.instructions.md`](./setup.instructions.md)
+- 環境構築・コマンド: [`setup.instructions.md`](../../.apm/instructions/setup.instructions.md)
