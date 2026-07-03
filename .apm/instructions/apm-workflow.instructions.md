@@ -7,7 +7,9 @@ applyTo: ".apm/**"
 
 ## Source of Truth
 
-`.apm/instructions/*.instructions.md` がすべての AI エージェント向け指示の Source of Truth。ここを編集し `apm install` / `apm compile` を実行すると、GitHub Copilot・Codex 向けの生成物に同じ指示が反映される。
+`.apm/instructions/*.instructions.md` がリポジトリ固有の AI エージェント向け指示の Source of Truth。ここを編集し `apm install` / `apm compile` を実行すると、GitHub Copilot・Codex 向けの生成物に同じ指示が反映される。
+
+全リポジトリ共通の指示（言語ルール・PR レビュー観点）は `apm.yml` の `dependencies.apm` で参照する共通パッケージ [`ROhta/apm-config/base`](https://github.com/ROhta/apm-config) が Source of Truth。共通ルールを直したい場合は本リポジトリではなく apm-config を編集し、`apm update` で取り込む。
 
 ## ファイルの管理方針
 

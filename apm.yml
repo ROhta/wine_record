@@ -11,7 +11,8 @@ targets:
   - codex
   - claude
 dependencies:
-  apm: []
+  apm:
+    - ROhta/apm-config/base#main
   mcp: []
 includes: auto
 scripts: {}

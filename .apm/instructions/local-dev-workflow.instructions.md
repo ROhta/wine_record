@@ -113,5 +113,5 @@ query($owner:String!,$repo:String!,$pr:Int!){
 
 ## 関連ルール
 
-- レビュー応答の文章ルール: [`pr-review.instructions.md`](./pr-review.instructions.md)
+- レビュー応答の文章ルール: 共通パッケージ `ROhta/apm-config/base`（`pr-review.instructions.md`）から配信。生成物は `.github/instructions/pr-review.instructions.md` / `.claude/rules/pr-review.md`。
 - 環境構築・コマンド: [`setup.instructions.md`](./setup.instructions.md)
