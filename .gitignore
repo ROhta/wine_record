@@ -145,12 +145,16 @@ vite.config.ts.timestamp-*
 # wine_record
 
 # APM 生成物（SoT は .apm/instructions/ と apm.yml。詳細は .apm/instructions/apm-workflow.instructions.md）
-# 追跡するのは .apm/instructions/・apm.yml・apm.lock.yaml・.github/copilot-instructions.md・.github/instructions/ のみ。
-# .github/instructions/ は生成物だが、クラウドの GitHub Copilot Code Review が読めるよう例外的に追跡する
-# （共通指示を apm-config/base へ移した後もクラウド経路にルールを届けるため）。
+# 追跡するのは .apm/instructions/・apm.yml・apm.lock.yaml・.github/copilot-instructions.md と、
+# .github/instructions/ のうち base 由来の pr-review / language のみ。
+# .github/instructions/ は生成物のため原則追跡しないが、共通指示 pr-review / language は
+# クラウドの GitHub Copilot Code Review に届けるため例外的に追跡する（第三者依存や重複生成物は対象外）。
 apm_modules/
 AGENTS.md
 CLAUDE.md
+.github/instructions/*
+!.github/instructions/pr-review.instructions.md
+!.github/instructions/language.instructions.md
 .claude/rules/
 .codex/
 .mcp.json

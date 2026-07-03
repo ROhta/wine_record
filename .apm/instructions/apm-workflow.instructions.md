@@ -21,7 +21,8 @@ applyTo: ".apm/**"
 | `.github/copilot-instructions.md` | Copilot Code Review に SoT への参照を伝えるスタブ（人間が編集） | ✅ 追跡する |
 | `CLAUDE.md` | `apm compile` で生成（Claude Code 用・constitution 込み） | ❌ 追跡しない |
 | `AGENTS.md`（各所） | `apm compile` で生成（Codex 等） | ❌ 追跡しない |
-| `.github/instructions/*.instructions.md` | `apm install`/`compile` で生成（GitHub Copilot 用）。クラウドの Copilot Code Review が読めるよう例外的に追跡 | ✅ 追跡する |
+| `.github/instructions/pr-review.instructions.md` / `language.instructions.md` | `apm install` で生成（base 由来）。クラウドの Copilot Code Review 用に例外的に追跡 | ✅ 追跡する |
+| `.github/instructions/` のその他 | `apm install`/`compile` で生成（GitHub Copilot 用）。SoT は `.apm/` にあり重複のため追跡しない | ❌ 追跡しない |
 | `.claude/rules/*.md` | `apm install` で生成（Claude Code 補助） | ❌ 追跡しない |
 | `.codex/`・`.vscode/mcp.json`・`.mcp.json` | `apm install` で生成（MCP・エージェント設定） | ❌ 追跡しない |
 | `apm_modules/` ほか APM プラグイン展開先 | `apm install` で生成 | ❌ 追跡しない |
@@ -42,11 +43,11 @@ apm install   # プリミティブ再デプロイ（.github/instructions/・.cla
 apm compile   # CLAUDE.md / AGENTS.md を更新
 ```
 
-生成物のうち `apm.lock.yaml` と `.github/instructions/*.instructions.md`（クラウド Copilot 経路確保のための例外）は追跡対象としてコミットする。それ以外の生成物（`CLAUDE.md` / `AGENTS.md` / `.claude/rules/` など）は `.gitignore` 対象のためコミットには含まれない。`apm compile` は既定で Spec Kit の constitution ブロックを取り込む（`--with-constitution`）。
+生成物のうち `apm.lock.yaml` と `.github/instructions/{pr-review,language}.instructions.md`（クラウド Copilot 経路確保のための base 由来例外）は追跡対象としてコミットする。それ以外の生成物（`.github/instructions/` の他ファイル・`CLAUDE.md` / `AGENTS.md` / `.claude/rules/` など）は `.gitignore` 対象のためコミットには含まれない。`apm compile` は既定で Spec Kit の constitution ブロックを取り込む（`--with-constitution`）。
 
 ## GitHub Copilot Code Review への指示伝達
 
-GitHub Copilot Code Review エージェントは `AGENTS.md` を読まず、`.github/copilot-instructions.md` または `.github/instructions/*.instructions.md` のみを読む。共通指示（pr-review 等）を apm-config/base へ移したため、生成物 `.github/instructions/*.instructions.md` を追跡対象にしてクラウド経路へ届ける（`.gitignore` 参照）。あわせて `.github/copilot-instructions.md` をスタブとして配置し、生成済みの `.github/instructions/pr-review.instructions.md` を参照させている。
+GitHub Copilot Code Review エージェントは `AGENTS.md` を読まず、`.github/copilot-instructions.md` または `.github/instructions/*.instructions.md` のみを読む。共通指示（pr-review / language）を apm-config/base へ移したため、その生成物 `.github/instructions/pr-review.instructions.md` / `language.instructions.md` のみ追跡対象にしてクラウド経路へ届ける（第三者依存や重複生成物は追跡しない。`.gitignore` 参照）。あわせて `.github/copilot-instructions.md` をスタブとして配置し、生成済みの `.github/instructions/pr-review.instructions.md` を参照させている。
 
 参考:
 
