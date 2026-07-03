@@ -58,9 +58,12 @@ reviews:
 knowledge_base:
   code_guidelines:
     enabled: true
-    # SoT は .apm/instructions/（CLAUDE.md は gitignore 済み生成物のため自動検出されない）。
+    # リポジトリ固有指示の SoT は .apm/instructions/。
+    # 共通指示（pr-review / language 等）は apm-config/base 由来で、追跡対象の生成物
+    # .github/instructions/ にのみ実体があるため、両方を索引対象に含める。
     filePatterns:
       - ".apm/instructions/*.md"
+      - ".github/instructions/*.md"
 
 chat:
   # @coderabbitai へのメンションに自動応答する。
