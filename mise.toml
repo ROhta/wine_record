@@ -8,4 +8,4 @@ node = "24.16.0"
 pnpm = "11.9.0"
 terraform = "1.13.0"
 # Agent Package Manager（AI エージェント instructions 管理）。registry 未収録のため github backend で取得。
-"github:microsoft/apm" = { version = "0.23.1", extract_all = "true" }
+"github:microsoft/apm" = { version = "0.24.0", extract_all = "true" }
