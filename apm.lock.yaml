@@ -1,13 +1,13 @@
 lockfile_version: '1'
-generated_at: '2026-07-05T01:39:13.195914+00:00'
-apm_version: 0.23.1
+generated_at: '2026-07-05T21:36:30.368586+00:00'
+apm_version: 0.24.0
 dependencies:
 - repo_url: ROhta/apm-config
   name: apm-config-base
   host: github.com
-  resolved_commit: 82831f48b6be9e1e70291813ae66a1fa68884c64
-  resolved_ref: 82831f48b6be9e1e70291813ae66a1fa68884c64
-  version: 1.3.0
+  resolved_commit: 319d9bf9958bdf07c9074daaffdafbbbbb7ebb22
+  resolved_ref: 319d9bf9958bdf07c9074daaffdafbbbbb7ebb22
+  version: 1.3.1
   virtual_path: base
   is_virtual: true
   package_type: apm_package
@@ -26,25 +26,25 @@ dependencies:
   - .github/instructions/pr-review.instructions.md
   deployed_file_hashes:
     .claude/rules/apm-plugins.md: sha256:f95b68647254d211907f7b0bcb3a301282feb0f3ac43cea7c6583ecadfa856a3
-    .claude/rules/apm-workflow.md: sha256:77f233a036a099037016283b1d2b5900eb1cbc8c455d20aa1a219e974b76a2af
+    .claude/rules/apm-workflow.md: sha256:c7c5c5513ff6ed00760324f916a06f546e39197b4b689e801939766c81755915
     .claude/rules/dev-workflow.md: sha256:3ed61551aa57fdbb638f4081bbdd2606f4b6b16fef86e5dc23c94adc4df6db32
     .claude/rules/language.md: sha256:ba3ab130598d94ac7e96e60a393f3d0fd9a00e69a3a6db7415690a53f5aea8ff
     .claude/rules/local-dev-workflow.md: sha256:eb8d50ccf74eb2dd754e660bca4ffd6c6e5805a66ef8a29e6aa1524b3aa86744
     .claude/rules/pr-review.md: sha256:a641b7cf37e1d054e09509311d21f5ce3bdaf96ff238159a8650676740bc00e8
     .github/instructions/apm-plugins.instructions.md: sha256:8698c902bcb3e82c4f6078b43d41b6fe704dd59fa6978e041ff33802c7668f85
-    .github/instructions/apm-workflow.instructions.md: sha256:c4b99c881fc3d24d536cc9d607d95799978ea078cc1fd63be448bdf4613bfa56
+    .github/instructions/apm-workflow.instructions.md: sha256:f5523e2feb3f8da0159980ff83ea2153a8b86032dc8cd75cb4f85ace28b1707c
     .github/instructions/dev-workflow.instructions.md: sha256:ee54598c010cd3fb169203338f2b2bed38eee514096019352f9028880580b317
     .github/instructions/language.instructions.md: sha256:18d17cabd53bf121ee02a80acfd67e071e5f3b5523d15f5c156f8a993e831092
     .github/instructions/local-dev-workflow.instructions.md: sha256:df40450d324a124e12bedaba05e7e062f5057aadfd2981f2974aa6692ada8c9d
     .github/instructions/pr-review.instructions.md: sha256:245fe9b9e85f80e89b0872c985a45a96983032d12dd705a42ff7542f66fd244f
-  content_hash: sha256:d82668f263d1526ad6c720a1c5060cec803e1c16b89cae44ecaff5653538cad8
+  content_hash: sha256:3a79749375cbffd3ef2fdad2742076f1e42f99b3d1642f45501a587a8d72c9f8
   declared_license: GPL-3.0-or-later
 - repo_url: ROhta/apm-config
   name: apm-config-speckit
   host: github.com
-  resolved_commit: 82831f48b6be9e1e70291813ae66a1fa68884c64
-  resolved_ref: 82831f48b6be9e1e70291813ae66a1fa68884c64
-  version: 1.2.0
+  resolved_commit: 319d9bf9958bdf07c9074daaffdafbbbbb7ebb22
+  resolved_ref: 319d9bf9958bdf07c9074daaffdafbbbbb7ebb22
+  version: 1.3.0
   virtual_path: speckit
   is_virtual: true
   package_type: apm_package
@@ -52,10 +52,257 @@ dependencies:
   - .claude/rules/speckit-workflow.md
   - .github/instructions/speckit-workflow.instructions.md
   deployed_file_hashes:
-    .claude/rules/speckit-workflow.md: sha256:f6b7b5a03f72afda48981776292dde3cb338bc74c0e5a1c2f8a23ee2b33b4fa8
-    .github/instructions/speckit-workflow.instructions.md: sha256:f0cddc20557a465536df7af1cb0e2af782549012ab2df10a9af382758576e031
-  content_hash: sha256:19b27547d36b71ab591b2e193e851ae48e84e94b8c772ff6823b73b283c3658d
+    .claude/rules/speckit-workflow.md: sha256:d2bd1c296229f7be24184f50457ed7e6571635cb05fda51ca8eb9c6451f434a3
+    .github/instructions/speckit-workflow.instructions.md: sha256:f9de3fad1b79b0c6bea2dfbccfae2ecca5de1651ea44122238db9bb8ecaa9831
+  content_hash: sha256:7db6c8d9cb4b2183bd35f5adb7d0d6ba2297c1afaafd80271a3efb722f7a594e
   declared_license: GPL-3.0-or-later
+- repo_url: obra/superpowers
+  name: superpowers
+  host: github.com
+  resolved_commit: d884ae04edebef577e82ff7c4e143debd0bbec99
+  resolved_ref: d884ae04edebef577e82ff7c4e143debd0bbec99
+  version: 6.1.1
+  depth: 2
+  resolved_by: ROhta/apm-config
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/brainstorming
+  - .agents/skills/brainstorming/SKILL.md
+  - .agents/skills/brainstorming/scripts/frame-template.html
+  - .agents/skills/brainstorming/scripts/helper.js
+  - .agents/skills/brainstorming/scripts/server.cjs
+  - .agents/skills/brainstorming/scripts/start-server.sh
+  - .agents/skills/brainstorming/scripts/stop-server.sh
+  - .agents/skills/brainstorming/spec-document-reviewer-prompt.md
+  - .agents/skills/brainstorming/visual-companion.md
+  - .agents/skills/dispatching-parallel-agents
+  - .agents/skills/dispatching-parallel-agents/SKILL.md
+  - .agents/skills/executing-plans
+  - .agents/skills/executing-plans/SKILL.md
+  - .agents/skills/finishing-a-development-branch
+  - .agents/skills/finishing-a-development-branch/SKILL.md
+  - .agents/skills/receiving-code-review
+  - .agents/skills/receiving-code-review/SKILL.md
+  - .agents/skills/requesting-code-review
+  - .agents/skills/requesting-code-review/SKILL.md
+  - .agents/skills/requesting-code-review/code-reviewer.md
+  - .agents/skills/subagent-driven-development
+  - .agents/skills/subagent-driven-development/SKILL.md
+  - .agents/skills/subagent-driven-development/implementer-prompt.md
+  - .agents/skills/subagent-driven-development/scripts/review-package
+  - .agents/skills/subagent-driven-development/scripts/sdd-workspace
+  - .agents/skills/subagent-driven-development/scripts/task-brief
+  - .agents/skills/subagent-driven-development/task-reviewer-prompt.md
+  - .agents/skills/systematic-debugging
+  - .agents/skills/systematic-debugging/CREATION-LOG.md
+  - .agents/skills/systematic-debugging/SKILL.md
+  - .agents/skills/systematic-debugging/condition-based-waiting-example.ts
+  - .agents/skills/systematic-debugging/condition-based-waiting.md
+  - .agents/skills/systematic-debugging/defense-in-depth.md
+  - .agents/skills/systematic-debugging/find-polluter.sh
+  - .agents/skills/systematic-debugging/root-cause-tracing.md
+  - .agents/skills/systematic-debugging/test-academic.md
+  - .agents/skills/systematic-debugging/test-pressure-1.md
+  - .agents/skills/systematic-debugging/test-pressure-2.md
+  - .agents/skills/systematic-debugging/test-pressure-3.md
+  - .agents/skills/test-driven-development
+  - .agents/skills/test-driven-development/SKILL.md
+  - .agents/skills/test-driven-development/testing-anti-patterns.md
+  - .agents/skills/using-git-worktrees
+  - .agents/skills/using-git-worktrees/SKILL.md
+  - .agents/skills/using-superpowers
+  - .agents/skills/using-superpowers/SKILL.md
+  - .agents/skills/using-superpowers/references/antigravity-tools.md
+  - .agents/skills/using-superpowers/references/codex-tools.md
+  - .agents/skills/using-superpowers/references/pi-tools.md
+  - .agents/skills/verification-before-completion
+  - .agents/skills/verification-before-completion/SKILL.md
+  - .agents/skills/writing-plans
+  - .agents/skills/writing-plans/SKILL.md
+  - .agents/skills/writing-plans/plan-document-reviewer-prompt.md
+  - .agents/skills/writing-skills
+  - .agents/skills/writing-skills/SKILL.md
+  - .agents/skills/writing-skills/anthropic-best-practices.md
+  - .agents/skills/writing-skills/examples/CLAUDE_MD_TESTING.md
+  - .agents/skills/writing-skills/graphviz-conventions.dot
+  - .agents/skills/writing-skills/persuasion-principles.md
+  - .agents/skills/writing-skills/render-graphs.js
+  - .agents/skills/writing-skills/testing-skills-with-subagents.md
+  - .claude/hooks/superpowers/hooks/run-hook.cmd
+  - .claude/hooks/superpowers/hooks/session-start
+  - .claude/skills/brainstorming
+  - .claude/skills/brainstorming/SKILL.md
+  - .claude/skills/brainstorming/scripts/frame-template.html
+  - .claude/skills/brainstorming/scripts/helper.js
+  - .claude/skills/brainstorming/scripts/server.cjs
+  - .claude/skills/brainstorming/scripts/start-server.sh
+  - .claude/skills/brainstorming/scripts/stop-server.sh
+  - .claude/skills/brainstorming/spec-document-reviewer-prompt.md
+  - .claude/skills/brainstorming/visual-companion.md
+  - .claude/skills/dispatching-parallel-agents
+  - .claude/skills/dispatching-parallel-agents/SKILL.md
+  - .claude/skills/executing-plans
+  - .claude/skills/executing-plans/SKILL.md
+  - .claude/skills/finishing-a-development-branch
+  - .claude/skills/finishing-a-development-branch/SKILL.md
+  - .claude/skills/receiving-code-review
+  - .claude/skills/receiving-code-review/SKILL.md
+  - .claude/skills/requesting-code-review
+  - .claude/skills/requesting-code-review/SKILL.md
+  - .claude/skills/requesting-code-review/code-reviewer.md
+  - .claude/skills/subagent-driven-development
+  - .claude/skills/subagent-driven-development/SKILL.md
+  - .claude/skills/subagent-driven-development/implementer-prompt.md
+  - .claude/skills/subagent-driven-development/scripts/review-package
+  - .claude/skills/subagent-driven-development/scripts/sdd-workspace
+  - .claude/skills/subagent-driven-development/scripts/task-brief
+  - .claude/skills/subagent-driven-development/task-reviewer-prompt.md
+  - .claude/skills/systematic-debugging
+  - .claude/skills/systematic-debugging/CREATION-LOG.md
+  - .claude/skills/systematic-debugging/SKILL.md
+  - .claude/skills/systematic-debugging/condition-based-waiting-example.ts
+  - .claude/skills/systematic-debugging/condition-based-waiting.md
+  - .claude/skills/systematic-debugging/defense-in-depth.md
+  - .claude/skills/systematic-debugging/find-polluter.sh
+  - .claude/skills/systematic-debugging/root-cause-tracing.md
+  - .claude/skills/systematic-debugging/test-academic.md
+  - .claude/skills/systematic-debugging/test-pressure-1.md
+  - .claude/skills/systematic-debugging/test-pressure-2.md
+  - .claude/skills/systematic-debugging/test-pressure-3.md
+  - .claude/skills/test-driven-development
+  - .claude/skills/test-driven-development/SKILL.md
+  - .claude/skills/test-driven-development/testing-anti-patterns.md
+  - .claude/skills/using-git-worktrees
+  - .claude/skills/using-git-worktrees/SKILL.md
+  - .claude/skills/using-superpowers
+  - .claude/skills/using-superpowers/SKILL.md
+  - .claude/skills/using-superpowers/references/antigravity-tools.md
+  - .claude/skills/using-superpowers/references/codex-tools.md
+  - .claude/skills/using-superpowers/references/pi-tools.md
+  - .claude/skills/verification-before-completion
+  - .claude/skills/verification-before-completion/SKILL.md
+  - .claude/skills/writing-plans
+  - .claude/skills/writing-plans/SKILL.md
+  - .claude/skills/writing-plans/plan-document-reviewer-prompt.md
+  - .claude/skills/writing-skills
+  - .claude/skills/writing-skills/SKILL.md
+  - .claude/skills/writing-skills/anthropic-best-practices.md
+  - .claude/skills/writing-skills/examples/CLAUDE_MD_TESTING.md
+  - .claude/skills/writing-skills/graphviz-conventions.dot
+  - .claude/skills/writing-skills/persuasion-principles.md
+  - .claude/skills/writing-skills/render-graphs.js
+  - .claude/skills/writing-skills/testing-skills-with-subagents.md
+  - .codex/hooks/superpowers/hooks/run-hook.cmd
+  - .codex/hooks/superpowers/hooks/session-start
+  - .github/hooks/scripts/superpowers/hooks/run-hook.cmd
+  - .github/hooks/scripts/superpowers/hooks/session-start
+  - .github/hooks/superpowers-hooks.json
+  deployed_file_hashes:
+    .agents/skills/brainstorming/SKILL.md: sha256:e14914605f640e0841758e45d0ab2a53243b59b921f929e47921c99668f2e61d
+    .agents/skills/brainstorming/scripts/frame-template.html: sha256:6a8a4e58bd6a44b904e2e3c57de774481d909204597e1498de53f1b2fecc4c4e
+    .agents/skills/brainstorming/scripts/helper.js: sha256:43c6d69954a46ec34a2a262bcc62a9a7e83e839c739f199cb72646d397c686e3
+    .agents/skills/brainstorming/scripts/server.cjs: sha256:2d2961ea8d11f56c5f4c3a1a68d22709efa5d7601a2246d8c880774e7e9e8412
+    .agents/skills/brainstorming/scripts/start-server.sh: sha256:a4e5ae84275bcaacd2f84345afeabe59cf7b00ba080e123da7cc1fb226f12847
+    .agents/skills/brainstorming/scripts/stop-server.sh: sha256:0b5ccbbd57f62d3ed88993f7940b5ee0e5c0fc9b21c550c623da4f6292e47daf
+    .agents/skills/brainstorming/spec-document-reviewer-prompt.md: sha256:95a0a195de9d984be2fffa95bab16fc8c563bc296a9cfc5e9c29cb3ece0d7457
+    .agents/skills/brainstorming/visual-companion.md: sha256:3321a044c777d03d7177df41c77bb83155ff2a6d0c16b8a3d752426d29f14ea8
+    .agents/skills/dispatching-parallel-agents/SKILL.md: sha256:f0df13f584049059cc5619f90061405b89dcc6e28ab3f2a8517d27d99c7a46a6
+    .agents/skills/executing-plans/SKILL.md: sha256:bbd8d28bb655a52817cc129ce49f9e46fa7c6303f72ed5de95bfe914ef8e0ce8
+    .agents/skills/finishing-a-development-branch/SKILL.md: sha256:e6d4a812de900d33c6eacfb40747f99427f25c304a7b7099120f9373b115a47f
+    .agents/skills/receiving-code-review/SKILL.md: sha256:647036bbdab7bf2317e14e079595e984c9030f64295e2b4c0fb57dbeb48f25dd
+    .agents/skills/requesting-code-review/SKILL.md: sha256:1017ccdd5bc61fab67c654cf118cbdb520464b313073a0a6b9a6b9aa647a3ad6
+    .agents/skills/requesting-code-review/code-reviewer.md: sha256:b2f2ec7596925fe52dac158fdfbca19b3a7d779d619c481e6706a6c0001662d3
+    .agents/skills/subagent-driven-development/SKILL.md: sha256:5e9e846ae67d153ddf7c5f4fd5102af78454c8f3cdaa0720331cec063fc8861a
+    .agents/skills/subagent-driven-development/implementer-prompt.md: sha256:49018b28dc11bc9f3d13a28959bb10ae1a96eabc5d8f19f4079d901f9ff2bf64
+    .agents/skills/subagent-driven-development/scripts/review-package: sha256:0c0629f6e2c46fc8bf68dcfb8a247ab24eb548b7004fe494035e6fcba9b5cdfb
+    .agents/skills/subagent-driven-development/scripts/sdd-workspace: sha256:9430befaff459ed862415b700c1a9efe45fd34838a684802a1d8320de0c3a007
+    .agents/skills/subagent-driven-development/scripts/task-brief: sha256:5380283f00bffa99ab82ae78482b7d248abe10655129c72ca7050bdc0b6a85e1
+    .agents/skills/subagent-driven-development/task-reviewer-prompt.md: sha256:2eb9d54373420de25bc0bd00635d3a3123a6c0eb30c881168e6f3348e2387331
+    .agents/skills/systematic-debugging/CREATION-LOG.md: sha256:c24733a5b1821bd6bed1fc950261f0b9f4e90097e0bbb96459d8179713730789
+    .agents/skills/systematic-debugging/SKILL.md: sha256:3b20719eca4f0461cb51a195221320d775dcf03b6859271066a03a5132a6ce7a
+    .agents/skills/systematic-debugging/condition-based-waiting-example.ts: sha256:40ae5ebe497fdf310200e43fe986552546d0a22837c0d39e855db1cfd33eb88e
+    .agents/skills/systematic-debugging/condition-based-waiting.md: sha256:e89fec8400d6cd50f43407cec9fab50976ba4d55d0ec2eb51c0bd68036b54c26
+    .agents/skills/systematic-debugging/defense-in-depth.md: sha256:1e175fb86fc357e58c6aebf5441e481e1b7868b4380c0456b63a17eefbd18ba7
+    .agents/skills/systematic-debugging/find-polluter.sh: sha256:6462747eae9b175ac145b78bcfaeab755654a75e32637f08eb633f065a9e1d7c
+    .agents/skills/systematic-debugging/root-cause-tracing.md: sha256:6b0622269e098ca1399e123e553fd385f0b6412d88ef0e9c4f5a8ea9cf1cec7b
+    .agents/skills/systematic-debugging/test-academic.md: sha256:fe2ba480d78ac0d686dc025f41c2a32a43d642bf533f91b0c6053a04d35d6486
+    .agents/skills/systematic-debugging/test-pressure-1.md: sha256:0b6a915db0054577819834c79be9eb614e97bddba10d73768e1fbe91cfed048a
+    .agents/skills/systematic-debugging/test-pressure-2.md: sha256:b2030aeffba07050e8ad573ddf87486457c4a016a786bb326235bebd856f2016
+    .agents/skills/systematic-debugging/test-pressure-3.md: sha256:96b50a52e2c7989c9cf20fb752c47c1e9a3a70dc362f8f7989f8f5b64dac7708
+    .agents/skills/test-driven-development/SKILL.md: sha256:b5b4717b8b761cce15a6cfe9022e33fd959e0894c0c39d72c9cb49c23486c10e
+    .agents/skills/test-driven-development/testing-anti-patterns.md: sha256:bde453bc258f06543987477c837939afaa774ea2acbd9f308d702fc452bc4283
+    .agents/skills/using-git-worktrees/SKILL.md: sha256:e2c3ec142e52868a51af246c620cd76ab648dcf27d6900d47e6ffd07159a9794
+    .agents/skills/using-superpowers/SKILL.md: sha256:55379fe7c1c473a02c61961c822996bff30e1320d6921d9062509bc508482c05
+    .agents/skills/using-superpowers/references/antigravity-tools.md: sha256:d0bcfa94dd0fa399fb9606a0f7c9562b43040cad02be167a2b999c3913a1d5e9
+    .agents/skills/using-superpowers/references/codex-tools.md: sha256:9310bb2315eed2c1cebea02cd1c9e8fe121cb788fc6b41e8b8f8b5ff46f85f37
+    .agents/skills/using-superpowers/references/pi-tools.md: sha256:703dbc83d23ecab9c6f388460c38abc482e9dee2fe6772a8c7a255152ad3a4d5
+    .agents/skills/verification-before-completion/SKILL.md: sha256:ea52d15aabaf72bc6b558efe2c126f161b53961090ddcd712000273bfe8c7b6c
+    .agents/skills/writing-plans/SKILL.md: sha256:272e1af349f5062c28dc282b3e21b220d58d683a7314a10c455b7432ec91d845
+    .agents/skills/writing-plans/plan-document-reviewer-prompt.md: sha256:aa728b96aad603c8be28875a4305637f6c984aa81ffcadcb13e743202fa2a0c7
+    .agents/skills/writing-skills/SKILL.md: sha256:6b8d08fe863318be8480ae8428e169640309fa9208df84bb0510012764454146
+    .agents/skills/writing-skills/anthropic-best-practices.md: sha256:217629b356c09c9bd11017c9788e8fc654ca1b32c92d4a51cd490e16dd65e59a
+    .agents/skills/writing-skills/examples/CLAUDE_MD_TESTING.md: sha256:0b379a3415e185d3c434b3ad283d8aa132f3022c2a4f210f168865b5986bcef0
+    .agents/skills/writing-skills/graphviz-conventions.dot: sha256:e2890a593c91370e384b42f2f67b1a6232c9e69dddea7891a0c1c46d7b20b694
+    .agents/skills/writing-skills/persuasion-principles.md: sha256:a51bc9bf75189ea73a27b3fb504a2fdfdb966fb1f7f1cdf03203230a216ccc03
+    .agents/skills/writing-skills/render-graphs.js: sha256:ccda971a87bb185f8febf81c56b556a20d026fa980c17b35fa3e8824fbb37852
+    .agents/skills/writing-skills/testing-skills-with-subagents.md: sha256:c711346852c911b24a84aa161e0cff06a4cd7f4e2fa9e9c0a266cead5afcbade
+    .claude/hooks/superpowers/hooks/run-hook.cmd: sha256:d3d9c6199678dab2858e60509dde5e7414f13c2a2b5e48a38b1d368b6e1d6abb
+    .claude/hooks/superpowers/hooks/session-start: sha256:88a060272ca8047e0d1cd73a016e1cebba8396807a44be1e296d7c02dcbb9934
+    .claude/skills/brainstorming/SKILL.md: sha256:e14914605f640e0841758e45d0ab2a53243b59b921f929e47921c99668f2e61d
+    .claude/skills/brainstorming/scripts/frame-template.html: sha256:6a8a4e58bd6a44b904e2e3c57de774481d909204597e1498de53f1b2fecc4c4e
+    .claude/skills/brainstorming/scripts/helper.js: sha256:43c6d69954a46ec34a2a262bcc62a9a7e83e839c739f199cb72646d397c686e3
+    .claude/skills/brainstorming/scripts/server.cjs: sha256:2d2961ea8d11f56c5f4c3a1a68d22709efa5d7601a2246d8c880774e7e9e8412
+    .claude/skills/brainstorming/scripts/start-server.sh: sha256:a4e5ae84275bcaacd2f84345afeabe59cf7b00ba080e123da7cc1fb226f12847
+    .claude/skills/brainstorming/scripts/stop-server.sh: sha256:0b5ccbbd57f62d3ed88993f7940b5ee0e5c0fc9b21c550c623da4f6292e47daf
+    .claude/skills/brainstorming/spec-document-reviewer-prompt.md: sha256:95a0a195de9d984be2fffa95bab16fc8c563bc296a9cfc5e9c29cb3ece0d7457
+    .claude/skills/brainstorming/visual-companion.md: sha256:3321a044c777d03d7177df41c77bb83155ff2a6d0c16b8a3d752426d29f14ea8
+    .claude/skills/dispatching-parallel-agents/SKILL.md: sha256:f0df13f584049059cc5619f90061405b89dcc6e28ab3f2a8517d27d99c7a46a6
+    .claude/skills/executing-plans/SKILL.md: sha256:bbd8d28bb655a52817cc129ce49f9e46fa7c6303f72ed5de95bfe914ef8e0ce8
+    .claude/skills/finishing-a-development-branch/SKILL.md: sha256:e6d4a812de900d33c6eacfb40747f99427f25c304a7b7099120f9373b115a47f
+    .claude/skills/receiving-code-review/SKILL.md: sha256:647036bbdab7bf2317e14e079595e984c9030f64295e2b4c0fb57dbeb48f25dd
+    .claude/skills/requesting-code-review/SKILL.md: sha256:1017ccdd5bc61fab67c654cf118cbdb520464b313073a0a6b9a6b9aa647a3ad6
+    .claude/skills/requesting-code-review/code-reviewer.md: sha256:b2f2ec7596925fe52dac158fdfbca19b3a7d779d619c481e6706a6c0001662d3
+    .claude/skills/subagent-driven-development/SKILL.md: sha256:5e9e846ae67d153ddf7c5f4fd5102af78454c8f3cdaa0720331cec063fc8861a
+    .claude/skills/subagent-driven-development/implementer-prompt.md: sha256:49018b28dc11bc9f3d13a28959bb10ae1a96eabc5d8f19f4079d901f9ff2bf64
+    .claude/skills/subagent-driven-development/scripts/review-package: sha256:0c0629f6e2c46fc8bf68dcfb8a247ab24eb548b7004fe494035e6fcba9b5cdfb
+    .claude/skills/subagent-driven-development/scripts/sdd-workspace: sha256:9430befaff459ed862415b700c1a9efe45fd34838a684802a1d8320de0c3a007
+    .claude/skills/subagent-driven-development/scripts/task-brief: sha256:5380283f00bffa99ab82ae78482b7d248abe10655129c72ca7050bdc0b6a85e1
+    .claude/skills/subagent-driven-development/task-reviewer-prompt.md: sha256:2eb9d54373420de25bc0bd00635d3a3123a6c0eb30c881168e6f3348e2387331
+    .claude/skills/systematic-debugging/CREATION-LOG.md: sha256:c24733a5b1821bd6bed1fc950261f0b9f4e90097e0bbb96459d8179713730789
+    .claude/skills/systematic-debugging/SKILL.md: sha256:3b20719eca4f0461cb51a195221320d775dcf03b6859271066a03a5132a6ce7a
+    .claude/skills/systematic-debugging/condition-based-waiting-example.ts: sha256:40ae5ebe497fdf310200e43fe986552546d0a22837c0d39e855db1cfd33eb88e
+    .claude/skills/systematic-debugging/condition-based-waiting.md: sha256:e89fec8400d6cd50f43407cec9fab50976ba4d55d0ec2eb51c0bd68036b54c26
+    .claude/skills/systematic-debugging/defense-in-depth.md: sha256:1e175fb86fc357e58c6aebf5441e481e1b7868b4380c0456b63a17eefbd18ba7
+    .claude/skills/systematic-debugging/find-polluter.sh: sha256:6462747eae9b175ac145b78bcfaeab755654a75e32637f08eb633f065a9e1d7c
+    .claude/skills/systematic-debugging/root-cause-tracing.md: sha256:6b0622269e098ca1399e123e553fd385f0b6412d88ef0e9c4f5a8ea9cf1cec7b
+    .claude/skills/systematic-debugging/test-academic.md: sha256:fe2ba480d78ac0d686dc025f41c2a32a43d642bf533f91b0c6053a04d35d6486
+    .claude/skills/systematic-debugging/test-pressure-1.md: sha256:0b6a915db0054577819834c79be9eb614e97bddba10d73768e1fbe91cfed048a
+    .claude/skills/systematic-debugging/test-pressure-2.md: sha256:b2030aeffba07050e8ad573ddf87486457c4a016a786bb326235bebd856f2016
+    .claude/skills/systematic-debugging/test-pressure-3.md: sha256:96b50a52e2c7989c9cf20fb752c47c1e9a3a70dc362f8f7989f8f5b64dac7708
+    .claude/skills/test-driven-development/SKILL.md: sha256:b5b4717b8b761cce15a6cfe9022e33fd959e0894c0c39d72c9cb49c23486c10e
+    .claude/skills/test-driven-development/testing-anti-patterns.md: sha256:bde453bc258f06543987477c837939afaa774ea2acbd9f308d702fc452bc4283
+    .claude/skills/using-git-worktrees/SKILL.md: sha256:e2c3ec142e52868a51af246c620cd76ab648dcf27d6900d47e6ffd07159a9794
+    .claude/skills/using-superpowers/SKILL.md: sha256:55379fe7c1c473a02c61961c822996bff30e1320d6921d9062509bc508482c05
+    .claude/skills/using-superpowers/references/antigravity-tools.md: sha256:d0bcfa94dd0fa399fb9606a0f7c9562b43040cad02be167a2b999c3913a1d5e9
+    .claude/skills/using-superpowers/references/codex-tools.md: sha256:9310bb2315eed2c1cebea02cd1c9e8fe121cb788fc6b41e8b8f8b5ff46f85f37
+    .claude/skills/using-superpowers/references/pi-tools.md: sha256:703dbc83d23ecab9c6f388460c38abc482e9dee2fe6772a8c7a255152ad3a4d5
+    .claude/skills/verification-before-completion/SKILL.md: sha256:ea52d15aabaf72bc6b558efe2c126f161b53961090ddcd712000273bfe8c7b6c
+    .claude/skills/writing-plans/SKILL.md: sha256:272e1af349f5062c28dc282b3e21b220d58d683a7314a10c455b7432ec91d845
+    .claude/skills/writing-plans/plan-document-reviewer-prompt.md: sha256:aa728b96aad603c8be28875a4305637f6c984aa81ffcadcb13e743202fa2a0c7
+    .claude/skills/writing-skills/SKILL.md: sha256:6b8d08fe863318be8480ae8428e169640309fa9208df84bb0510012764454146
+    .claude/skills/writing-skills/anthropic-best-practices.md: sha256:217629b356c09c9bd11017c9788e8fc654ca1b32c92d4a51cd490e16dd65e59a
+    .claude/skills/writing-skills/examples/CLAUDE_MD_TESTING.md: sha256:0b379a3415e185d3c434b3ad283d8aa132f3022c2a4f210f168865b5986bcef0
+    .claude/skills/writing-skills/graphviz-conventions.dot: sha256:e2890a593c91370e384b42f2f67b1a6232c9e69dddea7891a0c1c46d7b20b694
+    .claude/skills/writing-skills/persuasion-principles.md: sha256:a51bc9bf75189ea73a27b3fb504a2fdfdb966fb1f7f1cdf03203230a216ccc03
+    .claude/skills/writing-skills/render-graphs.js: sha256:ccda971a87bb185f8febf81c56b556a20d026fa980c17b35fa3e8824fbb37852
+    .claude/skills/writing-skills/testing-skills-with-subagents.md: sha256:c711346852c911b24a84aa161e0cff06a4cd7f4e2fa9e9c0a266cead5afcbade
+    .codex/hooks/superpowers/hooks/run-hook.cmd: sha256:d3d9c6199678dab2858e60509dde5e7414f13c2a2b5e48a38b1d368b6e1d6abb
+    .codex/hooks/superpowers/hooks/session-start: sha256:88a060272ca8047e0d1cd73a016e1cebba8396807a44be1e296d7c02dcbb9934
+    .github/hooks/scripts/superpowers/hooks/run-hook.cmd: sha256:d3d9c6199678dab2858e60509dde5e7414f13c2a2b5e48a38b1d368b6e1d6abb
+    .github/hooks/scripts/superpowers/hooks/session-start: sha256:88a060272ca8047e0d1cd73a016e1cebba8396807a44be1e296d7c02dcbb9934
+    .github/hooks/superpowers-hooks.json: sha256:414b2cda93dfd4523ea183cc02c29b17b7c92bbfd54ad89acd83aadac042ea5a
+  content_hash: sha256:fcec2b6832dc4a4ce8fd0b7883fc72531fb402dd76537b62e495ab5c09742cf4
+  declared_license: MIT
 local_deployed_files:
 - .claude/rules/setup.md
 - .claude/rules/spec-context.md
