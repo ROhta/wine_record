@@ -12,7 +12,8 @@ targets:
   - claude
 dependencies:
   apm:
-    - ROhta/apm-config/base#main
+    - ROhta/apm-config/base#82831f48b6be9e1e70291813ae66a1fa68884c64
+    - ROhta/apm-config/speckit#82831f48b6be9e1e70291813ae66a1fa68884c64
   mcp: []
 includes: auto
 scripts: {}
