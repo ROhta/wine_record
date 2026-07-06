@@ -4,7 +4,7 @@
 
 ## ドキュメント
 
-リポジトリ固有の AI エージェント向け指示は [`.apm/instructions/`](.apm/instructions) に集約している。これらは [microsoft/apm](https://github.com/microsoft/apm) によって管理され、`apm compile` で Claude Code / Codex / GitHub Copilot 向けファイル（`CLAUDE.md` / `AGENTS.md` 等）に展開される。
+リポジトリ固有の AI エージェント向け指示は [`.apm/instructions/`](.apm/instructions) に集約しています。これらは [microsoft/apm](https://github.com/microsoft/apm) によって管理され、`apm compile` で Claude Code / Codex / GitHub Copilot 向けファイル（`CLAUDE.md` / `AGENTS.md` 等）に展開されます。
 
 ### instructions
 
@@ -35,7 +35,7 @@
 
 ## MCP
 
-本リポジトリ自体が、ラベル写真からワインを記録するリモート MCP サーバーである。共通 MCP パッケージは消費しない（`apm.yml` の `dependencies.mcp` は空）。提供するツールと接続方法は以下を参照。
+本リポジトリ自体が、ラベル写真からワインを記録するリモート MCP サーバーです。共通 MCP パッケージは消費しません（`apm.yml` の `dependencies.mcp` は空）。提供するツールと接続方法は以下を参照してください。
 
 - [MCP ツール一覧](docs/guide/mcp-tools.md)
 - [Claude から使う（OAuth コネクタ）](docs/guide/connect-claude.md)
