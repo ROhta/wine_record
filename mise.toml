@@ -4,8 +4,8 @@
 #   - Vercel 本番ビルド: node=iac/main.tf の node_version（24.x）、pnpm=package.json の packageManager
 #   - Terraform Cloud リモート実行: terraform 版は TFC workspace 設定（iac/versions.tf の required_version を満たす）
 [tools]
-node = "24.16.0"
-pnpm = "11.9.0"
-terraform = "1.13.0"
+node = "24.18.0"
+pnpm = "11.10.0"
+terraform = "1.15.7"
 # Agent Package Manager（AI エージェント instructions 管理）。registry 未収録のため github backend で取得。
 "github:microsoft/apm" = { version = "0.24.0", extract_all = "true" }

@@ -4,7 +4,7 @@
 	"description": "AIエージェントを通じてワインを記録する MCP サーバー",
 	"type": "module",
 	"private": true,
-	"packageManager": "pnpm@11.9.0",
+	"packageManager": "pnpm@11.10.0",
 	"engines": {
 		"node": ">=24",
 		"pnpm": ">=11"
@@ -35,17 +35,17 @@
 		"@modelcontextprotocol/ext-apps": "^1.7.4",
 		"@tsconfig/strictest": "^2.0.8",
 		"@types/express": "^5.0.6",
-		"@types/node": "^25.9.1",
+		"@types/node": "^24.13.2",
 		"@vercel/blob": "^2.5.0",
 		"eslint": "^10.6.0",
 		"eslint-config-prettier": "^10.1.8",
 		"globals": "^17.7.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^17.0.8",
-		"prettier": "^3.9.3",
-		"tsx": "^4.22.4",
+		"prettier": "^3.9.4",
+		"tsx": "^4.23.0",
 		"typescript": "^6.0.3",
-		"typescript-eslint": "^8.62.0",
+		"typescript-eslint": "^8.62.1",
 		"vitest": "^4.1.9"
 	},
 	"dependencies": {
