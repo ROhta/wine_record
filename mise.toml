@@ -9,3 +9,6 @@ pnpm = "11.10.0"
 terraform = "1.15.7"
 # Agent Package Manager（AI エージェント instructions 管理）。registry 未収録のため github backend で取得。
 "github:microsoft/apm" = { version = "0.24.1", extract_all = "true" }
+
+[settings]
+lockfile = true
