@@ -1,8 +1,8 @@
 lockfile_version: '1'
-generated_at: '2026-07-06T13:09:41.210695+00:00'
-apm_version: 0.24.0
+generated_at: '2026-07-12T03:45:48.583377+00:00'
+apm_version: 0.24.1
 dependencies:
-- repo_url: ROhta/apm-config
+- repo_url: rohta/apm-config
   name: apm-config-base
   host: github.com
   resolved_commit: c150cfffc0199321928d524b15a91b95888ccfd6
@@ -43,7 +43,7 @@ dependencies:
     .github/instructions/review-response-loop.instructions.md: sha256:602254403a6890a64a55669472a1549f34e7383b3afb29f0fdb9989b8dfce5f8
   content_hash: sha256:ae1d68b5b9c18c29224809795582b0a7905ecc4b8d150401f39501eeb60483e3
   declared_license: GPL-3.0-or-later
-- repo_url: ROhta/apm-config
+- repo_url: rohta/apm-config
   name: apm-config-speckit
   host: github.com
   resolved_commit: c150cfffc0199321928d524b15a91b95888ccfd6
@@ -67,7 +67,7 @@ dependencies:
   resolved_ref: d884ae04edebef577e82ff7c4e143debd0bbec99
   version: 6.1.1
   depth: 2
-  resolved_by: ROhta/apm-config
+  resolved_by: rohta/apm-config
   package_type: marketplace_plugin
   deployed_files:
   - .agents/skills/brainstorming
