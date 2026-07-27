@@ -2,12 +2,15 @@
 #
 # 共通方針:
 # - グループ化（groups: "*"）で 1 エコシステム = 1 PR にまとめ、ノイズを抑える。
+# - 全エコシステム共通で patch のみ ignore し、minor 以上は PR 化する
+#   （patch は取りこぼしても影響が小さい一方、minor を据え置くと固定版が古いまま取り残されるため）。
 # - cooldown で新リリース直後の更新を一定期間待ち、地雷バージョンを踏みにくくする。
+#   minor を PR 化する以上、semver-minor-days が地雷バージョン回避の要になる。
 # - rebase-strategy: auto / branch separator "_" / labels: dependencies で運用を bingo_next と揃える。
 version: 2
 updates:
   # npm（ルートの package.json）。
-  # minor/patch は ignore し major のみ PR 化する（日常更新のノイズ抑制。
+  # patch は ignore し minor 以上を PR 化する（patch のノイズは抑えつつ、機能追加・非推奨対応には追随する。
   # セキュリティ更新は Dependabot security updates として別途発火するため影響なし）。
   - package-ecosystem: "npm"
     directory: "/"
@@ -30,7 +33,6 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types:
-          - version-update:semver-minor
           - version-update:semver-patch
     groups:
       npm-all-dependencies:
@@ -47,6 +49,11 @@ updates:
       timezone: "Asia/Tokyo"
     cooldown:
       default-days: 10
+    # 他エコシステムと揃えて patch のみ ignore する（プロバイダの patch 更新まで PR 化するとノイズが勝るため）。
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-patch
     labels:
       - "dependencies"
     open-pull-requests-limit: 10
@@ -60,8 +67,9 @@ updates:
 
   # GitHub Actions（.github/workflows/）。CI は SHA 固定（sha_pinning_required）。
   # Dependabot は更新時に SHA とバージョンコメント（# v4.4.0）を併せて書き換えるため pin 形式は保たれる。
-  # ただし npm 同様 minor/patch は ignore（bingo_next 踏襲）のため、PR 化されるのは major 更新時のみ
-  # （アクションのリリースは大半が minor なので pin は major まで据え置き。セキュリティ更新は別途発火）。
+  # npm 同様 patch のみ ignore し、minor 以上は PR 化する
+  # （アクションのリリースは大半が minor であり、据え置くと固定 SHA が古いまま取り残されるため。
+  # セキュリティ更新は別途発火）。
   # composite action（.github/actions/）は未使用のため directory は "/" のみ。
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -75,7 +83,6 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types:
-          - version-update:semver-minor
           - version-update:semver-patch
     labels:
       - "dependencies"

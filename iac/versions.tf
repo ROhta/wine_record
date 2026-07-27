@@ -15,13 +15,13 @@ terraform {
   required_providers {
     vercel = {
       source  = "vercel/vercel"
-      version = "~> 5.3"
+      version = "~> 5.5"
     }
     # Auth0（US 003・MCP コネクタ OAuth のテナント設定を IaC 管理）。
     # subject_type_authorization に対応する版が必要（`terraform init` 時に lock で固定）。
     auth0 = {
       source  = "auth0/auth0"
-      version = "~> 1.0"
+      version = "~> 1.53"
     }
   }
 }
