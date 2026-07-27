@@ -5,7 +5,7 @@
 # - 全エコシステム共通で patch のみ ignore し、minor 以上は PR 化する
 #   （patch は取りこぼしても影響が小さい一方、minor を据え置くと固定版が古いまま取り残されるため）。
 # - cooldown で新リリース直後の更新を一定期間待ち、地雷バージョンを踏みにくくする。
-#   minor を PR 化する以降は semver-minor-days が地雷バージョン回避の要になる。
+#   minor を PR 化する以上、semver-minor-days が地雷バージョン回避の要になる。
 # - rebase-strategy: auto / branch separator "_" / labels: dependencies で運用を bingo_next と揃える。
 version: 2
 updates:

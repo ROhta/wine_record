@@ -25,8 +25,8 @@ Terraform が Auth0 Management API を操作するための M2M アプリを**�
 
 ## ステップ 2: provider／backend 配線
 
-`iac/versions.tf` の `required_providers` に `auth0/auth0`（`~> 1.0`・`subject_type_authorization` 対応版を
-lock で固定）を追加し、`iac/providers.tf` に `provider "auth0" {}`（資格情報は env 経由）を追加する。
+`iac/versions.tf` の `required_providers` に `auth0/auth0`（`~> 1.53`・`subject_type_authorization` 対応の
+下限を制約自体で表現する）を追加し、`iac/providers.tf` に `provider "auth0" {}`（資格情報は env 経由）を追加する。
 
 ```sh
 cd iac && terraform init   # auth0 provider を取得し lock を更新
