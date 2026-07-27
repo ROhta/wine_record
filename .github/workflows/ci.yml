@@ -26,6 +26,8 @@ jobs:
         with:
           version: 2026.6.1
           install_args: "node pnpm"
+      # mise.toml（SSoT）と package.json の pnpm 版が乖離していないことを検証する（依存導入前に fail fast）。
+      - run: mise run check-versions
       # pnpm ストアをキャッシュする。
       - name: Get pnpm store directory
         run: echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
