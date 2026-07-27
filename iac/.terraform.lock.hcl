@@ -3,9 +3,10 @@
 
 provider "registry.terraform.io/auth0/auth0" {
   version     = "1.53.0"
-  constraints = "~> 1.0"
+  constraints = "~> 1.53"
   hashes = [
     "h1:DGmUpAiGeitMECnafkkaAEhhTz2TDj9ReIwoDVJmpMI=",
+    "h1:pQCt9olqZaj6qe69yQ3ry87hEpW+q18O1aMTN534WrM=",
     "zh:165054dc797a1c4c331547bc0253cd04025a4f9b00ae42c09a057902cbf616be",
     "zh:243e1da5334f53d3494568f367bb4ed9cca075961ad3fbe19d01d13b45091910",
     "zh:37f50017d31637d177880e762d64d963aeb4339229648963e054fe3950c04094",
@@ -25,8 +26,9 @@ provider "registry.terraform.io/auth0/auth0" {
 
 provider "registry.terraform.io/vercel/vercel" {
   version     = "5.5.0"
-  constraints = "~> 5.3"
+  constraints = "~> 5.5"
   hashes = [
+    "h1:2oG5IW4aNOIOdAjwyKfdZYmKtVAKiLUICcsPN2546Uo=",
     "h1:6v3XXAb3saACELAFz9JwRoK2w7dmHc7ovBoTlvjSafM=",
     "zh:29714ce971c08b3351e90bc9d723bff6b78518e63ab9cc3bd374728ddf5836f5",
     "zh:2e5524e130fa1314f67a165e3672404f8444a8ccb2368322554f6d19c0b787a2",
