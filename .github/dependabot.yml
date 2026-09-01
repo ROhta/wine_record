@@ -10,7 +10,6 @@ updates:
       - dependency-type: "all"
     cooldown:
       semver-major-days: 30
-      semver-minor-days: 10
     labels:
       - "dependencies"
     open-pull-requests-limit: 5
