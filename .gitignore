@@ -156,6 +156,17 @@ CLAUDE.md
 !.github/instructions/pr-review.instructions.md
 !.github/instructions/language.instructions.md
 .claude/rules/
+.claude/hooks/
+.claude/apm-hooks.json
+.claude/settings.json
+# .claude/skills/ は混在（Spec Kit スキルは追跡、APM 展開分は生成物のため無視）
+.claude/skills/*
+!.claude/skills/speckit-*/
+.agents/
+.github/hooks/
 .codex/
 .mcp.json
 .vscode/mcp.json
+
+# semgrep guardian フックの生成物・キャッシュ
+.semgrep/
