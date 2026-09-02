@@ -16,7 +16,7 @@ updates:
     pull-request-branch-name:
       separator: "_"
     rebase-strategy: "auto"
-    versioning-strategy: increase-if-necessary
+    versioning-strategy: increase
     ignore:
       - dependency-name: "*"
         update-types:
