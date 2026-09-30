@@ -397,7 +397,8 @@ function buildContext(config: Config): ServerContext {
 	const store = createVectorStore(config)
 	const deps = buildDeps(config, store)
 	const auth: AuthGate | null = config.auth ? {verifier: createAuth0Verifier(config.auth), issuerBaseUrl: config.auth.issuerBaseUrl, audience: config.auth.audience} : null
-	// 存在しない id の fetch は空を返すだけの読み取りだが、Upstash 側では 1 リクエストとして活動に数えられる。
+	// 存在しない id の fetch は空を返すだけの読み取り。Upstash の REQUESTS に 1 件計上され活動扱いになる想定
+	// （本番の cron 実行後に REQUESTS の増加で確認する。増えなければ range/query に切り替える）。
 	const keepalive: KeepaliveGate | null = config.cronSecret ? {secret: config.cronSecret, ping: () => store.fetch("overall", ["keepalive"]).then(() => undefined)} : null
 	return {deps, auth, keepalive}
 }
