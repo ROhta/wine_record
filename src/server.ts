@@ -1,5 +1,5 @@
 import {fileURLToPath} from "node:url"
-import {randomUUID, timingSafeEqual} from "node:crypto"
+import {createHash, randomUUID, timingSafeEqual} from "node:crypto"
 import express from "express"
 import helmet from "helmet"
 import {z} from "zod"
@@ -342,11 +342,13 @@ export function createApp(deps: McpServerDeps, auth?: AuthGate, keepalive?: Keep
 	)
 }
 
-/** `Authorization` が `Bearer <secret>` と一致するかを定数時間で比較する（タイミング攻撃対策）。 */
+/**
+ * `Authorization` が `Bearer <secret>` と一致するかを定数時間で比較する（タイミング攻撃対策）。
+ * 固定長の SHA-256 ダイジェスト同士を比べ、秘密の長さで比較経路が分岐しないようにする。
+ */
 function bearerMatches(header: string | undefined, secret: string): boolean {
-	const actual = Buffer.from(header ?? "")
-	const expected = Buffer.from(`Bearer ${secret}`)
-	return actual.length === expected.length && timingSafeEqual(actual, expected)
+	const digest = (v: string): Buffer => createHash("sha256").update(v).digest()
+	return timingSafeEqual(digest(header ?? ""), digest(`Bearer ${secret}`))
 }
 
 /**
@@ -397,10 +399,15 @@ function buildContext(config: Config): ServerContext {
 	const store = createVectorStore(config)
 	const deps = buildDeps(config, store)
 	const auth: AuthGate | null = config.auth ? {verifier: createAuth0Verifier(config.auth), issuerBaseUrl: config.auth.issuerBaseUrl, audience: config.auth.audience} : null
+	return {deps, auth, keepalive: buildKeepalive(config, store)}
+}
+
+/** CRON_SECRET があるときだけ keepalive を構築する（無ければ null = /cron/keepalive は 404）。 */
+function buildKeepalive(config: Config, store: VectorStore): KeepaliveGate | null {
+	if (!config.cronSecret) return null
 	// 存在しない id の fetch は空を返すだけの読み取り。Upstash の REQUESTS に 1 件計上され活動扱いになる想定
 	// （本番の cron 実行後に REQUESTS の増加で確認する。増えなければ range/query に切り替える）。
-	const keepalive: KeepaliveGate | null = config.cronSecret ? {secret: config.cronSecret, ping: () => store.fetch("overall", ["keepalive"]).then(() => undefined)} : null
-	return {deps, auth, keepalive}
+	return {secret: config.cronSecret, ping: () => store.fetch("overall", ["keepalive"]).then(() => undefined)}
 }
 
 /**
@@ -414,7 +421,8 @@ export default createServerlessApp()
 /** サーバーを起動する。 */
 export function start(): void {
 	const config = loadConfig()
-	const app = createApp(buildDeps(config, createVectorStore(config)))
+	const store = createVectorStore(config)
+	const app = createApp(buildDeps(config, store), undefined, buildKeepalive(config, store) ?? undefined)
 	app.listen(config.port, () => {
 		console.log(`wine-record MCP server listening on :${config.port}`)
 	})
