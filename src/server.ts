@@ -1,5 +1,5 @@
 import {fileURLToPath} from "node:url"
-import {randomUUID} from "node:crypto"
+import {randomUUID, timingSafeEqual} from "node:crypto"
 import express from "express"
 import helmet from "helmet"
 import {z} from "zod"
@@ -8,7 +8,7 @@ import {StreamableHTTPServerTransport} from "@modelcontextprotocol/sdk/server/st
 import type {CallToolResult} from "@modelcontextprotocol/sdk/types.js"
 import {loadConfig, type Config} from "./config.js"
 import {loadTaxonomyFromFile} from "./domain/taxonomyLoader.js"
-import {createVectorStore} from "./storage/vectorStore.js"
+import {createVectorStore, type VectorStore} from "./storage/vectorStore.js"
 import {createRecordWine, type RecordWineResult} from "./tools/recordWine.js"
 import {createPreviewRecord, type PreviewRecordResult} from "./tools/previewRecord.js"
 import {createGetJsaTaxonomy, type GetJsaTaxonomyResult} from "./tools/getJsaTaxonomy.js"
@@ -29,6 +29,17 @@ export interface AuthGate {
 	verifier: TokenVerifier
 	issuerBaseUrl: string
 	audience: string
+}
+
+/**
+ * Upstash 休止防止 cron の依存。Upstash Vector の Free プランは無操作が続くとインデックスを
+ * 休止させ、休止中は Vercel のデプロイが "Resource provisioning failed" で失敗する。
+ * Vercel Cron が `Authorization: Bearer <secret>` 付きで GET /cron/keepalive を叩き、`ping` で
+ * 軽い読み取りを 1 回流して「活動あり」にする。
+ */
+export interface KeepaliveGate {
+	secret: string
+	ping: () => Promise<void>
 }
 
 /**
@@ -238,13 +249,35 @@ function resolveOrFail<T>(resolve: () => T, res: express.Response, logMsg: strin
  * サーバーレスでは初回に config/Upstash を遅延構築する）。/health は依存に一切触れない
  * liveness プローブとし、設定欠落でも 200 を返す（起動可否と設定可否を切り分けるため）。
  */
-function buildExpressApp(resolveDeps: () => McpServerDeps, resolveAuth: () => AuthGate | null): express.Express {
+function buildExpressApp(resolveDeps: () => McpServerDeps, resolveAuth: () => AuthGate | null, resolveKeepalive: () => KeepaliveGate | null): express.Express {
 	const app = express()
 	app.use(helmet())
 	app.use(express.json())
 
 	app.get("/health", (_req, res) => {
 		res.json({status: "ok"})
+	})
+
+	// Upstash 休止防止（Vercel Cron 専用）。OAuth ゲートとは独立し、CRON_SECRET の Bearer のみで認可する。
+	// 未設定なら 404（fail-closed）。ping 失敗の原因（秘匿情報を含みうる）はサーバーログにのみ出す。
+	app.get("/cron/keepalive", async (req, res) => {
+		const gate = resolveOrFail(resolveKeepalive, res, "keepalive 設定の構築に失敗しました:")
+		if (!gate.ok) return
+		if (gate.value === null) {
+			res.status(404).json({error: "not_found"})
+			return
+		}
+		if (!bearerMatches(req.headers.authorization, gate.value.secret)) {
+			res.status(401).json({error: "unauthorized"})
+			return
+		}
+		try {
+			await gate.value.ping()
+			res.json({status: "ok"})
+		} catch (err) {
+			console.error("keepalive の ping に失敗しました:", err)
+			res.status(500).json({error: "keepalive_failed"})
+		}
 	})
 
 	// RFC 9728 Protected Resource Metadata（認証外・公開）。認証 OFF なら 404。
@@ -301,11 +334,19 @@ function buildExpressApp(resolveDeps: () => McpServerDeps, resolveAuth: () => Au
  * Express アプリを生成する（依存を直接注入。テスト・ローカル起動用）。
  * `auth` を渡すと認証ゲートが有効になる（省略時は認証 OFF＝従来どおり通過）。
  */
-export function createApp(deps: McpServerDeps, auth?: AuthGate): express.Express {
+export function createApp(deps: McpServerDeps, auth?: AuthGate, keepalive?: KeepaliveGate): express.Express {
 	return buildExpressApp(
 		() => deps,
 		() => auth ?? null,
+		() => keepalive ?? null,
 	)
+}
+
+/** `Authorization` が `Bearer <secret>` と一致するかを定数時間で比較する（タイミング攻撃対策）。 */
+function bearerMatches(header: string | undefined, secret: string): boolean {
+	const actual = Buffer.from(header ?? "")
+	const expected = Buffer.from(`Bearer ${secret}`)
+	return actual.length === expected.length && timingSafeEqual(actual, expected)
 }
 
 /**
@@ -313,19 +354,19 @@ export function createApp(deps: McpServerDeps, auth?: AuthGate): express.Express
  * 遅延構築・memo 化する。import 時に loadConfig を呼ばないため、env 無しのテスト環境でも安全。
  */
 function createServerlessApp(): express.Express {
-	let cached: {deps: McpServerDeps; auth: AuthGate | null} | undefined
-	const resolve = (): {deps: McpServerDeps; auth: AuthGate | null} => (cached ??= buildContext(loadConfig()))
+	let cached: ServerContext | undefined
+	const resolve = (): ServerContext => (cached ??= buildContext(loadConfig()))
 	return buildExpressApp(
 		() => resolve().deps,
 		() => resolve().auth,
+		() => resolve().keepalive,
 	)
 }
 
 /** 実依存（Upstash / タクソノミー）を構築して返す。store と taxonomy は一度だけ生成し共有する。 */
-function buildDeps(config: Config): McpServerDeps {
+function buildDeps(config: Config, store: VectorStore): McpServerDeps {
 	const taxonomyPath = fileURLToPath(new URL("../data/jsa-taxonomy.json", import.meta.url))
 	const taxonomy = loadTaxonomyFromFile(taxonomyPath)
-	const store = createVectorStore(config)
 	const recordWine = createRecordWine({
 		taxonomy,
 		store,
@@ -342,11 +383,23 @@ function buildDeps(config: Config): McpServerDeps {
 	return {recordWine, previewRecord, getJsaTaxonomy, searchWines}
 }
 
-/** config から MCP 依存と認証ゲートを構築する（認証は config.auth があるときのみ）。 */
-function buildContext(config: Config): {deps: McpServerDeps; auth: AuthGate | null} {
-	const deps = buildDeps(config)
+interface ServerContext {
+	deps: McpServerDeps
+	auth: AuthGate | null
+	keepalive: KeepaliveGate | null
+}
+
+/**
+ * config から MCP 依存・認証ゲート・keepalive を構築する（認証は config.auth、keepalive は
+ * config.cronSecret があるときのみ）。store は MCP 依存と keepalive で共有する。
+ */
+function buildContext(config: Config): ServerContext {
+	const store = createVectorStore(config)
+	const deps = buildDeps(config, store)
 	const auth: AuthGate | null = config.auth ? {verifier: createAuth0Verifier(config.auth), issuerBaseUrl: config.auth.issuerBaseUrl, audience: config.auth.audience} : null
-	return {deps, auth}
+	// 存在しない id の fetch は空を返すだけの読み取りだが、Upstash 側では 1 リクエストとして活動に数えられる。
+	const keepalive: KeepaliveGate | null = config.cronSecret ? {secret: config.cronSecret, ping: () => store.fetch("overall", ["keepalive"]).then(() => undefined)} : null
+	return {deps, auth, keepalive}
 }
 
 /**
@@ -360,7 +413,7 @@ export default createServerlessApp()
 /** サーバーを起動する。 */
 export function start(): void {
 	const config = loadConfig()
-	const app = createApp(buildDeps(config))
+	const app = createApp(buildDeps(config, createVectorStore(config)))
 	app.listen(config.port, () => {
 		console.log(`wine-record MCP server listening on :${config.port}`)
 	})

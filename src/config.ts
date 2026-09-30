@@ -20,6 +20,8 @@ const EnvSchema = z
 		// 片方のみは設定ミスとして下の superRefine で弾く（欠落フィールド名のみを返す）。
 		AUTH0_ISSUER_BASE_URL: z.string().optional(),
 		AUTH0_AUDIENCE: z.string().optional(),
+		// Vercel Cron が Authorization: Bearer で送る共有秘密。未設定なら /cron/keepalive は無効（404）。
+		CRON_SECRET: z.string().optional(),
 		PORT: z.coerce.number().int().positive().default(3000),
 	})
 	.superRefine((e, ctx) => {
@@ -51,6 +53,11 @@ export interface Config {
 	 * `issuerBaseUrl`=Auth0 テナント発行者 URL、`audience`=API Identifier（= 正規 MCP URL）。
 	 */
 	auth: {issuerBaseUrl: string; audience: string} | null
+	/**
+	 * Upstash 休止防止 cron（/cron/keepalive）の共有秘密。
+	 * `null`（未設定・空文字）なら keepalive エンドポイントは無効（fail-closed）。
+	 */
+	cronSecret: string | null
 	/** MCP サーバー（Streamable HTTP）が listen するポート。 */
 	port: number
 }
@@ -75,6 +82,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
 			publicBaseUrl: e.R2_PUBLIC_BASE_URL ?? "",
 		},
 		auth: e.AUTH0_ISSUER_BASE_URL && e.AUTH0_AUDIENCE ? {issuerBaseUrl: e.AUTH0_ISSUER_BASE_URL, audience: e.AUTH0_AUDIENCE} : null,
+		cronSecret: e.CRON_SECRET || null,
 		port: e.PORT,
 	}
 }
