@@ -9,7 +9,7 @@
 #   /mcp に到達できず（SSO ログインを通過できない）二重ゲートになるため外す。
 #   ※ これにより /mcp は「OAuth で保護された公開エンドポイント」になる（authless ではない）。
 # - git 接続により、main への push で本番デプロイ、その他ブランチで preview デプロイを行う。
-# - UPSTASH_* / AUTH0_* 環境変数は Vercel 側（統合・ダッシュボード）がオーナーのため、ここでは管理しない。
+# - UPSTASH_* / AUTH0_* / CRON_SECRET 環境変数は Vercel 側（統合・ダッシュボード）がオーナーのため、ここでは管理しない。
 resource "vercel_project" "wine_record" {
   name         = "wine-record"
   framework    = "node"

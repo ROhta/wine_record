@@ -38,6 +38,12 @@ describe("loadConfig", () => {
 		expect(cfg.r2.bucket).toBeNull()
 	})
 
+	it("CRON_SECRET を設定すると cronSecret に入り、未設定・空文字なら null（keepalive 無効）", () => {
+		expect(loadConfig({...validEnv, CRON_SECRET: "cron-secret-0123456789"}).cronSecret).toBe("cron-secret-0123456789")
+		expect(loadConfig(validEnv).cronSecret).toBeNull()
+		expect(loadConfig({...validEnv, CRON_SECRET: ""}).cronSecret).toBeNull()
+	})
+
 	it("必須キー欠落で throw し、メッセージに欠落フィールド名を含む", () => {
 		const env: Record<string, string | undefined> = {...validEnv, UPSTASH_VECTOR_REST_TOKEN: undefined}
 		expect(() => loadConfig(env)).toThrowError(/UPSTASH_VECTOR_REST_TOKEN/)
