@@ -42,7 +42,7 @@ description: "record-wine 機能の実装タスク一覧"
 - [X] T007 [P] ドメイン型を定義 `src/domain/wineRecord.ts` / `src/domain/region.ts` / `src/domain/taxonomy.ts`（data-model.md 準拠）
 - [X] T008 [P] Upstash Vector ラッパの骨組みを実装 `src/storage/vectorStore.ts`（`bge-m3` インデックス前提、namespace=overall/aroma/appearance/taste の upsert/fetch I/F）
 - [X] T009 [P] MCP サーバー骨組みを実装 `src/server.ts`（Streamable HTTP、Helmet 系セキュアヘッダ既定適用、ツール登録の土台）
-- [X] T010 **前提データ**: 提供される JSA 表現集 PDF を構造化し `data/jsa-taxonomy.json` を生成（外観/香り/味わい→ターム配列。`pdf` スキルで対応）
+- [X] T010 **前提データ**: 提供される JSA 表現集 PDF を構造化し `src/data/jsa-taxonomy.json` を生成（外観/香り/味わい→ターム配列。`pdf` スキルで対応）
 - [X] T011 [P] JSA タクソノミーのローダ/型検証を実装 `src/domain/taxonomy.ts`（`tests/fixtures` の小サンプルでテストし、T010 と並行可）
 
 **チェックポイント**: 土台完成。

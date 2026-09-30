@@ -3,11 +3,6 @@
 	"git": {
 		"deploymentEnabled": true
 	},
-	"functions": {
-		"src/server.ts": {
-			"includeFiles": "data/**"
-		}
-	},
 	"crons": [
 		{
 			"path": "/cron/keepalive",

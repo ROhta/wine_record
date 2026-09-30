@@ -35,9 +35,9 @@ describe("parseTaxonomy", () => {
 
 describe("loadTaxonomyFromFile（実データ検証）", () => {
 	const here = dirname(fileURLToPath(import.meta.url))
-	const path = join(here, "../../data/jsa-taxonomy.json")
+	const path = join(here, "../../src/data/jsa-taxonomy.json")
 
-	it("data/jsa-taxonomy.json を読み込み・検証し、転記内容が正しい", () => {
+	it("src/data/jsa-taxonomy.json を読み込み・検証し、転記内容が正しい", () => {
 		const t = loadTaxonomyFromFile(path)
 		expect(t.version).toBe("2020.01.11")
 		// 白: 色調=7語 / 赤: 色調=10語

@@ -1,4 +1,3 @@
-import {fileURLToPath} from "node:url"
 import {createHash, randomUUID, timingSafeEqual} from "node:crypto"
 import express from "express"
 import helmet from "helmet"
@@ -7,7 +6,9 @@ import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js"
 import {StreamableHTTPServerTransport} from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import type {CallToolResult} from "@modelcontextprotocol/sdk/types.js"
 import {loadConfig, type Config} from "./config.js"
-import {loadTaxonomyFromFile} from "./domain/taxonomyLoader.js"
+import {parseTaxonomy} from "./domain/taxonomyLoader.js"
+// 実行時の fs 読み込みはサーバーレスの関数バンドルに同梱されない（ENOENT）ため、import でバンドルへ取り込む。
+import rawTaxonomy from "./data/jsa-taxonomy.json" with {type: "json"}
 import {createVectorStore, type VectorStore} from "./storage/vectorStore.js"
 import {createRecordWine, type RecordWineResult} from "./tools/recordWine.js"
 import {createPreviewRecord, type PreviewRecordResult} from "./tools/previewRecord.js"
@@ -367,8 +368,7 @@ function createServerlessApp(): express.Express {
 
 /** 実依存（Upstash / タクソノミー）を構築して返す。store と taxonomy は一度だけ生成し共有する。 */
 function buildDeps(config: Config, store: VectorStore): McpServerDeps {
-	const taxonomyPath = fileURLToPath(new URL("../data/jsa-taxonomy.json", import.meta.url))
-	const taxonomy = loadTaxonomyFromFile(taxonomyPath)
+	const taxonomy = parseTaxonomy(rawTaxonomy)
 	const recordWine = createRecordWine({
 		taxonomy,
 		store,
