@@ -47,7 +47,7 @@
 | `aroma` | string[] | 香り表現のターム一覧 |
 | `taste` | string[] | 味わい表現のターム一覧 |
 
-JSA 表現集 PDF を構造化した `data/jsa-taxonomy.json` が供給源。`get_jsa_taxonomy`
+JSA 表現集 PDF を構造化した `src/data/jsa-taxonomy.json` が供給源。`get_jsa_taxonomy`
 ツールと記録時のバリデーションが参照する。
 
 ### LabelImage（ラベル画像）
