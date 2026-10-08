@@ -48,7 +48,7 @@
 		"vitest": "^5.0.0"
 	},
 	"dependencies": {
-		"@modelcontextprotocol/sdk": "^1.29.0",
+		"@modelcontextprotocol/sdk": "^1.31.0",
 		"@upstash/vector": "^1.2.3",
 		"express": "^5.2.1",
 		"express-oauth2-jwt-bearer": "^1.9.2",
