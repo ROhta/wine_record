@@ -140,4 +140,23 @@ describe("認証ゲート（US1/US2/US3）", () => {
 			await close(server)
 		}
 	})
+
+	it("POST /mcp は 15 分間に 100 件を超えるリクエストを 429 で拒否する", async () => {
+		const {server, base} = startApp()
+		try {
+			const responses = await Promise.all(
+				Array.from({length: 101}, () =>
+					fetch(`${base}/mcp`, {
+						method: "POST",
+						headers: {"content-type": "application/json"},
+						body: "{}",
+					}),
+				),
+			)
+			expect(responses.filter(res => res.status === 429)).toHaveLength(1)
+			expect(responses.filter(res => res.status === 401)).toHaveLength(100)
+		} finally {
+			await close(server)
+		}
+	})
 })

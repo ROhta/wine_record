@@ -1,5 +1,6 @@
 import {createHash, randomUUID, timingSafeEqual} from "node:crypto"
 import express from "express"
+import {rateLimit} from "express-rate-limit"
 import helmet from "helmet"
 import {z} from "zod"
 import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js"
@@ -252,6 +253,12 @@ function resolveOrFail<T>(resolve: () => T, res: express.Response, logMsg: strin
  */
 function buildExpressApp(resolveDeps: () => McpServerDeps, resolveAuth: () => AuthGate | null, resolveKeepalive: () => KeepaliveGate | null): express.Express {
 	const app = express()
+	const mcpRateLimit = rateLimit({
+		windowMs: 15 * 60 * 1000,
+		limit: 100,
+		standardHeaders: true,
+		legacyHeaders: false,
+	})
 	app.use(helmet())
 	app.use(express.json())
 
@@ -296,7 +303,7 @@ function buildExpressApp(resolveDeps: () => McpServerDeps, resolveAuth: () => Au
 	app.get("/.well-known/oauth-protected-resource/mcp", serveMetadata)
 
 	// Streamable HTTP（ステートレス: リクエストごとに transport / server を生成。依存は共有）
-	app.post("/mcp", async (req, res) => {
+	app.post("/mcp", mcpRateLimit, async (req, res) => {
 		const gate = resolveOrFail(resolveAuth, res, "認証設定の構築に失敗しました:")
 		if (!gate.ok) return
 		// 認証ゲート: ON なら Bearer トークンを検証。未認証/無効は依存を構築せず 401 で弾く。
