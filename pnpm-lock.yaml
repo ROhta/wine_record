@@ -20,6 +20,9 @@ importers:
       express-oauth2-jwt-bearer:
         specifier: ^1.9.2
         version: 1.10.0
+      express-rate-limit:
+        specifier: 8.7.2
+        version: 8.7.2(express@5.2.1)
       helmet:
         specifier: ^8.3.0
         version: 8.3.0
@@ -838,8 +841,8 @@ packages:
     resolution: {integrity: sha512-sicg3wCTOdxiipC2noQ9XRVK94SO0wky8NmBbS6fsYZg8vWHizjvNt2HiPlUp6vLFu2eyIcWsqnJkZonqy1vzg==}
     engines: {node: ^12.19.0 || ^14.15.0 || ^16.13.0 || ^18.12.0 || ^20.2.0 || ^22.1.0 || ^24.0.0}
 
-  express-rate-limit@8.7.1:
-    resolution: {integrity: sha512-2FXbqkygil3mZiXzEtM0IjE/UBmBNot0J1GEVrJT4JbrvwOSoEtqtO+wHbiMQELWe1eNvHoYRg2dkjOid+6JkA==}
+  express-rate-limit@8.7.2:
+    resolution: {integrity: sha512-U1ScocxDD9WI09LaBVypvNkOtNR5yWAmZLkuKJdAzIchA4YKFYF6GT5IKER7epG58oXtjvGlV0/6ii0F83EyZg==}
     engines: {node: '>= 16'}
     peerDependencies:
       express: '>= 4.11'
@@ -1774,7 +1777,7 @@ snapshots:
       eventsource: 3.0.7
       eventsource-parser: 3.1.1
       express: 5.3.0
-      express-rate-limit: 8.7.1(express@5.3.0)
+      express-rate-limit: 8.7.2(express@5.3.0)
       hono: 4.13.13
       jose: 6.2.13
       json-schema-typed: 8.0.2
@@ -2291,7 +2294,15 @@ snapshots:
     dependencies:
       jose: 4.15.9
 
-  express-rate-limit@8.7.1(express@5.3.0):
+  express-rate-limit@8.7.2(express@5.2.1):
+    dependencies:
+      debug: 4.4.3
+      express: 5.2.1
+      ip-address: 10.7.4
+    transitivePeerDependencies:
+      - supports-color
+
+  express-rate-limit@8.7.2(express@5.3.0):
     dependencies:
       debug: 4.4.3
       express: 5.3.0
