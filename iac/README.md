@@ -11,7 +11,7 @@ Auth0 の手順は本ファイル末尾の「Auth0（US 003）」を参照。
 
 | リソース | 内容 |
 | --- | --- |
-| `vercel_project.wine_record` | プロジェクト設定。git 接続（main=本番 / その他=preview）、`framework=node`、`node_version=26.x`、**Deployment Protection 無効化（`vercel_authentication.deployment_type = "none"`）** |
+| `vercel_project.wine_record` | プロジェクト設定。git 接続（main=本番 / その他=preview）、`framework=node`、`node_version=24.x`、**Deployment Protection 無効化（`vercel_authentication.deployment_type = "none"`）** |
 
 ### 管理しないもの（意図的）
 

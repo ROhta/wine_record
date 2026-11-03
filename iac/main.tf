@@ -13,7 +13,7 @@
 resource "vercel_project" "wine_record" {
   name         = "wine-record"
   framework    = "node"
-  node_version = "26.x"
+  node_version = "24.x"
 
   git_repository = {
     type              = "github"
