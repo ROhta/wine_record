@@ -10,8 +10,8 @@
 #   - Terraform Cloud リモート実行: terraform 版は TFC workspace 設定（iac/versions.tf の required_version を満たす）
 # node は Vercel が提供するメジャー（20.x / 22.x / 24.x）に制約されるため、上流に新しいメジャーが出ても 24 系に据え置く。
 [tools]
-node = "24.18.0"
-pnpm = "11.17.0"
+node = "24.22.2"
+pnpm = "11.28.10"
 terraform = "1.15.8"
 # Agent Package Manager（AI エージェント instructions 管理）。registry 未収録のため github backend で取得。
 "github:microsoft/apm" = { version = "0.26.0", extract_all = "true" }
